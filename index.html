@@ -8,6 +8,10 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: #f5f5f5; }
+        .error-bar {
+            background: #ff4444; color: white; padding: 1rem; text-align: center;
+            font-weight: bold; display: none;
+        }
         header {
             background: #1a1a2e; color: white; padding: 1rem;
             display: flex; justify-content: space-between; align-items: center;
@@ -97,6 +101,9 @@
     </style>
 </head>
 <body>
+    <!-- ERROR DISPLAY BAR -->
+    <div id="error-bar" class="error-bar"></div>
+
     <header>
         <div class="logo">BRINE BD</div>
         <button class="cart-icon" onclick="openCart()">🛒 <span class="cart-count" id="cart-count">0</span></button>
@@ -156,10 +163,23 @@
     </div>
 
     <script>
+        // ==================== ERROR DISPLAY HELPER ====================
+        function showError(msg) {
+            const bar = document.getElementById('error-bar');
+            bar.textContent = '⚠️ ' + msg;
+            bar.style.display = 'block';
+        }
+
         // ==================== SUPABASE SETUP ====================
         const SUPABASE_URL = "https://nlsfcjsgxjlikwlyyzcu.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sc2ZjanNneGpsaWt3bHl5emN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MzA1ODcsImV4cCI6MjA5NjUwNjU4N30.HdNF-qAVdqVGhD2DjXjw0JmKosIofhbsAck_IgMrGYc";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (e) {
+            showError('Supabase init error: ' + e.message);
+        }
 
         // ==================== STATE ====================
         let products = [];
@@ -170,11 +190,23 @@
 
         // ==================== FETCH PRODUCTS ====================
         async function loadProducts() {
-            const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return; }
-            products = data;
-            renderCategoryNav();
-            renderProducts();
+            if (!supabase) {
+                showError('Supabase client not initialized.');
+                return;
+            }
+            try {
+                const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+                if (error) {
+                    showError('Supabase fetch error: ' + error.message + ' (code: ' + error.code + ')');
+                    return;
+                }
+                products = data;
+                document.getElementById('error-bar').style.display = 'none'; // hide error if success
+                renderCategoryNav();
+                renderProducts();
+            } catch (err) {
+                showError('Unexpected error: ' + err.message);
+            }
         }
 
         function renderCategoryNav() {
@@ -334,7 +366,6 @@
             });
             if (error) { alert('Error adding product: ' + error.message); return; }
             alert('Product added!');
-            // Clear form
             ['p-name','p-price','p-oldprice','p-badge','p-sizes'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('p-image').value = '';
             loadProducts();
@@ -344,7 +375,6 @@
             const id = document.getElementById('del-id').value;
             if (!id) return alert('Enter Product ID');
             if (!confirm(`Delete product ID ${id}?`)) return;
-            // Get image URL first to delete from storage if exists
             const { data: prod } = await supabase.from('products').select('image_url').eq('id', id).single();
             if (prod && prod.image_url) {
                 const path = prod.image_url.split('/').pop();
