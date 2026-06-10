@@ -1,394 +1,495 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brine BD - Premium Clothing</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f5f5f5; }
-        .error-bar {
-            background: #ff4444; color: white; padding: 1rem; text-align: center;
-            font-weight: bold; display: none;
-        }
-        header {
-            background: #1a1a2e; color: white; padding: 1rem;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-size: 1.8rem; font-weight: bold; color: #e94560; }
-        .cart-icon {
-            position: relative; cursor: pointer; font-size: 1.8rem;
-            background: none; border: none; color: white;
-        }
-        .cart-count {
-            position: absolute; top: -10px; right: -10px;
-            background: #e94560; color: white; border-radius: 50%;
-            padding: 0.2rem 0.5rem; font-size: 0.8rem;
-        }
-        .category-nav {
-            display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem;
-            justify-content: center; background: white; border-bottom: 1px solid #ddd;
-        }
-        .cat-btn {
-            padding: 0.5rem 1.2rem; border-radius: 20px;
-            border: 1px solid #e94560; background: white; color: #e94560;
-            cursor: pointer; transition: 0.2s;
-        }
-        .cat-btn.active { background: #e94560; color: white; }
-        .products {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem; padding: 2rem; max-width: 1200px; margin: 0 auto;
-        }
-        .product-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s;
-            display: flex; flex-direction: column;
-        }
-        .product-card:hover { transform: translateY(-5px); }
-        .product-img {
-            width: 100%; height: 250px; object-fit: cover;
-            background: #eee;
-        }
-        .product-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
-        .product-name { font-weight: bold; margin-bottom: 0.3rem; }
-        .product-category { color: #666; font-size: 0.9rem; }
-        .price { font-size: 1.2rem; color: #e94560; margin: 0.5rem 0; }
-        .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-left: 0.5rem; }
-        .badge {
-            background: #e94560; color: white; padding: 0.2rem 0.5rem;
-            border-radius: 4px; font-size: 0.8rem; display: inline-block;
-            margin-bottom: 0.5rem; align-self: flex-start;
-        }
-        .size-select { margin: 0.5rem 0; padding: 0.3rem; width: 100%; }
-        .add-to-cart {
-            margin-top: auto; padding: 0.7rem; background: #e94560; color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-        }
-        .add-to-cart:hover { opacity: 0.9; }
-
-        /* Admin panel */
-        #admin-panel {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 200; justify-content: center;
-            align-items: center; flex-direction: column;
-        }
-        #admin-inner {
-            background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;
-            max-height: 80vh; overflow-y: auto;
-        }
-        #admin-inner input, #admin-inner select, #admin-inner button {
-            width: 100%; padding: 0.7rem; margin: 0.5rem 0; border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        #admin-inner button { background: #e94560; color: white; cursor: pointer; border: none; }
-        .admin-toggle { color: white; background: none; border: none; display: none; }
-        .close-admin { float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-
-        /* Cart modal */
-        #cart-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 150; justify-content: center;
-            align-items: center;
-        }
-        #cart-inner {
-            background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px;
-            max-height: 80vh; overflow-y: auto;
-        }
-        .cart-item { display: flex; justify-content: space-between; margin: 0.5rem 0; align-items: center; }
-        .checkout-btn { width: 100%; padding: 0.8rem; background: #25D366; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 1rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brine BD | Premium Football & Clothing Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;900&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+<style>
+:root{--black:#0a0a0a;--dark:#111111;--card:#181818;--border:#2a2a2a;--gold:#f5c518;--gold2:#e6b000;--white:#f5f5f5;--gray:#888;--lightgray:#ccc;--red:#e63946;--green:#25d366}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--black);color:var(--white);font-family:'Barlow',sans-serif}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,10,10,0.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}.logo-icon{width:38px;height:38px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:22px;color:var(--black)}.logo-text{font-family:'Bebas Neue';font-size:24px;color:var(--white);letter-spacing:2px}
+.nav-links{display:flex;gap:28px;list-style:none}.nav-links a{color:var(--lightgray);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:color .2s}.nav-links a:hover{color:var(--gold)}
+.nav-right{display:flex;align-items:center;gap:12px}.cart-btn{background:var(--gold);color:var(--black);border:none;padding:8px 18px;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .2s}.cart-btn:hover{background:var(--gold2)}.cart-count{background:var(--red);color:white;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none}.hamburger span{width:24px;height:2px;background:var(--white)}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--dark);padding:20px;z-index:999;border-bottom:1px solid var(--border);flex-direction:column;gap:16px}.mobile-menu.open{display:flex}.mobile-menu a{color:var(--lightgray);text-decoration:none;font-size:16px;font-weight:600;padding:8px 0;border-bottom:1px solid var(--border)}
+.hero{min-height:100vh;display:flex;align-items:center;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a0a 50%,#0a0a0a 100%);position:relative;overflow:hidden;padding-top:64px}.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(245,197,24,0.08) 0%,transparent 60%)}
+.hero-content{max-width:1200px;margin:0 auto;padding:80px 24px}.hero-tag{display:inline-block;background:var(--gold);color:var(--black);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:6px 14px;border-radius:4px;margin-bottom:20px}
+.hero h1{font-family:'Bebas Neue';font-size:clamp(56px,10vw,120px);line-height:.9;color:var(--white);margin-bottom:24px}.hero h1 span{color:var(--gold)}
+.hero p{font-size:18px;color:var(--gray);max-width:500px;margin-bottom:36px;line-height:1.6}.hero-btns{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{background:var(--gold);color:var(--black);padding:14px 32px;border-radius:8px;font-weight:700;font-size:16px;text-decoration:none;letter-spacing:1px;transition:all .2s}.btn-primary:hover{background:var(--gold2);transform:translateY(-2px)}
+.btn-secondary{border:2px solid var(--border);color:var(--white);padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;text-decoration:none;letter-spacing:1px;transition:all .2s}.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.hero-stats{display:flex;gap:40px;margin-top:60px}.stat-num{font-family:'Bebas Neue';font-size:40px;color:var(--gold)}.stat-label{font-size:13px;color:var(--gray);letter-spacing:1px}
+section.content{padding:80px 24px;max-width:1200px;margin:0 auto}
+.section-tag{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}.section-title{font-family:'Bebas Neue';font-size:48px;color:var(--white);line-height:1}
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px}
+.categories-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 16px;cursor:pointer;transition:all .3s;text-align:center;text-decoration:none}.cat-card:hover,.cat-card.active{border-color:var(--gold);transform:translateY(-4px);background:#1e1e1e}
+.cat-icon{font-size:32px;margin-bottom:10px}.cat-name{font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--white);letter-spacing:1px;text-transform:uppercase}.cat-count{font-size:11px;color:var(--gray);margin-top:4px}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.filter-btn{background:var(--card);border:1px solid var(--border);color:var(--lightgray);padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}.filter-btn:hover,.filter-btn.active{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:700}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.product-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .3s;position:relative}.product-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.product-img{width:100%;aspect-ratio:1;object-fit:cover;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden}.product-img img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px}.badge-sale{background:var(--red);color:white}.badge-new{background:var(--gold);color:var(--black)}.badge-hot{background:#ff6b00;color:white}
+.product-info{padding:16px}.product-category{font-size:11px;color:var(--gold);font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}.product-name{font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.3}
+.product-sizes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.size-tag{border:1px solid var(--border);color:var(--gray);font-size:11px;padding:2px 8px;border-radius:4px}
+.product-price{display:flex;align-items:center;gap:10px;margin-bottom:14px}.price-current{font-family:'Bebas Neue';font-size:24px;color:var(--gold)}.price-old{font-size:14px;color:var(--gray);text-decoration:line-through}
+.order-btn{width:100%;background:var(--green);color:white;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}.order-btn:hover{background:#20bd5a}
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--green);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);cursor:pointer;transition:all .3s;text-decoration:none}.wa-float:hover{transform:scale(1.1)}
+.wa-float svg{width:30px;height:30px;fill:white}
+.cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000}.cart-overlay.open{display:block}
+.cart-drawer{position:fixed;top:0;right:-420px;width:420px;max-width:100vw;height:100vh;background:var(--dark);z-index:2001;transition:right .3s ease;display:flex;flex-direction:column;border-left:1px solid var(--border)}.cart-drawer.open{right:0}
+.cart-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.cart-header h3{font-family:'Bebas Neue';font-size:28px;color:var(--white)}.close-btn{background:none;border:none;color:var(--gray);font-size:24px;cursor:pointer}
+.cart-items{flex:1;overflow-y:auto;padding:20px 24px}.cart-item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border)}.cart-item-img{width:70px;height:70px;background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden}.cart-item-img img{width:100%;height:100%;object-fit:cover}
+.cart-item-info{flex:1}.cart-item-name{font-size:15px;font-weight:600;color:var(--white);margin-bottom:4px}.cart-item-meta{font-size:12px;color:var(--gray);margin-bottom:8px}.cart-item-price{font-family:'Bebas Neue';font-size:20px;color:var(--gold)}.cart-item-remove{background:none;border:none;color:var(--gray);cursor:pointer;font-size:18px}
+.cart-footer{padding:20px 24px;border-top:1px solid var(--border)}.cart-total{display:flex;justify-content:space-between;margin-bottom:16px}.cart-total span{font-size:16px;color:var(--gray)}.cart-total strong{font-family:'Bebas Neue';font-size:28px;color:var(--gold)}
+.checkout-btn{width:100%;background:var(--green);color:white;border:none;padding:16px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s}.checkout-btn:hover{background:#20bd5a}
+.empty-cart{text-align:center;padding:60px 20px;color:var(--gray)}.empty-cart-icon{font-size:60px;margin-bottom:16px}
+.promo-banner{background:linear-gradient(135deg,var(--gold) 0%,#e6a800 100%);padding:60px 24px;text-align:center}.promo-banner h2{font-family:'Bebas Neue';font-size:56px;color:var(--black);margin-bottom:8px}.promo-banner p{font-size:18px;color:rgba(0,0,0,.7);margin-bottom:24px}
+.btn-dark{background:var(--black);color:var(--gold);padding:14px 36px;border-radius:8px;font-weight:700;font-size:16px;text-decoration:none;letter-spacing:1px;display:inline-block;transition:all .2s}.btn-dark:hover{transform:translateY(-2px)}
+.admin-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000}.admin-overlay.open{display:flex;align-items:center;justify-content:center;padding:20px}
+.admin-panel{background:var(--dark);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:32px}
+.admin-panel h2{font-family:'Bebas Neue';font-size:36px;color:var(--gold);margin-bottom:8px}
+.form-group{margin-bottom:18px}.form-group label{display:block;font-size:13px;font-weight:600;color:var(--lightgray);margin-bottom:8px;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:#111;border:1px solid var(--border);color:var(--white);padding:12px 14px;border-radius:8px;font-size:14px;font-family:'Barlow',sans-serif;transition:border-color .2s}.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold)}.form-group select option{background:var(--dark)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.img-upload{border:2px dashed var(--border);border-radius:8px;padding:30px;text-align:center;cursor:pointer;transition:border-color .2s}.img-upload:hover{border-color:var(--gold)}.img-upload input{display:none}
+.admin-actions{display:flex;gap:12px;margin-top:24px}.btn-add{flex:1;background:var(--gold);color:var(--black);border:none;padding:14px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer}.btn-add:hover{background:var(--gold2)}.btn-cancel{background:var(--card);color:var(--lightgray);border:1px solid var(--border);padding:14px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer}
+.admin-product-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}.admin-thumb{width:48px;height:48px;border-radius:6px;background:#222;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden}.admin-thumb img{width:100%;height:100%;object-fit:cover}.admin-product-item .info{flex:1}.admin-product-item .info strong{display:block;font-size:14px;color:var(--white)}.admin-product-item .info span{font-size:12px;color:var(--gray)}.del-btn{background:none;border:1px solid #333;color:var(--red);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.order-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:4000}.order-overlay.open{display:flex;align-items:center;justify-content:center;padding:20px}
+.order-modal{background:var(--dark);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:32px;max-height:90vh;overflow-y:auto}
+.order-modal h2{font-family:'Bebas Neue';font-size:32px;color:var(--gold);margin-bottom:4px}
+.product-summary{background:#111;border:1px solid var(--border);border-radius:10px;padding:14px;margin:16px 0;display:flex;gap:12px;align-items:center}.sum-img{width:56px;height:56px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0}.sum-img img{width:100%;height:100%;object-fit:cover}.sum-info{flex:1}.sum-info strong{display:block;font-size:15px;color:var(--white)}.sum-info span{font-size:13px;color:var(--gray)}.sum-price{font-family:'Bebas Neue';font-size:22px;color:var(--gold)}
+.send-order-btn{width:100%;background:var(--green);color:white;border:none;padding:15px;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s}.send-order-btn:hover{background:#20bd5a}
+.size-select-btn{border:1px solid var(--border);color:var(--gray);font-size:13px;padding:6px 14px;border-radius:6px;cursor:pointer;background:none;transition:all .2s}.size-select-btn:hover,.size-select-btn.selected{border-color:var(--gold);color:var(--gold);background:rgba(245,197,24,.05)}
+.toast{position:fixed;bottom:90px;right:24px;z-index:9999;background:#1a1a1a;border:1px solid var(--gold);color:var(--white);padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;transform:translateY(100px);opacity:0;transition:all .3s;pointer-events:none}.toast.show{transform:translateY(0);opacity:1}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;align-items:center;justify-content:center}.loading-overlay.show{display:flex}
+.spinner{width:50px;height:50px;border:4px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{background:var(--dark);border-top:1px solid var(--border);padding:60px 24px 30px;margin-top:80px}
+.footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand p{color:var(--gray);font-size:14px;margin-top:12px;line-height:1.6;max-width:300px}.footer-col h4{font-family:'Barlow Condensed';font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--white);margin-bottom:16px}.footer-col a{display:block;color:var(--gray);text-decoration:none;font-size:14px;margin-bottom:10px;transition:color .2s}.footer-col a:hover{color:var(--gold)}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.footer-bottom p{color:var(--gray);font-size:13px}
+.no-products{text-align:center;padding:80px 20px;color:var(--gray);grid-column:1/-1}.no-products-icon{font-size:60px;margin-bottom:16px}
+.admin-key-section{display:flex;gap:10px}.admin-key-section input{flex:1}.admin-key-section button{background:var(--gold);color:var(--black);border:none;padding:12px 20px;border-radius:8px;font-weight:700;cursor:pointer;white-space:nowrap}
+.uploading{opacity:.6;pointer-events:none}
+@media(max-width:900px){.categories-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.nav-links{display:none}.hamburger{display:flex}.hero h1{font-size:64px}.hero-stats{gap:24px;flex-wrap:wrap}.section-header{flex-direction:column;align-items:flex-start;gap:12px}.form-row{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.categories-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
-    <!-- ERROR DISPLAY BAR -->
-    <div id="error-bar" class="error-bar"></div>
 
-    <header>
-        <div class="logo">BRINE BD</div>
-        <button class="cart-icon" onclick="openCart()">🛒 <span class="cart-count" id="cart-count">0</span></button>
-    </header>
+<nav>
+  <a href="#" class="logo"><div class="logo-icon">B</div><span class="logo-text">BRINE BD</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#shop">Shop</a></li>
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
+    <button class="hamburger" onclick="toggleMobile()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
 
-    <div class="category-nav" id="cat-nav"></div>
-    <div class="products" id="products-container"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="toggleMobile()">Home</a>
+  <a href="#shop" onclick="toggleMobile()">Shop</a>
+  <a href="#categories" onclick="toggleMobile()">Categories</a>
+  <a href="#contact" onclick="toggleMobile()">Contact</a>
+</div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel">
-        <div id="admin-inner">
-            <button class="close-admin" onclick="closeAdmin()">✖</button>
-            <h3>🔐 Admin Panel</h3>
-            <div id="admin-login">
-                <input type="password" id="admin-pass" placeholder="Password">
-                <button onclick="adminLogin()">Login</button>
-            </div>
-            <div id="admin-dashboard" style="display:none">
-                <h4>Add New Product</h4>
-                <input type="text" id="p-name" placeholder="Product Name">
-                <select id="p-cat">
-                    <option>Football Jersey</option>
-                    <option>T-Shirt</option>
-                    <option>Polo</option>
-                    <option>Hoodie</option>
-                    <option>Pants/Shorts</option>
-                    <option>Jacket</option>
-                </select>
-                <input type="number" id="p-price" placeholder="Price (৳)">
-                <input type="number" id="p-oldprice" placeholder="Old Price (optional)">
-                <input type="text" id="p-badge" placeholder="Badge (e.g. NEW)">
-                <label>Sizes: (comma separated)</label>
-                <input type="text" id="p-sizes" placeholder="S,M,L,XL,XXL">
-                <input type="file" id="p-image" accept="image/*">
-                <button onclick="addProduct()">Add Product</button>
-                <hr>
-                <h4>Delete Product</h4>
-                <input type="number" id="del-id" placeholder="Product ID">
-                <button onclick="deleteProduct()">Delete</button>
-            </div>
-        </div>
+<section id="home" style="max-width:100%;padding:0;">
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">🔥 New Collection 2026</div>
+    <h1>WEAR THE<br><span>GAME</span></h1>
+    <p>Premium football jerseys & clothing. Authentic styles, unbeatable prices. Delivered across Bangladesh.</p>
+    <div class="hero-btns">
+      <a href="#shop" class="btn-primary">Shop Now</a>
+      <a href="https://wa.me/8801835655675" class="btn-secondary" target="_blank">WhatsApp Us</a>
     </div>
-
-    <!-- Cart Modal -->
-    <div id="cart-modal">
-        <div id="cart-inner">
-            <h3>🛒 Your Cart</h3>
-            <div id="cart-items"></div>
-            <hr>
-            <h4>Customer Info</h4>
-            <input type="text" id="cust-name" placeholder="Your Name">
-            <input type="text" id="cust-phone" placeholder="Phone Number">
-            <textarea id="cust-address" placeholder="Address" rows="2"></textarea>
-            <button class="checkout-btn" onclick="placeOrder()">📱 Order via WhatsApp</button>
-            <button onclick="closeCart()" style="background: #ccc; margin-top:0.5rem;">Close</button>
-        </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Products</div></div>
+      <div class="stat"><div class="stat-num">10K+</div><div class="stat-label">Happy Customers</div></div>
+      <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Authentic</div></div>
     </div>
+  </div>
+</div>
+</section>
 
-    <script>
-        // ==================== ERROR DISPLAY HELPER ====================
-        function showError(msg) {
-            const bar = document.getElementById('error-bar');
-            bar.textContent = '⚠️ ' + msg;
-            bar.style.display = 'block';
-        }
+<section class="content" id="categories">
+  <div class="section-header">
+    <div><div class="section-tag">Browse By</div><div class="section-title">Categories</div></div>
+  </div>
+  <div class="categories-grid">
+    <a class="cat-card active" onclick="filterProducts('all');setActiveCat(this)" href="#shop"><div class="cat-icon">🏪</div><div class="cat-name">All Items</div><div class="cat-count" id="count-all">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('Jersey');setActiveCat(this)" href="#shop"><div class="cat-icon">⚽</div><div class="cat-name">Football Jersey</div><div class="cat-count" id="count-Jersey">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('T-Shirt');setActiveCat(this)" href="#shop"><div class="cat-icon">👕</div><div class="cat-name">T-Shirt</div><div class="cat-count" id="count-T-Shirt">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('Polo');setActiveCat(this)" href="#shop"><div class="cat-icon">🎽</div><div class="cat-name">Polo Shirt</div><div class="cat-count" id="count-Polo">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('Hoodie');setActiveCat(this)" href="#shop"><div class="cat-icon">🧥</div><div class="cat-name">Hoodie/Sweater</div><div class="cat-count" id="count-Hoodie">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('Pants');setActiveCat(this)" href="#shop"><div class="cat-icon">👖</div><div class="cat-name">Pants/Shorts</div><div class="cat-count" id="count-Pants">0 products</div></a>
+    <a class="cat-card" onclick="filterProducts('Jacket');setActiveCat(this)" href="#shop"><div class="cat-icon">🧤</div><div class="cat-name">Jacket</div><div class="cat-count" id="count-Jacket">0 products</div></a>
+  </div>
+</section>
 
-        // ==================== SUPABASE SETUP ====================
-        const SUPABASE_URL = "https://nlsfcjsgxjlikwlyyzcu.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sc2ZjanNneGpsaWt3bHl5emN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MzA1ODcsImV4cCI6MjA5NjUwNjU4N30.HdNF-qAVdqVGhD2DjXjw0JmKosIofhbsAck_IgMrGYc";
+<section class="content" id="shop">
+  <div class="section-header">
+    <div><div class="section-tag">Our Store</div><div class="section-title">All Products</div></div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProducts('all');setActiveFilter(this)">All</button>
+    <button class="filter-btn" onclick="filterProducts('Jersey');setActiveFilter(this)">Jersey</button>
+    <button class="filter-btn" onclick="filterProducts('T-Shirt');setActiveFilter(this)">T-Shirt</button>
+    <button class="filter-btn" onclick="filterProducts('Polo');setActiveFilter(this)">Polo</button>
+    <button class="filter-btn" onclick="filterProducts('Hoodie');setActiveFilter(this)">Hoodie</button>
+    <button class="filter-btn" onclick="filterProducts('Pants');setActiveFilter(this)">Pants/Shorts</button>
+    <button class="filter-btn" onclick="filterProducts('Jacket');setActiveFilter(this)">Jacket</button>
+  </div>
+  <div class="products-grid" id="productsGrid">
+    <div class="no-products"><div class="no-products-icon">⏳</div><p style="font-size:18px;font-weight:600;color:#fff;">Loading products...</p></div>
+  </div>
+</section>
 
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch (e) {
-            showError('Supabase init error: ' + e.message);
-        }
+<div class="promo-banner">
+  <h2>CASH ON DELIVERY 🚚</h2>
+  <p>পুরো বাংলাদেশে ডেলিভারি। অর্ডার করুন WhatsApp-এ।</p>
+  <a href="https://wa.me/8801835655675" class="btn-dark" target="_blank">Order Now →</a>
+</div>
 
-        // ==================== STATE ====================
-        let products = [];
-        let cart = [];
-        let activeCategory = 'All';
-        const categories = ['All', 'Football Jersey', 'T-Shirt', 'Polo', 'Hoodie', 'Pants/Shorts', 'Jacket'];
-        const ADMIN_PASSWORD = 'brine2026';
+<footer id="contact">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo"><div class="logo-icon">B</div><span class="logo-text">BRINE BD</span></a>
+      <p>Premium football jerseys & clothing brand in Bangladesh. Authentic styles delivered to your door.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#home">Home</a><a href="#shop">Shop</a><a href="#categories">Categories</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="https://wa.me/8801835655675" target="_blank">📱 01835-655675</a>
+      <a href="mailto:brinebd75@gmail.com">📧 brinebd75@gmail.com</a>
+      <a href="#">📍 Bangladesh</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Brine BD. All rights reserved.</p>
+    <p>Cash on Delivery • Authentic Products • Fast Shipping</p>
+  </div>
+</footer>
 
-        // ==================== FETCH PRODUCTS ====================
-        async function loadProducts() {
-            if (!supabase) {
-                showError('Supabase client not initialized.');
-                return;
-            }
-            try {
-                const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-                if (error) {
-                    showError('Supabase fetch error: ' + error.message + ' (code: ' + error.code + ')');
-                    return;
-                }
-                products = data;
-                document.getElementById('error-bar').style.display = 'none'; // hide error if success
-                renderCategoryNav();
-                renderProducts();
-            } catch (err) {
-                showError('Unexpected error: ' + err.message);
-            }
-        }
+<a href="https://wa.me/8801835655675" class="wa-float" target="_blank">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
 
-        function renderCategoryNav() {
-            const nav = document.getElementById('cat-nav');
-            nav.innerHTML = categories.map(cat =>
-                `<button class="cat-btn ${cat === activeCategory ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
-            ).join('');
-        }
+<div class="toast" id="toast"></div>
 
-        function setCategory(cat) {
-            activeCategory = cat;
-            renderCategoryNav();
-            renderProducts();
-        }
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
 
-        function renderProducts() {
-            const container = document.getElementById('products-container');
-            const filtered = activeCategory === 'All' ? products : products.filter(p => p.category === activeCategory);
-            if (filtered.length === 0) {
-                container.innerHTML = '<p>No products yet. Add via Admin Panel (Ctrl+Shift+A).</p>';
-                return;
-            }
-            container.innerHTML = filtered.map(p => {
-                const sizes = p.sizes && p.sizes.length ? p.sizes : ['S','M','L','XL'];
-                const badge = p.badge ? `<span class="badge">${p.badge}</span>` : '';
-                const oldPrice = p.old_price ? `<span class="old-price">৳${p.old_price}</span>` : '';
-                const image = p.image_url || 'https://via.placeholder.com/300x300?text=No+Image';
-                return `
-                <div class="product-card">
-                    <img class="product-img" src="${image}" alt="${p.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x300?text=No+Image'">
-                    <div class="product-info">
-                        ${badge}
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-category">${p.category}</div>
-                        <div class="price">৳${p.price} ${oldPrice}</div>
-                        <select class="size-select" id="size-${p.id}">
-                            ${sizes.map(s => `<option>${s}</option>`).join('')}
-                        </select>
-                        <button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart 🛒</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header"><h3>🛒 Your Cart</h3><button class="close-btn" onclick="toggleCart()">✕</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total</span><strong id="cartTotal">৳0</strong></div>
+    <button class="checkout-btn" onclick="checkoutWhatsApp()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Send Order via WhatsApp
+    </button>
+  </div>
+</div>
 
-        // ==================== CART ====================
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            const size = sizeSelect ? sizeSelect.value : 'M';
-            cart.push({ ...product, size });
-            updateCartUI();
-            alert(`"${product.name}" (${size}) added to cart!`);
-        }
+<!-- ORDER MODAL -->
+<div class="order-overlay" id="orderOverlay">
+  <div class="order-modal">
+    <h2>📦 Place Order</h2>
+    <p style="color:var(--gray);font-size:13px;margin-bottom:4px;">আপনার তথ্য দিন, WhatsApp-এ অর্ডার যাবে।</p>
+    <div class="product-summary" id="orderSummary"></div>
+    <div class="form-group"><label>আপনার নাম *</label><input type="text" id="orderName" placeholder="Full Name"></div>
+    <div class="form-group"><label>ফোন নম্বর *</label><input type="tel" id="orderPhone" placeholder="01XXXXXXXXX"></div>
+    <div class="form-group"><label>ঠিকানা *</label><input type="text" id="orderAddress" placeholder="Full delivery address"></div>
+    <div class="form-group"><label>সাইজ সিলেক্ট করুন</label><div id="orderSizeSelect" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"></div></div>
+    <div class="form-group"><label>পরিমাণ</label><select id="orderQty"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    <div class="form-group"><label>বিশেষ নোট (Optional)</label><textarea id="orderNote" rows="2" placeholder="কোনো বিশেষ চাহিদা..."></textarea></div>
+    <button class="send-order-btn" onclick="sendWhatsAppOrder()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp-এ অর্ডার পাঠান
+    </button>
+    <button onclick="closeOrderModal()" style="width:100%;margin-top:10px;background:none;border:1px solid var(--border);color:var(--gray);padding:12px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+  </div>
+</div>
 
-        function updateCartUI() {
-            document.getElementById('cart-count').textContent = cart.length;
-            const container = document.getElementById('cart-items');
-            container.innerHTML = cart.map((item, i) => `
-                <div class="cart-item">
-                    <span>${item.name} (${item.size}) - ৳${item.price}</span>
-                    <button onclick="removeFromCart(${i})" style="color:red;background:none;border:none;cursor:pointer;">✖</button>
-                </div>
-            `).join('');
-        }
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <h2>⚙️ Admin Panel</h2>
+    <p style="color:var(--gray);font-size:14px;margin-bottom:24px;">পণ্য যোগ করুন, পরিবর্তন করুন বা বাদ দিন।</p>
+    <div id="adminLoginSection">
+      <div class="form-group">
+        <label>Admin Password</label>
+        <div class="admin-key-section">
+          <input type="password" id="adminPassword" placeholder="Enter password" onkeypress="if(event.key==='Enter')checkAdminPassword()">
+          <button onclick="checkAdminPassword()">Login</button>
+        </div>
+      </div>
+    </div>
+    <div id="adminContent" style="display:none;">
+      <h3 style="font-family:'Bebas Neue';font-size:24px;color:var(--white);margin-bottom:16px;">➕ নতুন পণ্য যোগ করুন</h3>
+      <div class="form-group"><label>Product Name *</label><input type="text" id="pName" placeholder="e.g. Argentina 2026 Home Jersey"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label>
+          <select id="pCategory">
+            <option value="Jersey">Football Jersey</option>
+            <option value="T-Shirt">T-Shirt</option>
+            <option value="Polo">Polo Shirt</option>
+            <option value="Hoodie">Hoodie / Sweater</option>
+            <option value="Pants">Pants / Shorts</option>
+            <option value="Jacket">Jacket</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Badge</label>
+          <select id="pBadge"><option value="">None</option><option value="new">New</option><option value="sale">Sale</option><option value="hot">Hot</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (৳) *</label><input type="number" id="pPrice" placeholder="1499"></div>
+        <div class="form-group"><label>Old Price (৳)</label><input type="number" id="pOldPrice" placeholder="1999"></div>
+      </div>
+      <div class="form-group">
+        <label>Available Sizes</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;color:var(--lightgray);font-size:14px;"><input type="checkbox" value="S" class="size-check"> S</label>
+          <label style="display:flex;align-items:center;gap:6px;color:var(--lightgray);font-size:14px;"><input type="checkbox" value="M" class="size-check" checked> M</label>
+          <label style="display:flex;align-items:center;gap:6px;color:var(--lightgray);font-size:14px;"><input type="checkbox" value="L" class="size-check" checked> L</label>
+          <label style="display:flex;align-items:center;gap:6px;color:var(--lightgray);font-size:14px;"><input type="checkbox" value="XL" class="size-check" checked> XL</label>
+          <label style="display:flex;align-items:center;gap:6px;color:var(--lightgray);font-size:14px;"><input type="checkbox" value="XXL" class="size-check"> XXL</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Product Image</label>
+        <div class="img-upload" onclick="document.getElementById('pImage').click()">
+          <input type="file" id="pImage" accept="image/*" onchange="previewImage(this)">
+          <div id="imgPreviewArea"><div style="font-size:32px;">📷</div><p style="color:var(--gray);font-size:13px;margin-top:8px;">Click to upload image</p></div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-add" onclick="addProduct()">➕ Add Product</button>
+        <button class="btn-cancel" onclick="closeAdmin()">Cancel</button>
+      </div>
+      <div style="margin-top:32px;">
+        <h3 style="font-family:'Bebas Neue';font-size:24px;color:var(--white);margin-bottom:16px;">📋 Current Products</h3>
+        <div id="adminProductList"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
+<script>
+const SUPABASE_URL = 'https://nlsfcjsgxjlikwlyyzcu.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sc2ZjanNneGpsaWt3bHl5emN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MzA1ODcsImV4cCI6MjA5NjUwNjU4N30.HdNF-qAVdqVGhD2DjXjw0JmKosIofhbsAck_IgMrGYc';
+const WA = '8801835655675';
+const ADMIN_PASS = 'brine2026';
 
-        function openCart() {
-            document.getElementById('cart-modal').style.display = 'flex';
-            updateCartUI();
-        }
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-        function closeCart() {
-            document.getElementById('cart-modal').style.display = 'none';
-        }
+let products = [];
+let cart = JSON.parse(localStorage.getItem('brinebd_cart')||'[]');
+let currentFilter = 'all';
+let currentOrderProduct = null;
+let selectedImageFile = null;
 
-        function placeOrder() {
-            if (cart.length === 0) return alert('Cart is empty!');
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const address = document.getElementById('cust-address').value.trim();
-            if (!name || !phone) return alert('Please enter name and phone number.');
+// SECRET SHORTCUT
+document.addEventListener('keydown', e => { if(e.ctrlKey && e.shiftKey && e.key==='A') openAdmin(); });
 
-            let orderText = `🛍️ *New Order from Brine BD*%0A`;
-            cart.forEach((item, i) => {
-                orderText += `%0A${i+1}. ${item.name} (${item.size}) - ৳${item.price}`;
-            });
-            const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
-            orderText += `%0A%0A💰 Total: ৳${total}%0A%0A👤 Name: ${name}%0A📞 Phone: ${phone}%0A📍 Address: ${address}`;
-            const waLink = `https://wa.me/8801835655675?text=${orderText}`;
-            window.open(waLink, '_blank');
-            cart = [];
-            updateCartUI();
-            closeCart();
-        }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+function showLoading(v) { document.getElementById('loadingOverlay').classList.toggle('show', v); }
 
-        // ==================== ADMIN ====================
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-                e.preventDefault();
-                document.getElementById('admin-panel').style.display = 'flex';
-            }
-        });
+function getCatIcon(cat) {
+  return {Jersey:'⚽','T-Shirt':'👕',Polo:'🎽',Hoodie:'🧥',Pants:'👖',Jacket:'🧤'}[cat]||'👔';
+}
 
-        function closeAdmin() {
-            document.getElementById('admin-panel').style.display = 'none';
-            document.getElementById('admin-login').style.display = 'block';
-            document.getElementById('admin-dashboard').style.display = 'none';
-        }
+// LOAD PRODUCTS FROM SUPABASE
+async function loadProducts() {
+  const { data, error } = await sb.from('products').select('*').order('created_at', {ascending: false});
+  if (error) { showToast('❌ Error loading products'); console.error(error); return; }
+  products = data || [];
+  renderProducts(currentFilter);
+  updateCounts();
+}
 
-        function adminLogin() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === ADMIN_PASSWORD) {
-                document.getElementById('admin-login').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
-            } else {
-                alert('Wrong password!');
-            }
-        }
+function renderProducts(filter) {
+  currentFilter = filter;
+  const grid = document.getElementById('productsGrid');
+  const list = filter === 'all' ? products : products.filter(p => p.category === filter);
+  if (!list.length) {
+    grid.innerHTML = `<div class="no-products"><div class="no-products-icon">📦</div><p style="font-size:18px;font-weight:600;color:#fff;margin-bottom:8px;">No products ${filter!=='all'?'in this category':'yet'}</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p => `
+    <div class="product-card">
+      <div class="product-img">
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy">` : `<span style="font-size:64px;">${getCatIcon(p.category)}</span>`}
+        ${p.badge ? `<div class="badge badge-${p.badge}">${p.badge.toUpperCase()}</div>` : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-category">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-sizes">${(p.sizes||[]).map(s=>`<span class="size-tag">${s}</span>`).join('')}</div>
+        <div class="product-price">
+          <span class="price-current">৳${Number(p.price).toLocaleString()}</span>
+          ${p.old_price ? `<span class="price-old">৳${Number(p.old_price).toLocaleString()}</span>` : ''}
+        </div>
+        <button class="order-btn" onclick="openOrderModal(${p.id})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Order Now
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
 
-        async function addProduct() {
-            const name = document.getElementById('p-name').value.trim();
-            const category = document.getElementById('p-cat').value;
-            const price = document.getElementById('p-price').value;
-            const old_price = document.getElementById('p-oldprice').value || null;
-            const badge = document.getElementById('p-badge').value || null;
-            const sizesStr = document.getElementById('p-sizes').value;
-            const imageFile = document.getElementById('p-image').files[0];
+function updateCounts() {
+  const cats = ['all','Jersey','T-Shirt','Polo','Hoodie','Pants','Jacket'];
+  cats.forEach(c => {
+    const el = document.getElementById('count-'+c);
+    if(el) { const n = c==='all'?products.length:products.filter(p=>p.category===c).length; el.textContent=n+' product'+(n!==1?'s':''); }
+  });
+}
 
-            if (!name || !price) return alert('Name and price required!');
+function filterProducts(f) { currentFilter=f; renderProducts(f); document.getElementById('shop').scrollIntoView({behavior:'smooth'}); }
+function setActiveFilter(el) { document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function setActiveCat(el) { document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
 
-            const sizes = sizesStr ? sizesStr.split(',').map(s => s.trim()) : [];
-            let image_url = null;
+// ORDER
+function openOrderModal(id) {
+  const p = products.find(x=>x.id===id); if(!p) return;
+  currentOrderProduct = p;
+  document.getElementById('orderSummary').innerHTML = `
+    <div class="sum-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${getCatIcon(p.category)}</span>`}</div>
+    <div class="sum-info"><strong>${p.name}</strong><span>${p.category}</span></div>
+    <div class="sum-price">৳${Number(p.price).toLocaleString()}</div>`;
+  document.getElementById('orderSizeSelect').innerHTML = (p.sizes||[]).map((s,i)=>`<button class="size-select-btn ${i===0?'selected':''}" onclick="selectSize(this)">${s}</button>`).join('');
+  document.getElementById('orderOverlay').classList.add('open');
+}
+function selectSize(el) { document.querySelectorAll('.size-select-btn').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); }
+function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
+function sendWhatsAppOrder() {
+  const name=document.getElementById('orderName').value.trim();
+  const phone=document.getElementById('orderPhone').value.trim();
+  const address=document.getElementById('orderAddress').value.trim();
+  const qty=document.getElementById('orderQty').value;
+  const note=document.getElementById('orderNote').value.trim();
+  const size=document.querySelector('.size-select-btn.selected')?.textContent||'N/A';
+  if(!name||!phone||!address){showToast('⚠️ নাম, ফোন ও ঠিকানা দিন!');return;}
+  const p=currentOrderProduct;
+  const total=Number(p.price)*Number(qty);
+  const msg=`🛒 *NEW ORDER - BRINE BD*\n\n📦 *Product:* ${p.name}\n🏷️ *Category:* ${p.category}\n📏 *Size:* ${size}\n🔢 *Quantity:* ${qty}\n💰 *Price:* ৳${Number(p.price).toLocaleString()} x ${qty} = ৳${total.toLocaleString()}\n\n👤 *Customer:* ${name}\n📱 *Phone:* ${phone}\n📍 *Address:* ${address}\n${note?`📝 *Note:* ${note}\n`:''}\n💳 *Payment:* Cash on Delivery`;
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
+  closeOrderModal(); showToast('✅ WhatsApp খুলছে!');
+}
 
-            if (imageFile) {
-                const fileName = `${Date.now()}_${imageFile.name}`;
-                const { data, error } = await supabase.storage
-                    .from('product-images')
-                    .upload(fileName, imageFile, { cacheControl: '3600', upsert: false });
-                if (error) { alert('Image upload failed: ' + error.message); return; }
-                const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(fileName);
-                image_url = urlData.publicUrl;
-            }
+// CART
+function toggleCart() { document.getElementById('cartOverlay').classList.toggle('open'); document.getElementById('cartDrawer').classList.toggle('open'); renderCart(); }
+function renderCart() {
+  const el=document.getElementById('cartItems');
+  if(!cart.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Your cart is empty</p></div>`;document.getElementById('cartTotal').textContent='৳0';return;}
+  el.innerHTML=cart.map((item,i)=>`<div class="cart-item"><div class="cart-item-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${getCatIcon(item.category)}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${item.name}</div><div class="cart-item-meta">${item.category} • Size: ${item.size}</div><div class="cart-item-price">৳${Number(item.price).toLocaleString()}</div></div><button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button></div>`).join('');
+  document.getElementById('cartTotal').textContent='৳'+cart.reduce((s,i)=>s+Number(i.price),0).toLocaleString();
+  document.getElementById('cartCount').textContent=cart.length;
+}
+function removeFromCart(i){cart.splice(i,1);localStorage.setItem('brinebd_cart',JSON.stringify(cart));renderCart();document.getElementById('cartCount').textContent=cart.length;}
+function checkoutWhatsApp(){if(!cart.length){showToast('Cart is empty!');return;}const total=cart.reduce((s,i)=>s+Number(i.price),0);let msg=`🛒 *CART ORDER - BRINE BD*\n\n`;cart.forEach((item,i)=>{msg+=`${i+1}. ${item.name} - Size: ${item.size} - ৳${Number(item.price).toLocaleString()}\n`;});msg+=`\n💰 *Total: ৳${total.toLocaleString()}*\n💳 *Payment: Cash on Delivery*`;window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');}
 
-            const { error } = await supabase.from('products').insert({
-                name,
-                category,
-                price: Number(price),
-                old_price: old_price ? Number(old_price) : null,
-                badge,
-                sizes,
-                image_url
-            });
-            if (error) { alert('Error adding product: ' + error.message); return; }
-            alert('Product added!');
-            ['p-name','p-price','p-oldprice','p-badge','p-sizes'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('p-image').value = '';
-            loadProducts();
-        }
+// ADMIN
+function openAdmin(){document.getElementById('adminOverlay').classList.add('open');}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
+document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
+document.getElementById('orderOverlay').addEventListener('click',function(e){if(e.target===this)closeOrderModal();});
 
-        async function deleteProduct() {
-            const id = document.getElementById('del-id').value;
-            if (!id) return alert('Enter Product ID');
-            if (!confirm(`Delete product ID ${id}?`)) return;
-            const { data: prod } = await supabase.from('products').select('image_url').eq('id', id).single();
-            if (prod && prod.image_url) {
-                const path = prod.image_url.split('/').pop();
-                await supabase.storage.from('product-images').remove([path]);
-            }
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) { alert('Delete failed: ' + error.message); return; }
-            alert('Product deleted!');
-            document.getElementById('del-id').value = '';
-            loadProducts();
-        }
+function checkAdminPassword(){
+  if(document.getElementById('adminPassword').value===ADMIN_PASS){
+    document.getElementById('adminLoginSection').style.display='none';
+    document.getElementById('adminContent').style.display='block';
+    renderAdminProducts();
+  } else { showToast('❌ Wrong password!'); }
+}
 
-        // ==================== INITIAL LOAD ====================
-        loadProducts();
-    </script>
+function previewImage(input){
+  if(input.files&&input.files[0]){
+    selectedImageFile=input.files[0];
+    const reader=new FileReader();
+    reader.onload=e=>{ document.getElementById('imgPreviewArea').innerHTML=`<img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">`; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+async function addProduct(){
+  const name=document.getElementById('pName').value.trim();
+  const category=document.getElementById('pCategory').value;
+  const price=document.getElementById('pPrice').value;
+  const old_price=document.getElementById('pOldPrice').value||null;
+  const badge=document.getElementById('pBadge').value||null;
+  const sizes=[...document.querySelectorAll('.size-check:checked')].map(c=>c.value);
+  if(!name||!price){showToast('⚠️ Name and price required!');return;}
+  if(!sizes.length){showToast('⚠️ Select at least one size!');return;}
+  showLoading(true);
+  let image_url=null;
+  if(selectedImageFile){
+    const ext=selectedImageFile.name.split('.').pop();
+    const fileName=`${Date.now()}.${ext}`;
+    const {data,error}=await sb.storage.from('product-images').upload(fileName,selectedImageFile,{contentType:selectedImageFile.type});
+    if(!error){ const {data:urlData}=sb.storage.from('product-images').getPublicUrl(fileName); image_url=urlData.publicUrl; }
+    else { showToast('⚠️ Image upload failed, saving without image'); }
+  }
+  const {error}=await sb.from('products').insert([{name,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url}]);
+  showLoading(false);
+  if(error){showToast('❌ Error: '+error.message);return;}
+  showToast('✅ Product added!');
+  document.getElementById('pName').value='';
+  document.getElementById('pPrice').value='';
+  document.getElementById('pOldPrice').value='';
+  document.getElementById('pBadge').value='';
+  document.getElementById('pImage').value='';
+  document.getElementById('imgPreviewArea').innerHTML=`<div style="font-size:32px;">📷</div><p style="color:var(--gray);font-size:13px;margin-top:8px;">Click to upload image</p>`;
+  selectedImageFile=null;
+  document.querySelectorAll('.size-check').forEach(c=>c.checked=['M','L','XL'].includes(c.value));
+  await loadProducts();
+  renderAdminProducts();
+}
+
+async function deleteProduct(id){
+  if(!confirm('Delete this product?'))return;
+  showLoading(true);
+  await sb.from('products').delete().eq('id',id);
+  showLoading(false);
+  showToast('🗑️ Deleted!');
+  await loadProducts();
+  renderAdminProducts();
+}
+
+function renderAdminProducts(){
+  const el=document.getElementById('adminProductList');
+  if(!products.length){el.innerHTML='<p style="color:var(--gray);font-size:14px;">No products yet.</p>';return;}
+  el.innerHTML=products.map(p=>`<div class="admin-product-item"><div class="admin-thumb">${p.image_url?`<img src="${p.image_url}">`:`<span>${getCatIcon(p.category)}</span>`}</div><div class="info"><strong>${p.name}</strong><span>${p.category} • ৳${Number(p.price).toLocaleString()}</span></div><button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button></div>`).join('');
+}
+
+function toggleMobile(){document.getElementById('mobileMenu').classList.toggle('open');}
+
+// INIT
+loadProducts();
+document.getElementById('cartCount').textContent=cart.length;
+</script>
 </body>
 </html>
