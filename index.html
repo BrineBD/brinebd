@@ -145,6 +145,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .edit-overlay.open{display:flex}
 .edit-box{background:var(--white);border-radius:12px;width:100%;max-width:520px;padding:28px;margin:auto;max-height:90vh;overflow-y:auto}
 .edit-box h3{font-size:18px;font-weight:600;margin-bottom:20px;color:var(--black)}
+/* REVIEWS */
+.review-section{padding:24px 32px;border-top:1px solid var(--border);background:var(--off)}
+.review-section h4{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--black)}
+.review-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.review-item{background:var(--white);border-radius:8px;padding:14px 16px;border:1px solid var(--border)}
+.review-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.review-name{font-weight:600;font-size:13px;color:var(--black)}
+.review-stars{color:#f59e0b;font-size:13px;letter-spacing:1px}
+.review-date{font-size:11px;color:var(--mid)}
+.review-comment{font-size:13px;color:var(--mid);line-height:1.5;margin-top:4px}
+.review-del{background:none;border:none;color:var(--mid);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:3px;display:none}
+.review-del:hover{color:var(--red)}
+.admin-mode .review-del{display:inline-block}
+.review-empty{font-size:13px;color:var(--mid);text-align:center;padding:20px 0}
+.review-avg{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.review-avg-score{font-size:28px;font-weight:700;color:var(--black)}
+.review-avg-stars{color:#f59e0b;font-size:18px}
+.review-avg-count{font-size:12px;color:var(--mid)}
+/* ADD REVIEW (admin only) */
+.add-review-btn{width:100%;padding:10px;background:var(--black);color:white;border:none;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;display:none}
+.admin-mode .add-review-btn{display:block}
+.add-review-form{display:none;margin-top:12px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:16px}
+.add-review-form.open{display:block}
+.rev-stars-pick{display:flex;gap:6px;margin-bottom:10px}
+.rev-star-btn{font-size:22px;background:none;border:none;cursor:pointer;opacity:.3;transition:opacity .2s}
+.rev-star-btn.on{opacity:1}
 /* EMPTY */
 .empty-state{text-align:center;padding:80px 20px;grid-column:1/-1}
 .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
@@ -386,7 +412,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <div class="footer-brand-name">Brine <span>BD</span></div>
+        <div class="footer-brand-name" id="footerBrand" style="cursor:default;user-select:none;">Brine <span>BD</span></div>
         <p>Premium football jerseys & clothing brand based in Bangladesh. Authentic styles delivered to your door with Cash on Delivery.</p>
       </div>
       <div class="footer-col">
@@ -461,6 +487,30 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           Order via WhatsApp
         </button>
         <div class="ppage-cod">🚚 Cash on Delivery | সারা বাংলাদেশে ডেলিভারি</div>
+      </div>
+    </div>
+    <!-- REVIEW SECTION -->
+    <div class="review-section" id="ppageReviews">
+      <div class="review-avg" id="reviewAvg"></div>
+      <h4>Customer Reviews</h4>
+      <div class="review-list" id="reviewList"></div>
+      <button class="add-review-btn" onclick="toggleAddReview()">+ Add Review (Admin)</button>
+      <div class="add-review-form" id="addReviewForm">
+        <div class="field"><label style="font-size:12px;font-weight:600;">Customer Name</label><input type="text" id="rName" placeholder="e.g. Rahim Dhaka" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:9px 12px;border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;margin-top:4px;"></div>
+        <div class="field" style="margin-top:10px;"><label style="font-size:12px;font-weight:600;">Rating</label>
+          <div class="rev-stars-pick" id="starPicker">
+            <button class="rev-star-btn on" onclick="setRating(1)">⭐</button>
+            <button class="rev-star-btn on" onclick="setRating(2)">⭐</button>
+            <button class="rev-star-btn on" onclick="setRating(3)">⭐</button>
+            <button class="rev-star-btn on" onclick="setRating(4)">⭐</button>
+            <button class="rev-star-btn on" onclick="setRating(5)">⭐</button>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px;"><label style="font-size:12px;font-weight:600;">Comment</label><textarea id="rComment" rows="2" placeholder="e.g. খুব সুন্দর jersey, quality অনেক ভালো!" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:9px 12px;border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;margin-top:4px;resize:vertical;"></textarea></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button onclick="toggleAddReview()" style="flex:1;padding:9px;border:1px solid var(--border);background:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;">Cancel</button>
+          <button onclick="submitReview()" style="flex:2;padding:9px;background:var(--black);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;">Submit Review</button>
+        </div>
       </div>
     </div>
   </div>
@@ -701,6 +751,13 @@ function openPpage(id){
   document.getElementById('ppageSizes').innerHTML=(p.sizes||[]).map((s,i)=>`<button class="ppage-size-btn${i===0?' on':''}" onclick="selPpageSize(this)">${s}</button>`).join('');
   document.getElementById('ppageOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+  // admin mode check
+  if(window._adminOpen){document.getElementById('ppageOverlay').classList.add('admin-mode');}
+  else{document.getElementById('ppageOverlay').classList.remove('admin-mode');}
+  curRating=5;
+  document.querySelectorAll('.rev-star-btn').forEach(b=>b.classList.add('on'));
+  document.getElementById('addReviewForm').classList.remove('open');
+  await loadReviews(p.id);
 }
 function gSlide(dir){
   const track=document.getElementById('gTrack');if(!track)return;
@@ -771,13 +828,67 @@ function cartCheckout(){
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
+// REVIEWS
+let curRating=5;
+async function loadReviews(productId){
+  const{data}=await sb.from('reviews').select('*').eq('product_id',productId).order('created_at',{ascending:false});
+  const list=document.getElementById('reviewList');
+  const avg=document.getElementById('reviewAvg');
+  const isAdmin=document.getElementById('adminOverlay').classList.contains('open')||window._adminOpen;
+  if(!data||!data.length){
+    list.innerHTML=`<div class="review-empty">কোনো review নেই এখনো।</div>`;
+    avg.innerHTML='';
+    return;
+  }
+  const avgScore=(data.reduce((a,r)=>a+r.rating,0)/data.length).toFixed(1);
+  avg.innerHTML=`<span class="review-avg-score">${avgScore}</span><span class="review-avg-stars">${'⭐'.repeat(Math.round(avgScore))}</span><span class="review-avg-count">(${data.length} reviews)</span>`;
+  list.innerHTML=data.map(r=>`
+    <div class="review-item">
+      <div class="review-top">
+        <div>
+          <span class="review-name">${r.reviewer_name}</span>
+          <span class="review-stars" style="margin-left:8px;">${'⭐'.repeat(r.rating)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="review-date">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
+          <button class="review-del" onclick="deleteReview(${r.id})">✕ Delete</button>
+        </div>
+      </div>
+      ${r.comment?`<div class="review-comment">${r.comment}</div>`:''}
+    </div>`).join('');
+}
+function toggleAddReview(){document.getElementById('addReviewForm').classList.toggle('open');}
+function setRating(n){
+  curRating=n;
+  document.querySelectorAll('.rev-star-btn').forEach((b,i)=>b.classList.toggle('on',i<n));
+}
+async function submitReview(){
+  const name=document.getElementById('rName').value.trim();
+  const comment=document.getElementById('rComment').value.trim();
+  if(!name){toast('Name required!');return;}
+  if(!curProduct){return;}
+  const{error}=await sb.from('reviews').insert([{product_id:curProduct.id,reviewer_name:name,rating:curRating,comment:comment||null}]);
+  if(error){toast('Error: '+error.message);return;}
+  toast('✅ Review added!');
+  document.getElementById('rName').value='';
+  document.getElementById('rComment').value='';
+  document.getElementById('addReviewForm').classList.remove('open');
+  await loadReviews(curProduct.id);
+}
+async function deleteReview(id){
+  if(!confirm('Delete this review?'))return;
+  await sb.from('reviews').delete().eq('id',id);
+  toast('Review deleted!');
+  await loadReviews(curProduct.id);
+}
+
 // ADMIN
-document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A')document.getElementById('adminOverlay').classList.add('open');});
+document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});
 document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
 document.getElementById('orderOverlay').addEventListener('click',function(e){if(e.target===this)closeOrder();});
 document.getElementById('ppageOverlay').addEventListener('click',function(e){if(e.target===this)closePpage();});
 document.getElementById('editOverlay').addEventListener('click',function(e){if(e.target===this)closeEdit();});
-function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');window._adminOpen=false;}
 function adminLogin(){
   if(document.getElementById('adminPw').value===PW){
     document.getElementById('adminLogin').style.display='none';
@@ -918,6 +1029,8 @@ function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle
 // INIT
 loadProducts();
 document.getElementById('cartBadge').textContent=cart.length;
+// Mobile 5-tap footer trigger
+(function(){let taps=0,timer=null;const el=document.getElementById('footerBrand');if(!el)return;el.addEventListener('click',function(){taps++;if(timer)clearTimeout(timer);timer=setTimeout(()=>{taps=0;},2000);if(taps>=5){taps=0;clearTimeout(timer);document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});})();
 </script>
 </body>
 </html>
