@@ -140,6 +140,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .gallery-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
 .gallery-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:background .2s}
 .gallery-dot.on{background:white}
+.ali-edit{background:var(--black);color:var(--white);border:none;padding:6px 14px;border-radius:4px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+.edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.edit-overlay.open{display:flex}
+.edit-box{background:var(--white);border-radius:12px;width:100%;max-width:520px;padding:28px;margin:auto;max-height:90vh;overflow-y:auto}
+.edit-box h3{font-size:18px;font-weight:600;margin-bottom:20px;color:var(--black)}
 /* EMPTY */
 .empty-state{text-align:center;padding:80px 20px;grid-column:1/-1}
 .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
@@ -461,6 +466,52 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </div>
 
+<!-- EDIT OVERLAY -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-box">
+    <h3>✏️ Edit Product</h3>
+    <div class="field"><label>Product Name *</label><input type="text" id="eName" placeholder="Product name"></div>
+    <div class="field"><label>Description</label><textarea id="eDesc" rows="2" placeholder="Product description..." style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;"></textarea></div>
+    <div class="field"><label>Category</label>
+      <select id="eCat" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
+        <option>Jersey</option><option>Hoodie</option><option>T-Shirt</option><option>Polo</option><option>Pants</option><option>Shorts</option><option>Accessories</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field"><label>Price (৳) *</label><input type="number" id="ePrice" placeholder="850"></div>
+      <div class="field"><label>Old Price (৳)</label><input type="number" id="eOldPrice" placeholder="1200"></div>
+    </div>
+    <div class="field"><label>Badge</label>
+      <select id="eBadge" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
+        <option value="">No badge</option><option value="New">New</option><option value="Hot">Hot</option><option value="Sale">Sale</option><option value="Limited">Limited</option>
+      </select>
+    </div>
+    <div class="field"><label>Sizes</label>
+      <div class="size-checks">
+        <label class="size-check"><input type="checkbox" class="esc" value="XS"> XS</label>
+        <label class="size-check"><input type="checkbox" class="esc" value="S"> S</label>
+        <label class="size-check"><input type="checkbox" class="esc" value="M"> M</label>
+        <label class="size-check"><input type="checkbox" class="esc" value="L"> L</label>
+        <label class="size-check"><input type="checkbox" class="esc" value="XL"> XL</label>
+        <label class="size-check"><input type="checkbox" class="esc" value="XXL"> XXL</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Images (নতুন ছবি দিলে replace হবে)</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+        <div class="img-slot" onclick="document.getElementById('epImg0').click()"><input type="file" id="epImg0" accept="image/*" style="display:none" onchange="ePreviewSlot(this,0)"><div class="slot-prev" id="eprev0"><span>📷</span><small>Photo 1</small></div></div>
+        <div class="img-slot" onclick="document.getElementById('epImg1').click()"><input type="file" id="epImg1" accept="image/*" style="display:none" onchange="ePreviewSlot(this,1)"><div class="slot-prev" id="eprev1"><span>📷</span><small>Photo 2</small></div></div>
+        <div class="img-slot" onclick="document.getElementById('epImg2').click()"><input type="file" id="epImg2" accept="image/*" style="display:none" onchange="ePreviewSlot(this,2)"><div class="slot-prev" id="eprev2"><span>📷</span><small>Photo 3</small></div></div>
+        <div class="img-slot" onclick="document.getElementById('epImg3').click()"><input type="file" id="epImg3" accept="image/*" style="display:none" onchange="ePreviewSlot(this,3)"><div class="slot-prev" id="eprev3"><span>📷</span><small>Photo 4</small></div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button onclick="closeEdit()" style="flex:1;padding:12px;border:1px solid var(--border);background:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
+      <button onclick="saveEdit()" style="flex:2;padding:12px;background:var(--black);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- ORDER MODAL -->
 <div class="modal-overlay" id="orderOverlay">
   <div class="modal">
@@ -723,6 +774,7 @@ document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A')do
 document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
 document.getElementById('orderOverlay').addEventListener('click',function(e){if(e.target===this)closeOrder();});
 document.getElementById('ppageOverlay').addEventListener('click',function(e){if(e.target===this)closePpage();});
+document.getElementById('editOverlay').addEventListener('click',function(e){if(e.target===this)closeEdit();});
 function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
 function adminLogin(){
   if(document.getElementById('adminPw').value===PW){
@@ -789,7 +841,71 @@ async function deleteProduct(id){
 function renderAdminList(){
   const el=document.getElementById('adminList');
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
-  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div></div><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div>`).join('');
+  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
+}
+
+// EDIT
+let editId=null;
+function openEdit(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  editId=id;
+  // fill fields
+  document.getElementById('eName').value=p.name||'';
+  document.getElementById('eDesc').value=p.description||'';
+  document.getElementById('ePrice').value=p.price||'';
+  document.getElementById('eOldPrice').value=p.old_price||'';
+  document.getElementById('eBadge').value=p.badge||'';
+  document.getElementById('eCat').value=p.category||'Jersey';
+  document.querySelectorAll('.esc').forEach(c=>c.checked=(p.sizes||[]).includes(c.value));
+  // show existing images
+  const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+  for(let i=0;i<4;i++){
+    const prev=document.getElementById('eprev'+i);
+    prev.innerHTML=imgs[i]?`<img src="${imgs[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`:`<span>📷</span><small>Photo ${i+1}</small>`;
+  }
+  eImgFiles=[null,null,null,null];
+  eKeepUrls=imgs.slice();
+  document.getElementById('editOverlay').classList.add('open');
+}
+function closeEdit(){document.getElementById('editOverlay').classList.remove('open');editId=null;}
+let eImgFiles=[null,null,null,null];
+let eKeepUrls=[];
+function ePreviewSlot(input,i){
+  if(input.files&&input.files[0]){
+    eImgFiles[i]=input.files[0];
+    const r=new FileReader();
+    r.onload=e=>{document.getElementById('eprev'+i).innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;};
+    r.readAsDataURL(input.files[0]);
+  }
+}
+async function saveEdit(){
+  if(!editId)return;
+  const name=document.getElementById('eName').value.trim();
+  const description=document.getElementById('eDesc').value.trim()||null;
+  const category=document.getElementById('eCat').value;
+  const price=document.getElementById('ePrice').value;
+  const old_price=document.getElementById('eOldPrice').value||null;
+  const badge=document.getElementById('eBadge').value||null;
+  const sizes=[...document.querySelectorAll('.esc:checked')].map(c=>c.value);
+  if(!name||!price){toast('Name and price required!');return;}
+  loading(true);
+  // upload new images, keep old ones
+  const image_urls=[...eKeepUrls];
+  for(let i=0;i<4;i++){
+    if(eImgFiles[i]){
+      const ext=eImgFiles[i].name.split('.').pop();
+      const fn=`${Date.now()}_e${i}.${ext}`;
+      const{error:ue}=await sb.storage.from('product-images').upload(fn,eImgFiles[i],{contentType:eImgFiles[i].type});
+      if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);image_urls[i]=ud.publicUrl;}
+    }
+  }
+  const image_url=image_urls[0]||null;
+  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls}).eq('id',editId);
+  loading(false);
+  if(error){toast('Error: '+error.message);return;}
+  toast('✅ Product updated!');
+  closeEdit();
+  await loadProducts();renderAdminList();
 }
 function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle('open');}
 
