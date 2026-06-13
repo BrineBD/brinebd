@@ -481,6 +481,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="field"><label>Price (৳) *</label><input type="number" id="ePrice" placeholder="850"></div>
       <div class="field"><label>Old Price (৳)</label><input type="number" id="eOldPrice" placeholder="1200"></div>
     </div>
+    <div class="field"><label>Stock (কতটা আছে)</label><input type="number" id="eStock" placeholder="e.g. 10" min="0"></div>
     <div class="field"><label>Badge</label>
       <select id="eBadge" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
         <option value="">No badge</option><option value="New">New</option><option value="Hot">Hot</option><option value="Sale">Sale</option><option value="Limited">Limited</option>
@@ -568,6 +569,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="field"><label>Price (৳) *</label><input type="number" id="pPrice" placeholder="1499"></div>
         <div class="field"><label>Old Price (৳)</label><input type="number" id="pOldPrice" placeholder="1999"></div>
       </div>
+      <div class="field"><label>Stock (কতটা আছে)</label><input type="number" id="pStock" placeholder="e.g. 10" min="0"></div>
       <div class="field">
         <label>Sizes</label>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -800,6 +802,7 @@ async function addProduct(){
   const category=document.getElementById('pCat').value;
   const price=document.getElementById('pPrice').value;
   const old_price=document.getElementById('pOldPrice').value||null;
+  const stock=document.getElementById('pStock').value||0;
   const badge=document.getElementById('pBadge').value||null;
   const sizes=[...document.querySelectorAll('.sc:checked')].map(c=>c.value);
   if(!name||!price){toast('Name and price required!');return;}
@@ -815,7 +818,7 @@ async function addProduct(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls}]);
+  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock)}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
@@ -823,6 +826,7 @@ async function addProduct(){
   document.getElementById('pDesc').value='';
   document.getElementById('pPrice').value='';
   document.getElementById('pOldPrice').value='';
+  document.getElementById('pStock').value='';
   imgFiles=[null,null,null,null];
   for(let i=0;i<4;i++){
     document.getElementById('pImg'+i).value='';
@@ -841,7 +845,7 @@ async function deleteProduct(id){
 function renderAdminList(){
   const el=document.getElementById('adminList');
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
-  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
+  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${(p.stock||0)<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 Stock: ${p.stock||0} pcs${(p.stock||0)===0?' — ⚠️ Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
 }
 
 // EDIT
@@ -854,6 +858,7 @@ function openEdit(id){
   document.getElementById('eDesc').value=p.description||'';
   document.getElementById('ePrice').value=p.price||'';
   document.getElementById('eOldPrice').value=p.old_price||'';
+  document.getElementById('eStock').value=p.stock||0;
   document.getElementById('eBadge').value=p.badge||'';
   document.getElementById('eCat').value=p.category||'Jersey';
   document.querySelectorAll('.esc').forEach(c=>c.checked=(p.sizes||[]).includes(c.value));
@@ -885,6 +890,7 @@ async function saveEdit(){
   const category=document.getElementById('eCat').value;
   const price=document.getElementById('ePrice').value;
   const old_price=document.getElementById('eOldPrice').value||null;
+  const stock=document.getElementById('eStock').value||0;
   const badge=document.getElementById('eBadge').value||null;
   const sizes=[...document.querySelectorAll('.esc:checked')].map(c=>c.value);
   if(!name||!price){toast('Name and price required!');return;}
@@ -900,7 +906,7 @@ async function saveEdit(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls}).eq('id',editId);
+  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock)}).eq('id',editId);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product updated!');
