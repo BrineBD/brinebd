@@ -3,29 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brine BD — Football Jersey & Premium Clothing | Bangladesh</title>
-<meta name="description" content="Brine BD — বাংলাদেশের সেরা ফুটবল জার্সি ও প্রিমিয়াম ক্লোথিং ব্র্যান্ড। Argentina, Brazil সহ সব ক্লাবের অরিজিনাল জার্সি। Cash on Delivery সারা বাংলাদেশে।">
-<meta name="keywords" content="football jersey bangladesh, brine bd, ফুটবল জার্সি, argentina jersey, brazil jersey, world cup jersey 2026, premium clothing bd, jersey shop dhaka, cash on delivery jersey">
-<meta name="robots" content="index, follow">
-<meta name="author" content="Brine BD">
-<link rel="canonical" href="https://brinebd.xyz/">
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://brinebd.xyz/">
-<meta property="og:title" content="Brine BD — Football Jersey & Premium Clothing Bangladesh">
-<meta property="og:description" content="অরিজিনাল ফুটবল জার্সি, স্ট্রিটওয়্যার ও প্রিমিয়াম ক্লোথিং। Cash on Delivery সারা বাংলাদেশে ডেলিভারি।">
-<meta property="og:image" content="https://brinebd.xyz/og-image.jpg">
-<meta property="og:site_name" content="Brine BD">
-<meta property="og:locale" content="bn_BD">
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Brine BD — Football Jersey Bangladesh">
-<meta name="twitter:description" content="অরিজিনাল ফুটবল জার্সি ও প্রিমিয়াম ক্লোথিং। Cash on Delivery।">
-<meta name="twitter:image" content="https://brinebd.xyz/og-image.jpg">
-<!-- Structured Data -->
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ClothingStore","name":"Brine BD","url":"https://brinebd.xyz","logo":"https://brinebd.xyz/og-image.jpg","description":"Bangladesh-based premium football jersey and clothing brand","address":{"@type":"PostalAddress","addressCountry":"BD"},"contactPoint":{"@type":"ContactPoint","telephone":"+8801835655675","contactType":"customer service","availableLanguage":["Bengali","English"]},"sameAs":["https://www.facebook.com/brinebd"]}
-</script>
+<title>Brine BD — Premium Clothing Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
@@ -116,7 +94,52 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .prod-order{background:var(--black);color:var(--white);border:none;padding:8px 16px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;letter-spacing:.5px}
 .prod-order:hover{background:var(--accent)}
 
-.prod-desc{font-size:12px;color:var(--mid);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* PRODUCT PAGE */
+.ppage-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.ppage-overlay.open{display:flex}
+.ppage{background:var(--white);border-radius:12px;width:100%;max-width:860px;margin:auto;overflow:hidden}
+.ppage-inner{display:grid;grid-template-columns:1fr 1fr;min-height:500px}
+.ppage-img{background:var(--off);display:flex;align-items:center;justify-content:center;font-size:100px;min-height:400px;position:relative}
+.ppage-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.ppage-close{position:absolute;top:14px;right:14px;background:var(--white);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:2}
+.ppage-info{padding:36px 32px;display:flex;flex-direction:column}
+.ppage-cat{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.ppage-name{font-family:'Playfair Display',serif;font-size:26px;line-height:1.2;color:var(--black);margin-bottom:12px}
+.ppage-price{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+.ppage-price-now{font-size:28px;font-weight:700;color:var(--black)}
+.ppage-price-old{font-size:16px;color:var(--mid);text-decoration:line-through}
+.ppage-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:20px;flex:1}
+.ppage-size-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.ppage-sizes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.ppage-size-btn{background:none;border:1px solid var(--border);color:var(--black);padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}
+.ppage-size-btn:hover,.ppage-size-btn.on{background:var(--black);color:var(--white);border-color:var(--black)}
+.ppage-order-btn{width:100%;background:#25d366;color:white;border:none;padding:14px;border-radius:6px;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s;font-family:'Inter',sans-serif}
+.ppage-order-btn:hover{background:#20bd5a}
+.ppage-cod{font-size:12px;color:var(--mid);text-align:center;margin-top:10px}
+@media(max-width:640px){
+  .ppage-inner{grid-template-columns:1fr}
+  .ppage-img{min-height:280px}
+  .ppage-info{padding:24px 20px}
+  .ppage-name{font-size:20px}
+}
+
+.img-slot{background:var(--off);border:1px dashed var(--border);border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:border-color .2s}
+.img-slot:hover{border-color:var(--black)}
+.slot-prev{display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+.slot-prev span{font-size:22px}
+.slot-prev small{font-size:10px;color:var(--mid)}
+.slot-prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* GALLERY */
+.gallery-wrap{position:relative;background:var(--off);overflow:hidden;min-height:400px;display:flex;align-items:center;justify-content:center}
+.gallery-track{display:flex;transition:transform .3s ease;height:100%;width:100%}
+.gallery-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px}
+.gallery-slide img{width:100%;height:100%;object-fit:cover}
+.gallery-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.9);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.gallery-prev{left:10px}
+.gallery-next{right:10px}
+.gallery-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.gallery-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:background .2s}
+.gallery-dot.on{background:white}
 /* EMPTY */
 .empty-state{text-align:center;padding:80px 20px;grid-column:1/-1}
 .empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
@@ -279,7 +302,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 </div>
 
 <!-- HERO -->
-<section class="hero" id="home" aria-label="Brine BD — Football Jersey & Clothing Store Bangladesh">
+<section class="hero" id="home">
   <div class="hero-inner">
     <div>
       <div class="hero-eyebrow">New Collection — 2026</div>
@@ -287,10 +310,10 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <p class="hero-desc">Football jerseys, streetwear & premium clothing — all in one place. Delivered anywhere in Bangladesh.</p>
       <div class="hero-actions">
         <a href="#shop" class="btn-black">Shop Now →</a>
-        <a href="https://wa.me/8801835655675" class="btn-outline" target="_blank" rel="noopener">WhatsApp Us</a>
+        <a href="https://wa.me/8801835655675" class="btn-outline" target="_blank">WhatsApp Us</a>
       </div>
     </div>
-    <div class="hero-visual" aria-hidden="true">
+    <div class="hero-visual">
       <div class="hero-card-big">👕</div>
       <div class="hero-cards-row">
         <div class="hero-card-sm"><span>⚽</span><span class="hcs-label">Jerseys</span></div>
@@ -358,7 +381,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <div class="footer-brand-name" id="footerBrand" style="cursor:default;user-select:none;">Brine <span>BD</span></div>
+        <div class="footer-brand-name">Brine <span>BD</span></div>
         <p>Premium football jerseys & clothing brand based in Bangladesh. Authentic styles delivered to your door with Cash on Delivery.</p>
       </div>
       <div class="footer-col">
@@ -411,6 +434,33 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </div>
 
+<!-- PRODUCT PAGE -->
+<div class="ppage-overlay" id="ppageOverlay">
+  <div class="ppage">
+    <div class="ppage-inner">
+      <div class="ppage-img" id="ppageImg">
+        <button class="ppage-close" onclick="closePpage()">✕</button>
+      </div>
+      <div class="ppage-info">
+        <div class="ppage-cat" id="ppageCat"></div>
+        <div class="ppage-name" id="ppageName"></div>
+        <div class="ppage-price">
+          <span class="ppage-price-now" id="ppagePrice"></span>
+          <span class="ppage-price-old" id="ppageOldPrice"></span>
+        </div>
+        <div class="ppage-desc" id="ppageDesc"></div>
+        <div class="ppage-size-label">Select Size</div>
+        <div class="ppage-sizes" id="ppageSizes"></div>
+        <button class="ppage-order-btn" onclick="ppageOrder()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Order via WhatsApp
+        </button>
+        <div class="ppage-cod">🚚 Cash on Delivery | সারা বাংলাদেশে ডেলিভারি</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ORDER MODAL -->
 <div class="modal-overlay" id="orderOverlay">
   <div class="modal">
@@ -448,7 +498,6 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     <div id="adminMain" style="display:none;">
       <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Add New Product</h3>
       <div class="field"><label>Product Name *</label><input type="text" id="pName" placeholder="e.g. Argentina 2026 Home Jersey"></div>
-      <div class="field"><label>Description</label><textarea id="pDesc" rows="2" placeholder="e.g. Official Argentina 2026 World Cup home jersey, lightweight fabric, perfect for fans..." style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;"></textarea></div>
       <div class="form-row">
         <div class="field"><label>Category *</label>
           <select id="pCat">
@@ -479,11 +528,26 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         </div>
       </div>
       <div class="field">
-        <label>Image</label>
-        <div class="img-drop" onclick="document.getElementById('pImg').click()">
-          <input type="file" id="pImg" accept="image/*" onchange="previewImg(this)">
-          <div id="imgPrev"><div style="font-size:28px;">📷</div><p>Click to upload</p></div>
+        <label>Images (সর্বোচ্চ ৪টা)</label>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+          <div class="img-slot" id="slot0" onclick="document.getElementById('pImg0').click()">
+            <input type="file" id="pImg0" accept="image/*" style="display:none" onchange="previewSlot(this,0)">
+            <div class="slot-prev" id="prev0"><span>📷</span><small>Photo 1</small></div>
+          </div>
+          <div class="img-slot" id="slot1" onclick="document.getElementById('pImg1').click()">
+            <input type="file" id="pImg1" accept="image/*" style="display:none" onchange="previewSlot(this,1)">
+            <div class="slot-prev" id="prev1"><span>📷</span><small>Photo 2</small></div>
+          </div>
+          <div class="img-slot" id="slot2" onclick="document.getElementById('pImg2').click()">
+            <input type="file" id="pImg2" accept="image/*" style="display:none" onchange="previewSlot(this,2)">
+            <div class="slot-prev" id="prev2"><span>📷</span><small>Photo 3</small></div>
+          </div>
+          <div class="img-slot" id="slot3" onclick="document.getElementById('pImg3').click()">
+            <input type="file" id="pImg3" accept="image/*" style="display:none" onchange="previewSlot(this,3)">
+            <div class="slot-prev" id="prev3"><span>📷</span><small>Photo 4</small></div>
+          </div>
         </div>
+        <p style="font-size:11px;color:var(--mid);margin-top:6px;">প্রথম ছবিটা product card এ দেখাবে।</p>
       </div>
       <div style="display:flex;gap:12px;margin-top:8px;">
         <button class="add-btn" onclick="addProduct()">Add Product</button>
@@ -529,21 +593,20 @@ function renderProducts(f){
     return;
   }
   g.innerHTML=list.map(p=>`
-    <div class="prod-card">
+    <div class="prod-card" onclick="openPpage(${p.id})">
       <div class="prod-img">
         ${p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
         ${p.badge?`<div class="prod-badge badge-${p.badge}">${p.badge}</div>`:''}
       </div>
       <div class="prod-category">${p.category}</div>
       <div class="prod-name">${p.name}</div>
-      ${p.description?`<div class="prod-desc">${p.description}</div>`:''}
       <div class="prod-sizes">${(p.sizes||[]).map(s=>`<span class="prod-size">${s}</span>`).join('')}</div>
       <div class="prod-bottom">
         <div class="prod-price">
           <span class="prod-price-now">৳${Number(p.price).toLocaleString()}</span>
           ${p.old_price?`<span class="prod-price-old">৳${Number(p.old_price).toLocaleString()}</span>`:''}
         </div>
-        <button class="prod-order" onclick="openOrder(${p.id})">Order</button>
+        <button class="prod-order" onclick="event.stopPropagation();openOrder(${p.id})">Order</button>
       </div>
     </div>`).join('');
 }
@@ -555,6 +618,57 @@ function filterCat(f,el){
   document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
   if(el){el.classList.add('active');}
   document.getElementById('shop').scrollIntoView({behavior:'smooth'});
+}
+
+// PRODUCT PAGE
+let galleryIdx=0;
+function openPpage(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  curProduct=p;
+  const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+  // gallery
+  const imgEl=document.getElementById('ppageImg');
+  if(imgs.length){
+    imgEl.innerHTML=`
+      <button class="ppage-close" onclick="closePpage()">✕</button>
+      <div class="gallery-wrap" style="width:100%;height:100%;min-height:400px;">
+        <div class="gallery-track" id="gTrack">${imgs.map(u=>`<div class="gallery-slide"><img src="${u}" alt="${p.name}"></div>`).join('')}</div>
+        ${imgs.length>1?`<button class="gallery-btn gallery-prev" onclick="gSlide(-1)">‹</button><button class="gallery-btn gallery-next" onclick="gSlide(1)">›</button><div class="gallery-dots">${imgs.map((_,i)=>`<div class="gallery-dot${i===0?' on':''}" onclick="gGoto(${i})"></div>`).join('')}</div>`:''}
+      </div>`;
+  }else{
+    imgEl.innerHTML=`<button class="ppage-close" onclick="closePpage()">✕</button><span style="font-size:100px">${icon(p.category)}</span>`;
+  }
+  galleryIdx=0;
+  document.getElementById('ppageCat').textContent=p.category;
+  document.getElementById('ppageName').textContent=p.name;
+  document.getElementById('ppagePrice').textContent='৳'+Number(p.price).toLocaleString();
+  const oldEl=document.getElementById('ppageOldPrice');
+  oldEl.textContent=p.old_price?'৳'+Number(p.old_price).toLocaleString():'';
+  document.getElementById('ppageDesc').textContent=p.description||'Premium quality product from Brine BD. Order now and get Cash on Delivery anywhere in Bangladesh.';
+  document.getElementById('ppageSizes').innerHTML=(p.sizes||[]).map((s,i)=>`<button class="ppage-size-btn${i===0?' on':''}" onclick="selPpageSize(this)">${s}</button>`).join('');
+  document.getElementById('ppageOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function gSlide(dir){
+  const track=document.getElementById('gTrack');if(!track)return;
+  const total=track.children.length;
+  galleryIdx=(galleryIdx+dir+total)%total;
+  track.style.transform=`translateX(-${galleryIdx*100}%)`;
+  document.querySelectorAll('.gallery-dot').forEach((d,i)=>d.classList.toggle('on',i===galleryIdx));
+}
+function gGoto(i){
+  const track=document.getElementById('gTrack');if(!track)return;
+  galleryIdx=i;
+  track.style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.gallery-dot').forEach((d,j)=>d.classList.toggle('on',j===i));
+}
+function closePpage(){document.getElementById('ppageOverlay').classList.remove('open');document.body.style.overflow='';}
+function selPpageSize(el){document.querySelectorAll('.ppage-size-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function ppageOrder(){
+  const p=curProduct;if(!p)return;
+  const size=document.querySelector('.ppage-size-btn.on')?.textContent||'N/A';
+  const msg=`🛒 *NEW ORDER — BRINE BD*\n\n📦 *${p.name}*\n🏷️ ${p.category} | 📏 Size: ${size}\n💰 ৳${Number(p.price).toLocaleString()}\n\n💳 *Cash on Delivery*\n\n_(Customer details will follow)_`;
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 // ORDER
@@ -606,10 +720,9 @@ function cartCheckout(){
 
 // ADMIN
 document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A')document.getElementById('adminOverlay').classList.add('open');});
-// Mobile 5-tap trigger
-(function(){let taps=0,timer=null;document.getElementById('footerBrand').addEventListener('click',function(){taps++;if(timer)clearTimeout(timer);timer=setTimeout(()=>{taps=0;},2000);if(taps>=5){taps=0;clearTimeout(timer);document.getElementById('adminOverlay').classList.add('open');}});})();
 document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
 document.getElementById('orderOverlay').addEventListener('click',function(e){if(e.target===this)closeOrder();});
+document.getElementById('ppageOverlay').addEventListener('click',function(e){if(e.target===this)closePpage();});
 function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
 function adminLogin(){
   if(document.getElementById('adminPw').value===PW){
@@ -618,11 +731,14 @@ function adminLogin(){
     renderAdminList();
   }else toast('Wrong password!');
 }
-function previewImg(input){
+let imgFiles=[null,null,null,null];
+function previewSlot(input,i){
   if(input.files&&input.files[0]){
-    imgFile=input.files[0];
+    imgFiles[i]=input.files[0];
     const r=new FileReader();
-    r.onload=e=>{document.getElementById('imgPrev').innerHTML=`<img src="${e.target.result}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;">`};
+    r.onload=e=>{
+      document.getElementById('prev'+i).innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;
+    };
     r.readAsDataURL(input.files[0]);
   }
 }
@@ -636,21 +752,30 @@ async function addProduct(){
   const sizes=[...document.querySelectorAll('.sc:checked')].map(c=>c.value);
   if(!name||!price){toast('Name and price required!');return;}
   loading(true);
-  let image_url=null;
-  if(imgFile){
-    const ext=imgFile.name.split('.').pop();
-    const fn=`${Date.now()}.${ext}`;
-    const{error:ue}=await sb.storage.from('product-images').upload(fn,imgFile,{contentType:imgFile.type});
-    if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);image_url=ud.publicUrl;}
+  // Upload all images
+  const image_urls=[];
+  for(let i=0;i<4;i++){
+    if(imgFiles[i]){
+      const ext=imgFiles[i].name.split('.').pop();
+      const fn=`${Date.now()}_${i}.${ext}`;
+      const{error:ue}=await sb.storage.from('product-images').upload(fn,imgFiles[i],{contentType:imgFiles[i].type});
+      if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);image_urls.push(ud.publicUrl);}
+    }
   }
-  const{error}=await sb.from('products').insert([{name,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,description}]);
+  const image_url=image_urls[0]||null;
+  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
-  document.getElementById('pName').value='';document.getElementById('pDesc').value='';document.getElementById('pPrice').value='';document.getElementById('pOldPrice').value='';
-  document.getElementById('pImg').value='';
-  document.getElementById('imgPrev').innerHTML='<div style="font-size:28px;">📷</div><p>Click to upload</p>';
-  imgFile=null;
+  document.getElementById('pName').value='';
+  document.getElementById('pDesc').value='';
+  document.getElementById('pPrice').value='';
+  document.getElementById('pOldPrice').value='';
+  imgFiles=[null,null,null,null];
+  for(let i=0;i<4;i++){
+    document.getElementById('pImg'+i).value='';
+    document.getElementById('prev'+i).innerHTML=`<span>📷</span><small>Photo ${i+1}</small>`;
+  }
   document.querySelectorAll('.sc').forEach(c=>c.checked=['M','L','XL'].includes(c.value));
   await loadProducts();renderAdminList();
 }
