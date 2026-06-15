@@ -725,7 +725,7 @@ function filterCat(f,el){
 
 // PRODUCT PAGE
 let galleryIdx=0;
-function openPpage(id){
+async function openPpage(id){
   const p=products.find(x=>x.id===id);if(!p)return;
   curProduct=p;
   const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
