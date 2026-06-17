@@ -995,7 +995,8 @@ async function deleteReview(id){
 // ADMIN
 document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});
 document.getElementById('adminOverlay').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
-document.getElementById('orderOverlay').addEventListener('click',function(e){if(e.target===this)closeOrder();});
+
+document.getElementById('orderModalOverlay').addEventListener('click',function(e){if(e.target===this)closeOrderModal();});
 document.getElementById('ppageOverlay').addEventListener('click',function(e){if(e.target===this)closePpage();});
 document.getElementById('editOverlay').addEventListener('click',function(e){if(e.target===this)closeEdit();});
 function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');window._adminOpen=false;}
