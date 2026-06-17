@@ -871,41 +871,15 @@ async function submitOrderForm(){
     items,total_amount:total,status:'pending'
   }]);
   if(dbErr){toast('Error saving order: '+dbErr.message);btn.disabled=false;btn.textContent='✅ Confirm Order';return;}
-  // Send email via Resend
+  // Send email via Edge Function
   try{
-    await fetch('https://api.resend.com/emails',{
+    await fetch(`${SURL}/functions/v1/send-order-email`,{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+RESEND_KEY},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SKEY},
       body:JSON.stringify({
-        from:'orders@brinebd.xyz',
-        to:[ADMIN_EMAIL],
-        subject:`🛒 New Order — ${p.name}`,
-        html:`<div style="font-family:sans-serif;max-width:520px;margin:auto;border:1px solid #e2e2e2;border-radius:10px;overflow:hidden;">
-          <div style="background:#1a1a1a;padding:20px 24px;">
-            <h2 style="color:#c8a96e;margin:0;font-size:20px;">🛒 New Order — Brine BD</h2>
-          </div>
-          <div style="padding:24px;">
-            <h3 style="margin:0 0 16px;font-size:16px;color:#1a1a1a;">📦 Product</h3>
-            <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Product</td><td style="padding:7px 0;font-weight:600;font-size:13px;">${p.name}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Category</td><td style="padding:7px 0;font-size:13px;">${p.category}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Size</td><td style="padding:7px 0;font-size:13px;">${size}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Quantity</td><td style="padding:7px 0;font-size:13px;">${qty}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Price</td><td style="padding:7px 0;font-size:13px;">৳${Number(p.price).toLocaleString()} × ${qty}</td></tr>
-              <tr style="border-top:2px solid #e2e2e2;"><td style="padding:10px 0 4px;font-weight:700;font-size:15px;">Total</td><td style="padding:10px 0 4px;font-weight:700;font-size:15px;color:#c8a96e;">৳${total.toLocaleString()}</td></tr>
-            </table>
-            <h3 style="margin:0 0 16px;font-size:16px;color:#1a1a1a;">👤 Customer</h3>
-            <table style="width:100%;border-collapse:collapse;">
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Name</td><td style="padding:7px 0;font-weight:600;font-size:13px;">${name}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Phone</td><td style="padding:7px 0;font-size:13px;">${phone}</td></tr>
-              <tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Address</td><td style="padding:7px 0;font-size:13px;">${addr}</td></tr>
-              ${note?`<tr><td style="padding:7px 0;color:#6b6b6b;font-size:13px;">Note</td><td style="padding:7px 0;font-size:13px;">${note}</td></tr>`:''}
-            </table>
-            <div style="margin-top:24px;padding:14px;background:#f8f7f5;border-radius:8px;text-align:center;">
-              <span style="font-size:13px;color:#6b6b6b;">💳 Cash on Delivery</span>
-            </div>
-          </div>
-        </div>`
+        productName:p.name,
+        customerName:name,
+        phone,address:addr,size,qty,total:total.toLocaleString(),note
       })
     });
   }catch(e){console.log('Email error:',e);}
