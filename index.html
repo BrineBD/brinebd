@@ -131,15 +131,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .om-field label{display:block;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mid);margin-bottom:5px}
 .om-field input,.om-field textarea,.om-field select{width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:10px 13px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;transition:border-color .2s}
 .om-field input:focus,.om-field textarea:focus,.om-field select:focus{outline:none;border-color:var(--black)}
-.om-custom-select{position:relative;}
-.om-custom-select .om-sel-display{width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:10px 13px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
-.om-custom-select .om-sel-display.disabled{opacity:.5;cursor:not-allowed;}
-.om-custom-select .om-sel-display span.arr{font-size:10px;color:var(--mid);}
-.om-sel-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:6px;z-index:999;max-height:220px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12);margin-top:2px;}
-.om-sel-dropdown.open{display:block;}
-.om-sel-option{padding:10px 13px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--black);}
-.om-sel-option:hover{background:var(--off);}
-.om-sel-option.selected{font-weight:600;color:var(--black);}
 .om-size-row{display:flex;gap:6px;flex-wrap:wrap}
 .om-size-btn{background:none;border:1px solid var(--border);color:var(--black);padding:7px 14px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}
 .om-size-btn.on{background:var(--black);color:var(--white);border-color:var(--black)}
@@ -619,35 +610,22 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="om-field"><label>আপনার নাম *</label><input type="text" id="omName" placeholder="Full name"></div>
       <div class="om-field"><label>ফোন নম্বর *</label><input type="tel" id="omPhone" placeholder="01XXXXXXXXX"></div>
       <div class="om-field"><label>বিভাগ *</label>
-        <div class="om-custom-select" id="csDivision">
-          <div class="om-sel-display" onclick="toggleOmSel('division')" id="omDivisionDisplay"><span id="omDivisionText">-- বিভাগ বেছে নিন --</span><span class="arr">▼</span></div>
-          <div class="om-sel-dropdown" id="omDivisionDrop">
-            <div class="om-sel-option" onclick="selectOmDiv('')">-- বিভাগ বেছে নিন --</div>
-            <div class="om-sel-option" onclick="selectOmDiv('ঢাকা')">ঢাকা</div>
-            <div class="om-sel-option" onclick="selectOmDiv('চট্টগ্রাম')">চট্টগ্রাম</div>
-            <div class="om-sel-option" onclick="selectOmDiv('রাজশাহী')">রাজশাহী</div>
-            <div class="om-sel-option" onclick="selectOmDiv('খুলনা')">খুলনা</div>
-            <div class="om-sel-option" onclick="selectOmDiv('বরিশাল')">বরিশাল</div>
-            <div class="om-sel-option" onclick="selectOmDiv('সিলেট')">সিলেট</div>
-            <div class="om-sel-option" onclick="selectOmDiv('রংপুর')">রংপুর</div>
-            <div class="om-sel-option" onclick="selectOmDiv('ময়মনসিংহ')">ময়মনসিংহ</div>
-          </div>
-        </div>
-        <input type="hidden" id="omDivision">
+        <select id="omDivision" onchange="onDivisionChange()">
+          <option value="">-- বিভাগ বেছে নিন --</option>
+          <option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option>
+          <option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option>
+          <option>রংপুর</option><option>ময়মনসিংহ</option>
+        </select>
       </div>
       <div class="om-field"><label>জেলা *</label>
-        <div class="om-custom-select" id="csDistrict">
-          <div class="om-sel-display disabled" onclick="toggleOmSel('district')" id="omDistrictDisplay"><span id="omDistrictText">-- আগে বিভাগ বেছে নিন --</span><span class="arr">▼</span></div>
-          <div class="om-sel-dropdown" id="omDistrictDrop"></div>
-        </div>
-        <input type="hidden" id="omDistrict">
+        <select id="omDistrict" onchange="onDistrictChange()" disabled>
+          <option value="">-- আগে বিভাগ বেছে নিন --</option>
+        </select>
       </div>
       <div class="om-field"><label>থানা / উপজেলা *</label>
-        <div class="om-custom-select" id="csThana">
-          <div class="om-sel-display disabled" onclick="toggleOmSel('thana')" id="omThanaDisplay"><span id="omThanaText">-- আগে জেলা বেছে নিন --</span><span class="arr">▼</span></div>
-          <div class="om-sel-dropdown" id="omThanaDrop"></div>
-        </div>
-        <input type="hidden" id="omThana">
+        <select id="omThana" disabled>
+          <option value="">-- আগে জেলা বেছে নিন --</option>
+        </select>
       </div>
       <div class="om-field"><label>বাড়ি নং / গ্রাম / এলাকা *</label><textarea id="omAddress" rows="2" placeholder="বাড়ি নং, গ্রাম, পাড়া..."></textarea></div>
       <div class="om-field"><label>Size</label><div class="om-size-row" id="omSizes"></div></div>
@@ -897,7 +875,11 @@ function openOrderModal(p){
   document.getElementById('omSizes').innerHTML=(p.sizes||[]).map((s,i)=>`<button class="om-size-btn${i===0?' on':''}" onclick="selOmSize(this)">${s}</button>`).join('');
   document.getElementById('omName').value='';
   document.getElementById('omPhone').value='';
-  selectOmDiv('');
+  document.getElementById('omDivision').value='';
+  document.getElementById('omDistrict').innerHTML='<option value="">-- আগে বিভাগ বেছে নিন --</option>';
+  document.getElementById('omDistrict').disabled=true;
+  document.getElementById('omThana').innerHTML='<option value="">-- আগে জেলা বেছে নিন --</option>';
+  document.getElementById('omThana').disabled=true;
   document.getElementById('omAddress').value='';
   document.getElementById('omNote').value='';
   document.getElementById('omQty').value='1';
@@ -1032,66 +1014,37 @@ const BD_GEO = {
   }
 };
 
-// Custom dropdown helpers
-function toggleOmSel(type){
-  const divDisp=document.getElementById('omDivisionDisplay');
-  const distDisp=document.getElementById('omDistrictDisplay');
-  if(type==='district'&&distDisp.classList.contains('disabled'))return;
-  if(type==='thana'&&document.getElementById('omThanaDisplay').classList.contains('disabled'))return;
-  ['omDivisionDrop','omDistrictDrop','omThanaDrop'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(id!=='om'+type.charAt(0).toUpperCase()+type.slice(1)+'Drop') el.classList.remove('open');
-  });
-  document.getElementById('om'+type.charAt(0).toUpperCase()+type.slice(1)+'Drop').classList.toggle('open');
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.om-custom-select')){
-    document.querySelectorAll('.om-sel-dropdown').forEach(d=>d.classList.remove('open'));
-  }
-});
-function selectOmDiv(val){
-  document.getElementById('omDivision').value=val;
-  document.getElementById('omDivisionText').textContent=val||'-- বিভাগ বেছে নিন --';
-  document.getElementById('omDivisionDrop').classList.remove('open');
-  // reset district & thana
-  document.getElementById('omDistrict').value='';
-  document.getElementById('omDistrictText').textContent='-- জেলা বেছে নিন --';
-  document.getElementById('omThana').value='';
-  document.getElementById('omThanaText').textContent='-- থানা বেছে নিন --';
-  const distDisp=document.getElementById('omDistrictDisplay');
-  const thanaDisp=document.getElementById('omThanaDisplay');
-  if(!val){distDisp.classList.add('disabled');thanaDisp.classList.add('disabled');document.getElementById('omDistrictDrop').innerHTML='';document.getElementById('omThanaDrop').innerHTML='';return;}
-  distDisp.classList.remove('disabled');
-  thanaDisp.classList.add('disabled');
-  const drop=document.getElementById('omDistrictDrop');
-  drop.innerHTML='<div class="om-sel-option" onclick="selectOmDist('')">-- জেলা বেছে নিন --</div>';
-  Object.keys(BD_GEO[val]||{}).forEach(d=>{
-    drop.innerHTML+=`<div class="om-sel-option" onclick="selectOmDist('${d}')">${d}</div>`;
-  });
-}
-function selectOmDist(val){
+function onDivisionChange(){
   const div=document.getElementById('omDivision').value;
-  document.getElementById('omDistrict').value=val;
-  document.getElementById('omDistrictText').textContent=val||'-- জেলা বেছে নিন --';
-  document.getElementById('omDistrictDrop').classList.remove('open');
-  document.getElementById('omThana').value='';
-  document.getElementById('omThanaText').textContent='-- থানা বেছে নিন --';
-  const thanaDisp=document.getElementById('omThanaDisplay');
-  if(!val){thanaDisp.classList.add('disabled');return;}
-  thanaDisp.classList.remove('disabled');
-  const drop=document.getElementById('omThanaDrop');
-  drop.innerHTML='<div class="om-sel-option" onclick="selectOmThana('')">-- থানা বেছে নিন --</div>';
-  ((BD_GEO[div]||{})[val]||[]).forEach(t=>{
-    drop.innerHTML+=`<div class="om-sel-option" onclick="selectOmThana('${t}')">${t}</div>`;
+  const distSel=document.getElementById('omDistrict');
+  const thanaSel=document.getElementById('omThana');
+  distSel.innerHTML='<option value="">-- জেলা বেছে নিন --</option>';
+  thanaSel.innerHTML='<option value="">-- আগে জেলা বেছে নিন --</option>';
+  thanaSel.disabled=true;
+  if(!div){distSel.disabled=true;return;}
+  distSel.disabled=false;
+  const districts=Object.keys(BD_GEO[div]||{});
+  districts.forEach(d=>{
+    const o=document.createElement('option');
+    o.value=d;o.textContent=d;
+    distSel.appendChild(o);
   });
 }
-function selectOmThana(val){
-  document.getElementById('omThana').value=val;
-  document.getElementById('omThanaText').textContent=val||'-- থানা বেছে নিন --';
-  document.getElementById('omThanaDrop').classList.remove('open');
+
+function onDistrictChange(){
+  const div=document.getElementById('omDivision').value;
+  const dist=document.getElementById('omDistrict').value;
+  const thanaSel=document.getElementById('omThana');
+  thanaSel.innerHTML='<option value="">-- থানা বেছে নিন --</option>';
+  if(!dist){thanaSel.disabled=true;return;}
+  thanaSel.disabled=false;
+  const thanas=(BD_GEO[div]||{})[dist]||[];
+  thanas.forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t;o.textContent=t;
+    thanaSel.appendChild(o);
+  });
 }
-function onDivisionChange(){}
-function onDistrictChange(){}
 
 // Legacy closeOrder (kept for compatibility)
 function closeOrder(){closeOrderModal();}
@@ -1123,7 +1076,7 @@ async function loadAdminOrders(){
       </div>
       <div class="oli-name">${o.customer_name}</div>
       <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
-      <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'—'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}</div>
+      <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}</div>
       <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
       <div class="oli-actions">
         <button class="oli-btn oli-btn-done" onclick="updateOrderStatus('${o.id}','delivered')">✅ Delivered</button>
@@ -1290,7 +1243,7 @@ async function deleteProduct(id){
 function renderAdminList(){
   const el=document.getElementById('adminList');
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
-  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${(p.stock||0)<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 Stock: ${p.stock||0} pcs${(p.stock||0)===0?' — ⚠️ Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
+  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${(p.stock||0)<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 Stock: ${p.stock||0} pcs${(p.stock||0)===0?' - Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
 }
 
 // EDIT
