@@ -1086,15 +1086,13 @@ async function loadAdminOrders(){
   }).join('');
 }
 
+
 async function updateOrderStatus(el){
   const id=el.dataset.id;
   const status=el.dataset.status;
   await sb.from('orders').update({status}).eq('id',id);
   loadAdminOrders();
   toast(status==='delivered'?'Delivered!':'Cancelled!');
-}).eq('id',id);
-  loadAdminOrders();
-  toast(status==='delivered'?'✅ Marked as delivered':'❌ Order cancelled');
 }
 
 // CART
