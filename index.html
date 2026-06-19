@@ -642,6 +642,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       </div>
     </div>
     <div id="adminMain" style="display:none;">
+      <!-- TABS -->
+      <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border);">
+        <button id="tabProducts" onclick="switchAdminTab('products')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid var(--black);margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--black);">Products</button>
+        <button id="tabOrders" onclick="switchAdminTab('orders')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">Orders</button>
+      </div>
+      <!-- PRODUCTS TAB -->
+      <div id="adminTabProducts">
       <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Add New Product</h3>
       <div class="field"><label>Product Name *</label><input type="text" id="pName" placeholder="e.g. Argentina 2026 Home Jersey"></div>
       <div class="form-row">
@@ -703,6 +710,15 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div style="margin-top:32px;">
         <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Current Products</h3>
         <div id="adminList"></div>
+      </div>
+      </div><!-- end adminTabProducts -->
+      <!-- ORDERS TAB -->
+      <div id="adminTabOrders" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h3 style="font-size:18px;font-weight:600;">Recent Orders</h3>
+          <button onclick="loadAdminOrders()" style="background:none;border:1px solid var(--border);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Refresh</button>
+        </div>
+        <div id="adminOrdersList"><p style="color:var(--mid);font-size:13px;">Loading orders...</p></div>
       </div>
     </div>
   </div>
@@ -889,6 +905,49 @@ async function submitOrderForm(){
 }
 // Legacy closeOrder (kept for compatibility)
 function closeOrder(){closeOrderModal();}
+
+// ADMIN TABS
+function switchAdminTab(tab){
+  document.getElementById('adminTabProducts').style.display = tab==='products'?'block':'none';
+  document.getElementById('adminTabOrders').style.display = tab==='orders'?'block':'none';
+  document.getElementById('tabProducts').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='products'?'var(--black)':'transparent')+';color:'+(tab==='products'?'var(--black)':'var(--mid)');
+  document.getElementById('tabOrders').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='orders'?'var(--black)':'transparent')+';color:'+(tab==='orders'?'var(--black)':'var(--mid)');
+  if(tab==='orders') loadAdminOrders();
+}
+
+async function loadAdminOrders(){
+  const el=document.getElementById('adminOrdersList');
+  el.innerHTML='<p style="color:var(--mid);font-size:13px;">Loading...</p>';
+  const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(50);
+  if(error){el.innerHTML='<p style="color:red;font-size:13px;">Error: '+error.message+'</p>';return;}
+  if(!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No orders yet.</p>';return;}
+  el.innerHTML=data.map(o=>{
+    const items=Array.isArray(o.items)?o.items:[];
+    const itemText=items.map(i=>`${i.name||''} (${i.size||''}×${i.qty||1})`).join(', ');
+    const date=new Date(o.created_at).toLocaleString('en-BD',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    const statusColor=o.status==='delivered'?'#22c55e':o.status==='cancelled'?'#ef4444':'#f59e0b';
+    return `<div class="order-list-item">
+      <div class="oli-top">
+        <span class="oli-id">#${o.id.slice(0,8).toUpperCase()}</span>
+        <span class="oli-status" style="background:${statusColor}">${o.status||'pending'}</span>
+      </div>
+      <div class="oli-name">${o.customer_name}</div>
+      <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
+      <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'—'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}</div>
+      <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
+      <div class="oli-actions">
+        <button class="oli-btn oli-btn-done" onclick="updateOrderStatus('${o.id}','delivered')">✅ Delivered</button>
+        <button class="oli-btn oli-btn-del" onclick="updateOrderStatus('${o.id}','cancelled')">❌ Cancel</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateOrderStatus(id, status){
+  await sb.from('orders').update({status}).eq('id',id);
+  loadAdminOrders();
+  toast(status==='delivered'?'✅ Marked as delivered':'❌ Order cancelled');
+}
 
 // CART
 function toggleCart(){document.getElementById('drawerOverlay').classList.toggle('open');document.getElementById('cartDrawer').classList.toggle('open');renderCart();}
