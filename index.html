@@ -6,14 +6,7 @@
 <title>Brine BD — Premium Clothing Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js">
-document.addEventListener('click',function(e){
-  if(!e.target.closest('#thanaBox')){
-    const d=document.getElementById('omt-drop');
-    if(d)d.style.display='none';
-  }
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -630,13 +623,9 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         </select>
       </div>
       <div class="om-field"><label>থানা / উপজেলা *</label>
-        <div style="position:relative;" id="thanaBox">
-          <input type="text" id="omThanaSearch" placeholder="থানা খুঁজুন..." disabled
-            oninput="filterThana(this.value)" onfocus="showThanaDrop()" autocomplete="off"
-            style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:10px 13px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
-          <div id="omt-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--border);border-radius:6px;max-height:200px;overflow-y:auto;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.12);margin-top:2px;"></div>
-        </div>
-        <input type="hidden" id="omThana">
+        <select id="omThana" disabled>
+          <option value="">-- আগে জেলা বেছে নিন --</option>
+        </select>
       </div>
       <div class="om-field"><label>বাড়ি নং / গ্রাম / এলাকা *</label><textarea id="omAddress" rows="2" placeholder="বাড়ি নং, গ্রাম, পাড়া..."></textarea></div>
       <div class="om-field"><label>Size</label><div class="om-size-row" id="omSizes"></div></div>
@@ -889,10 +878,8 @@ function openOrderModal(p){
   document.getElementById('omDivision').value='';
   document.getElementById('omDistrict').innerHTML='<option value="">-- আগে বিভাগ বেছে নিন --</option>';
   document.getElementById('omDistrict').disabled=true;
-  document.getElementById('omThana').value='';
-  if(document.getElementById('omThanaSearch')){document.getElementById('omThanaSearch').value='';document.getElementById('omThanaSearch').disabled=true;}
-  if(document.getElementById('omt-drop')){document.getElementById('omt-drop').style.display='none';}
-  allThanas=[];
+  document.getElementById('omThana').innerHTML='<option value="">-- আগে জেলা বেছে নিন --</option>';
+  document.getElementById('omThana').disabled=true;
   document.getElementById('omAddress').value='';
   document.getElementById('omNote').value='';
   document.getElementById('omQty').value='1';
@@ -1044,33 +1031,12 @@ function onDivisionChange(){
   });
 }
 
-let allThanas=[];
 function onDistrictChange(){
   const div=document.getElementById('omDivision').value;
   const dist=document.getElementById('omDistrict').value;
-  const search=document.getElementById('omThanaSearch');
-  document.getElementById('omThana').value='';
-  document.getElementById('omt-drop').innerHTML='';
-  document.getElementById('omt-drop').style.display='none';
-  if(!dist){search.disabled=true;search.value='';search.placeholder='থানা খুঁজুন...';allThanas=[];return;}
-  allThanas=(BD_GEO[div]||{})[dist]||[];
-  search.disabled=false;
-  search.value='';
-  search.placeholder='থানা খুঁজুন... ('+allThanas.length+' টি)';
-}
-function filterThana(q){
-  const drop=document.getElementById('omt-drop');
-  const filtered=q?allThanas.filter(t=>t.includes(q)):allThanas;
-  if(!filtered.length){drop.innerHTML='<div style="padding:10px 13px;font-size:13px;color:gray;">পাওয়া যায়নি</div>';drop.style.display='block';return;}
-  drop.innerHTML=filtered.map(t=>'<div onclick="pickThana(\'' +t+ '\')" style="padding:10px 13px;font-size:14px;cursor:pointer;font-family:Inter,sans-serif;border-bottom:1px solid #f0f0f0;">'+t+'</div>').join('');
-  drop.style.display='block';
-}
-function showThanaDrop(){if(!allThanas.length)return;filterThana(document.getElementById('omThanaSearch').value);}
-function pickThana(t){
-  document.getElementById('omThana').value=t;
-  document.getElementById('omThanaSearch').value=t;
-  document.getElementById('omt-drop').style.display='none';
-}
+  const thanaSel=document.getElementById('omThana');
+  thanaSel.innerHTML='<option value="">-- থানা বেছে নিন --</option>';
+  if(!dist){thanaSel.disabled=true;return;}
   thanaSel.disabled=false;
   const thanas=(BD_GEO[div]||{})[dist]||[];
   thanas.forEach(t=>{
@@ -1113,15 +1079,20 @@ async function loadAdminOrders(){
       <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}</div>
       <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
       <div class="oli-actions">
-        <button class="oli-btn oli-btn-done" onclick="updateOrderStatus('${o.id}','delivered')">✅ Delivered</button>
-        <button class="oli-btn oli-btn-del" onclick="updateOrderStatus('${o.id}','cancelled')">❌ Cancel</button>
+        <button class="oli-btn oli-btn-done" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="delivered">Delivered</button>
+        <button class="oli-btn oli-btn-del" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="cancelled">Cancel</button>
       </div>
     </div>`;
   }).join('');
 }
 
-async function updateOrderStatus(id, status){
+async function updateOrderStatus(el){
+  const id=el.dataset.id;
+  const status=el.dataset.status;
   await sb.from('orders').update({status}).eq('id',id);
+  loadAdminOrders();
+  toast(status==='delivered'?'Delivered!':'Cancelled!');
+}).eq('id',id);
   loadAdminOrders();
   toast(status==='delivered'?'✅ Marked as delivered':'❌ Order cancelled');
 }
