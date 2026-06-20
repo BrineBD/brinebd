@@ -6,43 +6,7 @@
 <title>Brine BD — Premium Clothing Store</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js">
-window._thanas=[];
-function openThanaDrop(){
-  if(!window._thanas.length)return;
-  renderThanaDrop(window._thanas);
-}
-function filterThana(q){
-  if(!window._thanas.length)return;
-  const list=q?window._thanas.filter(t=>t.includes(q)):window._thanas;
-  renderThanaDrop(list);
-}
-function renderThanaDrop(list){
-  const drop=document.getElementById('omt-drop');
-  if(!list.length){
-    drop.innerHTML='<div style="padding:10px 13px;color:gray;font-size:13px;">পাওয়া যায়নি</div>';
-    drop.style.display='block';return;
-  }
-  drop.innerHTML=list.map(t=>'<div class="_thana-opt" style="padding:10px 13px;font-size:14px;cursor:pointer;border-bottom:1px solid #f5f5f5;font-family:Inter,sans-serif;">'+t+'</div>').join('');
-  drop.style.display='block';
-  drop.querySelectorAll('._thana-opt').forEach(el=>{
-    el.addEventListener('click',function(){
-      const t=this.textContent;
-      document.getElementById('omThana').value=t;
-      document.getElementById('omThanaSearch').value=t;
-      drop.style.display='none';
-    });
-    el.addEventListener('mouseover',function(){this.style.background='#f5f5f5';});
-    el.addEventListener('mouseout',function(){this.style.background='';});
-  });
-}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('#omt-drop')&&e.target.id!=='omThanaSearch'){
-    const d=document.getElementById('omt-drop');
-    if(d)d.style.display='none';
-  }
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -1368,6 +1332,44 @@ loadProducts();
 document.getElementById('cartBadge').textContent=cart.length;
 // Mobile 5-tap footer trigger
 (function(){let taps=0,timer=null;const el=document.getElementById('footerBrand');if(!el)return;el.addEventListener('click',function(){taps++;if(timer)clearTimeout(timer);timer=setTimeout(()=>{taps=0;},2000);if(taps>=5){taps=0;clearTimeout(timer);document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});})();
+
+window._thanas=[];
+function openThanaDrop(){
+  if(!window._thanas.length)return;
+  renderThanaDrop(window._thanas);
+}
+function filterThana(q){
+  if(!window._thanas.length)return;
+  if(!q){renderThanaDrop(window._thanas);return;}
+  const list=window._thanas.filter(t=>t.includes(q));
+  renderThanaDrop(list.length?list:window._thanas);
+}
+function renderThanaDrop(list){
+  const drop=document.getElementById('omt-drop');
+  if(!list.length){
+    drop.innerHTML='<div style="padding:10px 13px;color:gray;font-size:13px;">পাওয়া যায়নি</div>';
+    drop.style.display='block';return;
+  }
+  drop.innerHTML=list.map(t=>'<div class="_thana-opt" style="padding:10px 13px;font-size:14px;cursor:pointer;border-bottom:1px solid #f5f5f5;font-family:Inter,sans-serif;">'+t+'</div>').join('');
+  drop.style.display='block';
+  drop.querySelectorAll('._thana-opt').forEach(el=>{
+    el.addEventListener('click',function(){
+      const t=this.textContent;
+      document.getElementById('omThana').value=t;
+      document.getElementById('omThanaSearch').value=t;
+      drop.style.display='none';
+    });
+    el.addEventListener('mouseover',function(){this.style.background='#f5f5f5';});
+    el.addEventListener('mouseout',function(){this.style.background='';});
+  });
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#omt-drop')&&e.target.id!=='omThanaSearch'){
+    const d=document.getElementById('omt-drop');
+    if(d)d.style.display='none';
+  }
+});
+
 </script>
 </body>
 </html>
