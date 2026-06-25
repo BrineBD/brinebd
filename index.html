@@ -434,7 +434,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <p class="hero-desc">Football jerseys, streetwear & premium clothing — all in one place. Delivered anywhere in Bangladesh.</p>
       <div class="hero-actions">
         <a href="#shop" class="btn-black">Shop Now →</a>
-        <a href="https://wa.me/8801835655675" class="btn-outline" target="_blank">WhatsApp Us</a>
+        <a href="https://wa.me/8801876650291" class="btn-outline" target="_blank">WhatsApp Us</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -494,7 +494,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <div class="banner-eyebrow">Cash on Delivery</div>
   <h2 class="banner-title">Order now,<br>pay on <em>delivery</em></h2>
   <p class="banner-sub">পুরো বাংলাদেশে ডেলিভারি — ঘরে বসে অর্ডার করুন।</p>
-  <a href="https://wa.me/8801835655675" class="btn-gold" target="_blank">
+  <a href="https://wa.me/8801876650291" class="btn-gold" target="_blank">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Order via WhatsApp
   </a>
@@ -518,14 +518,14 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       </div>
       <div class="footer-col">
         <h5>Info</h5>
-        <a href="#">About Us</a>
-        <a href="#">Shipping Policy</a>
-        <a href="#">Return Policy</a>
-        <a href="#">Size Guide</a>
+        <a href="#" onclick="openInfoModal('about');return false;">About Us</a>
+        <a href="#" onclick="openInfoModal('shipping');return false;">Shipping Policy</a>
+        <a href="#" onclick="openInfoModal('return');return false;">Return Policy</a>
+        <a href="#" onclick="openInfoModal('size');return false;">Size Guide</a>
       </div>
       <div class="footer-col">
         <h5>Contact</h5>
-        <a href="https://wa.me/8801835655675" target="_blank">📱 01835-655675</a>
+        <a href="https://wa.me/8801876650291" target="_blank">📱 01876-650291</a>
         <a href="mailto:brinebd75@gmail.com">📧 brinebd75@gmail.com</a>
         <a href="#">📍 Bangladesh</a>
       </div>
@@ -537,8 +537,16 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </footer>
 
+<!-- INFO MODALS -->
+<div id="infoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;border-radius:12px;position:relative;">
+    <button onclick="closeInfoModal()" style="position:sticky;top:0;float:right;background:#0a0a0a;color:#fff;border:none;padding:8px 16px;cursor:pointer;font-size:18px;border-radius:0 12px 0 8px;">✕</button>
+    <div id="infoModalContent" style="padding:32px 32px 40px;"></div>
+  </div>
+</div>
+
 <!-- WA FLOAT -->
-<a href="https://wa.me/8801835655675" class="wa-btn" target="_blank">
+<a href="https://wa.me/8801876650291" class="wa-btn" target="_blank">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
@@ -803,7 +811,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 <script>
 const SURL='https://nlsfcjsgxjlikwlyyzcu.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5sc2ZjanNneGpsaWt3bHl5emN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MzA1ODcsImV4cCI6MjA5NjUwNjU4N30.HdNF-qAVdqVGhD2DjXjw0JmKosIofhbsAck_IgMrGYc';
-const WA='8801835655675';
+const WA='8801876650291';
 const PW='brine2026';
 const {createClient}=window.supabase;
 const sb=createClient(SURL,SKEY);
@@ -1426,6 +1434,92 @@ document.addEventListener('click',function(e){
   }
 });
 
+</script>
+<script>
+const infoContent = {
+  about: `
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;">About <span style="color:#C9A84C;">Brine BD</span></h2>
+    <div style="width:40px;height:3px;background:#C9A84C;margin-bottom:20px;border-radius:2px;"></div>
+    <p style="font-size:15px;line-height:1.8;color:#444;margin-bottom:16px;">Brine BD হলো বাংলাদেশের একটি প্রিমিয়াম অনলাইন ক্লোথিং ব্র্যান্ড। আমরা বিশ্বাস করি প্রতিটি মানুষ ভালো মানের পোশাক সাশ্রয়ী মূল্যে পাওয়ার অধিকার রাখে।</p>
+    <p style="font-size:15px;line-height:1.8;color:#444;margin-bottom:16px;">আমাদের কাছে পাবেন Short Pants, Football Jersey, T-Shirt, Polo, Hoodie সহ আরো অনেক পোশাক — সবই প্রিমিয়াম কোয়ালিটির এবং সারা বাংলাদেশে Cash on Delivery তে।</p>
+    <div style="background:#f9f6ef;border-left:3px solid #C9A84C;padding:16px 20px;border-radius:0 8px 8px 0;margin-top:20px;">
+      <p style="font-size:14px;color:#666;margin:0;">📍 Based in Dhaka, Bangladesh<br>📧 brinebd75@gmail.com<br>📱 01876-650291</p>
+    </div>`,
+  shipping: `
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;">Shipping <span style="color:#C9A84C;">Policy</span></h2>
+    <div style="width:40px;height:3px;background:#C9A84C;margin-bottom:20px;border-radius:2px;"></div>
+    <div style="font-size:15px;line-height:1.8;color:#444;">
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">🚚 ডেলিভারি কোথায় পাঠাই?</p>
+      <p style="margin-bottom:16px;">সারা বাংলাদেশে হোম ডেলিভারি দেওয়া হয়। ঢাকার ভেতরে এবং ঢাকার বাইরে উভয় জায়গায় ডেলিভারি সম্ভব।</p>
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">⏱️ কত দিনে পাবো?</p>
+      <ul style="margin-bottom:16px;padding-left:20px;">
+        <li>ঢাকার ভেতরে: ১–২ কার্যদিবস</li>
+        <li>ঢাকার বাইরে: ২–৪ কার্যদিবস</li>
+      </ul>
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">💰 ডেলিভারি চার্জ কত?</p>
+      <ul style="margin-bottom:16px;padding-left:20px;">
+        <li>ঢাকার ভেতরে: ৬০ টাকা</li>
+        <li>ঢাকার বাইরে: ১২০ টাকা</li>
+      </ul>
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">💵 পেমেন্ট কিভাবে?</p>
+      <p>সম্পূর্ণ Cash on Delivery — পণ্য হাতে পেয়ে টাকা দিন।</p>
+    </div>`,
+  return: `
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;">Return <span style="color:#C9A84C;">Policy</span></h2>
+    <div style="width:40px;height:3px;background:#C9A84C;margin-bottom:20px;border-radius:2px;"></div>
+    <div style="font-size:15px;line-height:1.8;color:#444;">
+      <p style="margin-bottom:16px;">আমরা আমাদের প্রতিটি পণ্যের কোয়ালিটি নিয়ে সচেষ্ট। তবে কোনো সমস্যা হলে আমরা সমাধান করবো।</p>
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">✅ রিটার্ন করা যাবে যদি:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;">
+        <li>পণ্য ডেলিভারির সময় নষ্ট বা ত্রুটিপূর্ণ থাকে</li>
+        <li>ভুল পণ্য বা ভুল সাইজ পাঠানো হয়</li>
+        <li>পণ্য ছবির সাথে মিল না থাকে</li>
+      </ul>
+      <p style="font-weight:600;color:#222;margin-bottom:6px;">❌ রিটার্ন করা যাবে না যদি:</p>
+      <ul style="margin-bottom:16px;padding-left:20px;">
+        <li>পণ্য ব্যবহার করা হয়ে থাকে</li>
+        <li>ডেলিভারির ৪৮ ঘণ্টার বেশি সময় পার হয়</li>
+      </ul>
+      <div style="background:#f9f6ef;border-left:3px solid #C9A84C;padding:16px 20px;border-radius:0 8px 8px 0;">
+        <p style="font-size:14px;color:#666;margin:0;">রিটার্নের জন্য WhatsApp করুন: <strong>01876-650291</strong></p>
+      </div>
+    </div>`,
+  size: `
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;">Size <span style="color:#C9A84C;">Guide</span></h2>
+    <div style="width:40px;height:3px;background:#C9A84C;margin-bottom:20px;border-radius:2px;"></div>
+    <p style="font-size:14px;color:#888;margin-bottom:16px;">Short Pants ও Jersey র সাইজ চার্ট নিচে দেওয়া হলো।</p>
+    <p style="font-weight:600;color:#222;margin-bottom:10px;font-size:15px;">👖 Short Pants</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+      <tr style="background:#0a0a0a;color:#fff;">
+        <th style="padding:10px 14px;text-align:left;border-radius:6px 0 0 0;">সাইজ</th>
+        <th style="padding:10px 14px;text-align:left;">কোমর (ইঞ্চি)</th>
+        <th style="padding:10px 14px;text-align:left;border-radius:0 6px 0 0;">উচ্চতা</th>
+      </tr>
+      <tr style="background:#f9f9f9;"><td style="padding:10px 14px;border-bottom:1px solid #eee;">XS</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">26–28"</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">5'2"–5'5"</td></tr>
+      <tr><td style="padding:10px 14px;border-bottom:1px solid #eee;">S</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">28–30"</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">5'4"–5'7"</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:10px 14px;border-bottom:1px solid #eee;">M</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">30–32"</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">5'6"–5'9"</td></tr>
+      <tr><td style="padding:10px 14px;border-bottom:1px solid #eee;">L</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">32–34"</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">5'8"–5'11"</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:10px 14px;border-bottom:1px solid #eee;">XL</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">34–36"</td><td style="padding:10px 14px;border-bottom:1px solid #eee;">5'10"–6'1"</td></tr>
+      <tr><td style="padding:10px 14px;">XXL</td><td style="padding:10px 14px;">36–38"</td><td style="padding:10px 14px;">6'0"–6'3"</td></tr>
+    </table>
+    <div style="background:#f9f6ef;border-left:3px solid #C9A84C;padding:14px 18px;border-radius:0 8px 8px 0;">
+      <p style="font-size:13px;color:#666;margin:0;">💡 সাইজ নিয়ে সন্দেহ থাকলে WhatsApp করুন — আমরা সাহায্য করবো!</p>
+    </div>`
+};
+
+function openInfoModal(type) {
+  const modal = document.getElementById('infoModal');
+  document.getElementById('infoModalContent').innerHTML = infoContent[type] || '';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeInfoModal() {
+  document.getElementById('infoModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.getElementById('infoModal').addEventListener('click', function(e) {
+  if (e.target === this) closeInfoModal();
+});
 </script>
 </body>
 </html>
