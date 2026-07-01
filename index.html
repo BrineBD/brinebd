@@ -22,8 +22,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
-<!-- Meta Pixel Code -->
-<script>
+<!-- Meta Pixel Code — Brine BD | Pixel ID: 1368526035211702 -->
+<!-- FIX: data-cfasync="false" prevents Cloudflare Rocket Loader from deferring this script,
+     which would break the synchronous fbq queue and cause no events to fire -->
+<script data-cfasync="false">
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -34,6 +36,7 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1368526035211702');
 fbq('track', 'PageView');
+console.log('[MetaPixel] PageView fired');
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=1368526035211702&ev=PageView&noscript=1"
@@ -872,16 +875,20 @@ let galleryIdx=0;
 async function openPpage(id){
   const p=products.find(x=>x.id===id);if(!p)return;
   curProduct=p;
-  // Meta Pixel: ViewContent — product details modal opened
-  if(window.fbq){
-    fbq('track','ViewContent',{
-      content_ids:[String(p.id)],
-      content_name:p.name,
-      content_type:'product',
-      value:Number(p.price),
-      currency:'BDT'
-    });
-  }
+  // Meta Pixel: ViewContent — fires when product detail modal opens
+  // FIX: wrapped in try/catch so any pixel error never breaks the modal
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','ViewContent',{
+        content_ids:[String(p.id)],
+        content_name:p.name,
+        content_type:'product',
+        value:Number(p.price)||0,
+        currency:'BDT'
+      });
+      console.log('[MetaPixel] ViewContent fired →',p.name,'৳'+p.price);
+    }
+  }catch(e){console.error('[MetaPixel] ViewContent error:',e);}
   const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
   // gallery
   const imgEl=document.getElementById('ppageImg');
@@ -973,17 +980,6 @@ function closeOrderModal(){
   document.body.style.overflow='';
 }
 async function submitOrderForm(){
-  // Meta Pixel: InitiateCheckout — fires immediately on Place Order click
-  if(window.fbq){
-    const pp=curProduct;
-    fbq('track','InitiateCheckout',{
-      content_ids:pp?[String(pp.id)]:[],
-      content_name:pp?pp.name:undefined,
-      content_type:'product',
-      value:pp?Number(pp.price)*(parseInt(document.getElementById('omQty').value)||1):undefined,
-      currency:'BDT'
-    });
-  }
   const name=document.getElementById('omName').value.trim();
   const phone=document.getElementById('omPhone').value.trim();
   const division=document.getElementById('omDivision').value;
@@ -997,6 +993,20 @@ async function submitOrderForm(){
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');return;}
   const p=curProduct;
   const total=Number(p.price)*qty;
+  // Meta Pixel: InitiateCheckout — fires AFTER validation passes, value is always a valid number
+  // FIX: moved after validation so value/qty are resolved; undefined value was causing Meta to reject payload
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','InitiateCheckout',{
+        content_ids:[String(p.id)],
+        content_name:p.name,
+        content_type:'product',
+        value:total,
+        currency:'BDT'
+      });
+      console.log('[MetaPixel] InitiateCheckout fired →',p.name,'total ৳'+total);
+    }
+  }catch(e){console.error('[MetaPixel] InitiateCheckout error:',e);}
   const btn=document.getElementById('omSubmitBtn');
   btn.disabled=true;btn.textContent='⏳ Placing order...';
   // Save to Supabase
@@ -1021,16 +1031,21 @@ async function submitOrderForm(){
   btn.disabled=false;btn.textContent='✅ Confirm Order';
   document.getElementById('omForm').style.display='none';
   document.getElementById('omSuccess').style.display='block';
-  // Meta Pixel: Purchase — fires only now, after Supabase save succeeded and "Order Placed" success message is visible
-  if(window.fbq){
-    fbq('track','Purchase',{
-      content_ids:[String(p.id)],
-      content_name:p.name,
-      content_type:'product',
-      value:total,
-      currency:'BDT'
-    },{eventID:'order_'+Date.now()});
-  }
+  // Meta Pixel: Purchase — fires ONLY after Supabase confirms the order saved
+  // and the success message is already visible on screen
+  // FIX: try/catch so a pixel error never breaks the success flow; eventID deduplicates if CAPI added later
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','Purchase',{
+        content_ids:[String(p.id)],
+        content_name:p.name,
+        content_type:'product',
+        value:total,
+        currency:'BDT'
+      },{eventID:'bbd_order_'+Date.now()});
+      console.log('[MetaPixel] Purchase fired →',p.name,'total ৳'+total);
+    }
+  }catch(e){console.error('[MetaPixel] Purchase error:',e);}
 }
 // BANGLADESH GEO DATA
 const BD_GEO = {
