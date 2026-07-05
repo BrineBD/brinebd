@@ -150,7 +150,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .ppage-size-btn:hover,.ppage-size-btn.on{background:var(--black);color:var(--white);border-color:var(--black)}
 .ppage-order-btn{width:100%;background:var(--black);color:white;border:none;padding:14px;border-radius:6px;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s;font-family:'Inter',sans-serif}
 .ppage-order-btn:hover{background:#333}
+.ppage-order-btn:disabled{background:var(--mid);cursor:not-allowed}
 .ppage-cod{font-size:12px;color:var(--mid);text-align:center;margin-top:10px}
+.ppage-size-btn.out{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.ppage-stock-note{font-size:12px;color:var(--mid);margin-bottom:16px;margin-top:-8px}
+.ppage-qty-row{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.ppage-qty-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--off);color:var(--black);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
+.ppage-qty-btn:hover{background:var(--black);color:var(--white);border-color:var(--black)}
+.ppage-qty-num{font-size:15px;font-weight:600;min-width:20px;text-align:center}
+/* SIZE+STOCK admin rows */
+.ss-row{display:flex;align-items:center;gap:8px;background:var(--off);border:1px solid var(--border);border-radius:6px;padding:6px 10px}
+.ss-row label{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--mid);cursor:pointer;white-space:nowrap}
+.ss-row input[type=number]{width:56px;background:var(--white);border:1px solid var(--border);border-radius:4px;padding:4px 6px;font-size:12px;font-family:'Inter',sans-serif}
 /* ORDER FORM MODAL */
 .order-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
 .order-modal-overlay.open{display:flex}
@@ -158,6 +169,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .order-modal-box h3{font-size:18px;font-weight:700;color:var(--black);margin-bottom:4px}
 .order-modal-box .om-sub{font-size:13px;color:var(--mid);margin-bottom:20px}
 .om-product{display:flex;align-items:center;gap:12px;background:var(--off);border-radius:8px;padding:12px;margin-bottom:20px}
+.om-cart-list{max-height:220px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:8px}
+.om-cart-list .om-product{margin-bottom:0}
+.om-cart-list .om-name{font-weight:600;font-size:13px;color:var(--black)}
+.om-cart-list .om-meta{font-size:12px;color:var(--mid);margin-top:2px}
+.om-cart-total{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--black);color:white;border-radius:8px;margin-bottom:16px;font-weight:600}
 .om-product .om-img{width:52px;height:52px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0}
 .om-product .om-img img{width:100%;height:100%;object-fit:cover}
 .om-product .om-name{font-weight:600;font-size:14px;color:var(--black)}
@@ -300,6 +316,12 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 .ci-img img{width:100%;height:100%;object-fit:cover}
 .ci-info{flex:1}.ci-name{font-size:14px;font-weight:500;margin-bottom:4px}.ci-meta{font-size:12px;color:var(--mid);margin-bottom:8px}.ci-price{font-size:15px;font-weight:600}
 .ci-remove{background:none;border:none;color:var(--mid);cursor:pointer;font-size:16px;line-height:1;padding:2px}
+.ci-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ci-qty-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+.ci-qty-btn{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--off);color:var(--black);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:'Inter',sans-serif}
+.ci-qty-btn:hover{background:var(--black);color:var(--white);border-color:var(--black)}
+.ci-qty-num{font-size:13px;font-weight:600;min-width:18px;text-align:center}
+.ci-sub{font-size:12px;color:var(--mid);margin-top:2px}
 .drawer-foot{padding:20px 24px;border-top:1px solid var(--border)}
 .cart-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cart-row span{font-size:14px;color:var(--mid)}
@@ -586,8 +608,15 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="ppage-desc" id="ppageDesc"></div>
         <div class="ppage-size-label">Select Size</div>
         <div class="ppage-sizes" id="ppageSizes"></div>
-        <button class="ppage-order-btn" onclick="openOrderModal(curProduct)">
-          🛒 Place Order
+        <div class="ppage-stock-note" id="ppageStockNote"></div>
+        <div class="ppage-size-label">Quantity</div>
+        <div class="ppage-qty-row">
+          <button class="ppage-qty-btn" onclick="ppageQtyChange(-1)">−</button>
+          <span class="ppage-qty-num" id="ppageQtyNum">1</span>
+          <button class="ppage-qty-btn" onclick="ppageQtyChange(1)">+</button>
+        </div>
+        <button class="ppage-order-btn" id="ppageAddBtn" onclick="addToCartFromPpage()">
+          🛒 Add to Cart
         </button>
         <div class="ppage-cod">🚚 Cash on Delivery | সারা বাংলাদেশে ডেলিভারি</div>
       </div>
@@ -634,20 +663,19 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="field"><label>Price (৳) *</label><input type="number" id="ePrice" placeholder="850"></div>
       <div class="field"><label>Old Price (৳)</label><input type="number" id="eOldPrice" placeholder="1200"></div>
     </div>
-    <div class="field"><label>Stock (কতটা আছে)</label><input type="number" id="eStock" placeholder="e.g. 10" min="0"></div>
     <div class="field"><label>Badge</label>
       <select id="eBadge" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
         <option value="">No badge</option><option value="New">New</option><option value="Hot">Hot</option><option value="Sale">Sale</option><option value="Limited">Limited</option>
       </select>
     </div>
-    <div class="field"><label>Sizes</label>
-      <div class="size-checks">
-        <label class="size-check"><input type="checkbox" class="esc" value="XS"> XS</label>
-        <label class="size-check"><input type="checkbox" class="esc" value="S"> S</label>
-        <label class="size-check"><input type="checkbox" class="esc" value="M"> M</label>
-        <label class="size-check"><input type="checkbox" class="esc" value="L"> L</label>
-        <label class="size-check"><input type="checkbox" class="esc" value="XL"> XL</label>
-        <label class="size-check"><input type="checkbox" class="esc" value="XXL"> XXL</label>
+    <div class="field"><label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XS"> XS</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XS"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="S"> S</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="S"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="M"> M</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="M"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="L"> L</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="L"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XL"> XL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XL"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XXL"> XXL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XXL"></div>
       </div>
     </div>
     <div class="field">
@@ -696,8 +724,8 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <input type="hidden" id="omThana">
       </div>
       <div class="om-field"><label>বাড়ি নং / গ্রাম / এলাকা *</label><textarea id="omAddress" rows="2" placeholder="বাড়ি নং, গ্রাম, পাড়া..."></textarea></div>
-      <div class="om-field"><label>Size</label><div class="om-size-row" id="omSizes"></div></div>
-      <div class="om-field"><label>Quantity</label>
+      <div class="om-field" id="omSizeField"><label>Size</label><div class="om-size-row" id="omSizes"></div></div>
+      <div class="om-field" id="omQtyField"><label>Quantity</label>
         <select id="omQty"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
       <div class="om-field"><label>Note (optional)</label><input type="text" id="omNote" placeholder="কোনো বিশেষ চাহিদা..."></div>
@@ -756,17 +784,17 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="field"><label>Price (৳) *</label><input type="number" id="pPrice" placeholder="1499"></div>
         <div class="field"><label>Old Price (৳)</label><input type="number" id="pOldPrice" placeholder="1999"></div>
       </div>
-      <div class="field"><label>Stock (কতটা আছে)</label><input type="number" id="pStock" placeholder="e.g. 10" min="0"></div>
       <div class="field"><label>Description (SEO + Product details)</label><textarea id="pDesc" rows="3" placeholder="e.g. Premium quality cotton short pant, comfortable fit, suitable for all seasons..." style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;"></textarea></div>
       <div class="field">
-        <label>Sizes</label>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mid);cursor:pointer;"><input type="checkbox" value="S" class="sc"> S</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mid);cursor:pointer;"><input type="checkbox" value="M" class="sc" checked> M</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mid);cursor:pointer;"><input type="checkbox" value="L" class="sc" checked> L</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mid);cursor:pointer;"><input type="checkbox" value="XL" class="sc" checked> XL</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mid);cursor:pointer;"><input type="checkbox" value="XXL" class="sc"> XXL</label>
+        <label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="ss-row"><label><input type="checkbox" value="S" class="sc"> S</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="S"></div>
+          <div class="ss-row"><label><input type="checkbox" value="M" class="sc" checked> M</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="M"></div>
+          <div class="ss-row"><label><input type="checkbox" value="L" class="sc" checked> L</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="L"></div>
+          <div class="ss-row"><label><input type="checkbox" value="XL" class="sc" checked> XL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XL"></div>
+          <div class="ss-row"><label><input type="checkbox" value="XXL" class="sc"> XXL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XXL"></div>
         </div>
+        <p style="font-size:11px;color:var(--mid);margin-top:6px;">যে সাইজ বিক্রি করবেন সেটা টিক দিয়ে পাশে কত পিস স্টকে আছে লিখুন।</p>
       </div>
       <div class="field">
         <label>Images (সর্বোচ্চ ৪টা)</label>
@@ -827,6 +855,25 @@ const icon=c=>icons[c]||'👔';
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 function loading(v){document.getElementById('loader').classList.toggle('show',v)}
 
+// STOCK HELPERS
+// size_stock is a JSONB object like {"S":4,"M":10,"L":0}. Falls back to legacy total `stock`
+// for old products that haven't been re-saved with per-size numbers yet.
+function getSizeStock(p,size){
+  if(p&&p.size_stock&&Object.prototype.hasOwnProperty.call(p.size_stock,size)){
+    return Number(p.size_stock[size])||0;
+  }
+  return Number(p&&p.stock)||0;
+}
+function getTotalStock(p){
+  if(p&&p.size_stock&&Object.keys(p.size_stock).length){
+    return Object.values(p.size_stock).reduce((s,v)=>s+(Number(v)||0),0);
+  }
+  return Number(p&&p.stock)||0;
+}
+function qtyAlreadyInCart(id,size){
+  return cart.filter(c=>c.id===id&&c.size===size).reduce((s,c)=>s+c.qty,0);
+}
+
 async function loadProducts(){
   const{data,error}=await sb.from('products').select('*').order('created_at',{ascending:false});
   if(error){toast('Error loading products');return;}
@@ -842,11 +889,14 @@ function renderProducts(f){
     g.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><p>${f==='all'?'No products yet. Add via Admin Panel.':'No products in this category.'}</p></div>`;
     return;
   }
-  g.innerHTML=list.map(p=>`
+  g.innerHTML=list.map(p=>{
+    const totalStock=getTotalStock(p);
+    const outOfStock=totalStock<=0;
+    return `
     <div class="prod-card" onclick="openPpage(${p.id})">
       <div class="prod-img">
         ${p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
-        ${p.badge?`<div class="prod-badge badge-${p.badge}">${p.badge}</div>`:''}
+        ${outOfStock?`<div class="prod-badge badge-sale">Out of Stock</div>`:(p.badge?`<div class="prod-badge badge-${p.badge}">${p.badge}</div>`:'')}
       </div>
       <div class="prod-category">${p.category}</div>
       <div class="prod-name">${p.name}</div>
@@ -856,9 +906,10 @@ function renderProducts(f){
           <span class="prod-price-now">৳${Number(p.price).toLocaleString()}</span>
           ${p.old_price?`<span class="prod-price-old">৳${Number(p.old_price).toLocaleString()}</span>`:''}
         </div>
-        <button class="prod-order" onclick="event.stopPropagation();openOrder(${p.id})">Order</button>
+        <button class="prod-order" ${outOfStock?'disabled style="background:var(--mid);cursor:not-allowed;"':''} onclick="event.stopPropagation();quickAddToCart(${p.id})">${outOfStock?'Sold Out':'+ Add'}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function filterCat(f,el){
@@ -909,7 +960,19 @@ async function openPpage(id){
   const oldEl=document.getElementById('ppageOldPrice');
   oldEl.textContent=p.old_price?'৳'+Number(p.old_price).toLocaleString():'';
   document.getElementById('ppageDesc').textContent=p.description||'Premium quality product from Brine BD. Order now and get Cash on Delivery anywhere in Bangladesh.';
-  document.getElementById('ppageSizes').innerHTML=(p.sizes||[]).map((s,i)=>`<button class="ppage-size-btn${i===0?' on':''}" onclick="selPpageSize(this)">${s}</button>`).join('');
+  document.getElementById('ppageSizes').innerHTML=(p.sizes||[]).map((s)=>{
+    const stock=getSizeStock(p,s);
+    const already=qtyAlreadyInCart(p.id,s);
+    const out=(stock-already)<=0;
+    return `<button class="ppage-size-btn${out?' out':''}" ${out?'disabled':''} onclick="selPpageSize(this)" data-size="${s}">${s}</button>`;
+  }).join('');
+  // auto-select first size that actually has stock
+  const sizeBtns=[...document.querySelectorAll('.ppage-size-btn')];
+  const firstOk=sizeBtns.find(b=>!b.disabled);
+  if(firstOk)firstOk.classList.add('on');
+  ppageQty=1;
+  document.getElementById('ppageQtyNum').textContent='1';
+  updatePpageStockNote();
   document.getElementById('ppageOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   // admin mode check
@@ -934,28 +997,121 @@ function gGoto(i){
   document.querySelectorAll('.gallery-dot').forEach((d,j)=>d.classList.toggle('on',j===i));
 }
 function closePpage(){document.getElementById('ppageOverlay').classList.remove('open');document.body.style.overflow='';}
-function selPpageSize(el){document.querySelectorAll('.ppage-size-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
-function ppageOrder(){
-  openOrderModal(curProduct);
+
+let ppageQty=1;
+function selPpageSize(el){
+  if(el.disabled)return;
+  document.querySelectorAll('.ppage-size-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  ppageQty=1;
+  document.getElementById('ppageQtyNum').textContent='1';
+  updatePpageStockNote();
+}
+function ppageQtyChange(delta){
+  if(!curProduct)return;
+  const sizeBtn=document.querySelector('.ppage-size-btn.on');
+  const size=sizeBtn?sizeBtn.dataset.size:null;
+  const stock=size?getSizeStock(curProduct,size):getTotalStock(curProduct);
+  const already=size?qtyAlreadyInCart(curProduct.id,size):0;
+  const maxAllowed=Math.max(stock-already,0);
+  let next=ppageQty+delta;
+  if(next<1)next=1;
+  if(maxAllowed>0&&next>maxAllowed)next=maxAllowed;
+  ppageQty=next;
+  document.getElementById('ppageQtyNum').textContent=ppageQty;
+}
+function updatePpageStockNote(){
+  const p=curProduct;if(!p)return;
+  const note=document.getElementById('ppageStockNote');
+  const addBtn=document.getElementById('ppageAddBtn');
+  const sizeBtn=document.querySelector('.ppage-size-btn.on');
+  if(!sizeBtn){
+    if((p.sizes||[]).length){
+      // sizes exist but none selectable (all out of stock)
+      note.textContent='দুঃখিত, এই মুহূর্তে সব সাইজ স্টক আউট';
+      addBtn.disabled=true;addBtn.textContent='❌ স্টক নেই';
+      return;
+    }
+    const stock=getTotalStock(p);
+    note.textContent=stock>0?`স্টকে আছে: ${stock} পিস`:'স্টক নেই';
+    addBtn.disabled=stock<=0;addBtn.textContent=stock<=0?'❌ স্টক নেই':'🛒 Add to Cart';
+    return;
+  }
+  const size=sizeBtn.dataset.size;
+  const stock=getSizeStock(p,size);
+  const already=qtyAlreadyInCart(p.id,size);
+  const remaining=Math.max(stock-already,0);
+  note.textContent=stock>0?`"${size}" স্টকে আছে: ${stock} পিস${already?` (কার্টে আছে ${already})`:''}`:'এই সাইজ স্টকে নেই';
+  addBtn.disabled=remaining<=0;
+  addBtn.textContent=remaining<=0?'❌ স্টক নেই':'🛒 Add to Cart';
+}
+function saveCart(){
+  localStorage.setItem('bbd_cart',JSON.stringify(cart));
+  document.getElementById('cartBadge').textContent=cart.reduce((s,c)=>s+c.qty,0);
+}
+function addToCartFromPpage(){
+  const p=curProduct;if(!p)return;
+  const sizeBtn=document.querySelector('.ppage-size-btn.on');
+  const size=sizeBtn?sizeBtn.dataset.size:'N/A';
+  const stock=sizeBtn?getSizeStock(p,size):getTotalStock(p);
+  const already=qtyAlreadyInCart(p.id,size);
+  const qty=ppageQty;
+  if(stock-already<qty){toast(`দুঃখিত, মাত্র ${Math.max(stock-already,0)} পিস স্টকে আছে!`);return;}
+  const existing=cart.find(c=>c.id===p.id&&c.size===size);
+  if(existing){existing.qty+=qty;}else{
+    cart.push({id:p.id,name:p.name,category:p.category,size,qty,price:Number(p.price),image_url:p.image_url});
+  }
+  saveCart();
+  toast('✅ কার্টে যোগ হয়েছে!');
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','AddToCart',{content_ids:[String(p.id)],content_name:p.name,content_type:'product',value:Number(p.price)*qty,currency:'BDT'});
+      console.log('[MetaPixel] AddToCart fired →',p.name,'x'+qty);
+    }
+  }catch(e){console.error('[MetaPixel] AddToCart error:',e);}
+  updatePpageStockNote();
+}
+function quickAddToCart(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const sizes=p.sizes||[];
+  let size=sizes.find(s=>getSizeStock(p,s)-qtyAlreadyInCart(p.id,s)>0)||sizes[0]||'N/A';
+  const stock=sizes.length?getSizeStock(p,size):getTotalStock(p);
+  const already=qtyAlreadyInCart(p.id,size);
+  if(stock-already<1){toast('দুঃখিত, স্টক নেই!');return;}
+  const existing=cart.find(c=>c.id===p.id&&c.size===size);
+  if(existing){existing.qty+=1;}else{
+    cart.push({id:p.id,name:p.name,category:p.category,size,qty:1,price:Number(p.price),image_url:p.image_url});
+  }
+  saveCart();
+  toast('✅ কার্টে যোগ হয়েছে!');
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','AddToCart',{content_ids:[String(p.id)],content_name:p.name,content_type:'product',value:Number(p.price),currency:'BDT'});
+      console.log('[MetaPixel] AddToCart fired →',p.name);
+    }
+  }catch(e){console.error('[MetaPixel] AddToCart error:',e);}
 }
 
-// ORDER MODAL
+// CHECKOUT MODAL (always built from current cart items)
 const RESEND_KEY='re_iwVY5PBY_5bCAmdTmB4mDmmHbUUeoQ4T2';
 const ADMIN_EMAIL='brinebd75@gmail.com';
 
-function openOrder(id){
-  const p=products.find(x=>x.id===id);if(!p)return;
-  openOrderModal(p);
-}
-function openOrderModal(p){
-  if(!p)return;
-  curProduct=p;
+function openOrderModal(){
+  if(!cart.length){toast('কার্ট খালি! আগে পণ্য যোগ করুন।');return;}
   document.getElementById('omForm').style.display='block';
   document.getElementById('omSuccess').style.display='none';
+  // hide legacy single-size/qty fields — cart items already carry their own size & qty
+  document.getElementById('omSizeField').style.display='none';
+  document.getElementById('omQtyField').style.display='none';
+  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   document.getElementById('omProduct').innerHTML=`
-    <div class="om-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div>
-    <div><div class="om-name">${p.name}</div><div class="om-price">৳${Number(p.price).toLocaleString()}</div></div>`;
-  document.getElementById('omSizes').innerHTML=(p.sizes||[]).map((s,i)=>`<button class="om-size-btn${i===0?' on':''}" onclick="selOmSize(this)">${s}</button>`).join('');
+    <div class="om-cart-list">${cart.map(item=>`
+      <div class="om-product">
+        <div class="om-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div>
+        <div><div class="om-name">${item.name}</div><div class="om-meta">${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''} · Qty ${item.qty}</div></div>
+        <div class="om-price" style="margin-left:auto;">৳${(Number(item.price)*item.qty).toLocaleString()}</div>
+      </div>`).join('')}</div>
+    <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>`;
   document.getElementById('omName').value='';
   document.getElementById('omPhone').value='';
   document.getElementById('omDivision').value='';
@@ -970,11 +1126,20 @@ function openOrderModal(p){
   window._thanas=[];
   document.getElementById('omAddress').value='';
   document.getElementById('omNote').value='';
-  document.getElementById('omQty').value='1';
   document.getElementById('orderModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+  // InitiateCheckout — fires as soon as the checkout form opens with real cart contents
+  try{
+    if(typeof fbq==='function'){
+      fbq('track','InitiateCheckout',{
+        content_ids:cart.map(i=>String(i.id)),
+        contents:cart.map(i=>({id:String(i.id),quantity:i.qty})),
+        value:total,currency:'BDT',num_items:cart.reduce((s,i)=>s+i.qty,0)
+      });
+      console.log('[MetaPixel] InitiateCheckout fired → total ৳'+total);
+    }
+  }catch(e){console.error('[MetaPixel] InitiateCheckout error:',e);}
 }
-function selOmSize(el){document.querySelectorAll('.om-size-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
 function closeOrderModal(){
   document.getElementById('orderModalOverlay').classList.remove('open');
   document.body.style.overflow='';
@@ -987,65 +1152,82 @@ async function submitOrderForm(){
   const thana=document.getElementById('omThana').value||document.getElementById('omThanaSearch').value;
   const addrLine=document.getElementById('omAddress').value.trim();
   const addr=`${addrLine}, ${thana}, ${district}, ${division}`.replace(/^,\s*/,'');
-  const qty=parseInt(document.getElementById('omQty').value)||1;
   const note=document.getElementById('omNote').value.trim();
-  const size=document.querySelector('.om-size-btn.on')?.textContent||'N/A';
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');return;}
-  const p=curProduct;
-  const total=Number(p.price)*qty;
-  // Meta Pixel: InitiateCheckout — fires AFTER validation passes, value is always a valid number
-  // FIX: moved after validation so value/qty are resolved; undefined value was causing Meta to reject payload
-  try{
-    if(typeof fbq==='function'){
-      fbq('track','InitiateCheckout',{
-        content_ids:[String(p.id)],
-        content_name:p.name,
-        content_type:'product',
-        value:total,
-        currency:'BDT'
-      });
-      console.log('[MetaPixel] InitiateCheckout fired →',p.name,'total ৳'+total);
+  if(!cart.length){toast('কার্ট খালি!');return;}
+
+  // Re-check stock right before placing the order in case it changed since items were added
+  for(const item of cart){
+    const prod=products.find(x=>x.id===item.id);
+    if(!prod)continue;
+    const available=getSizeStock(prod,item.size);
+    if(available<item.qty){
+      toast(`দুঃখিত, "${item.name}"${item.size&&item.size!=='N/A'?' ('+item.size+')':''} এখন মাত্র ${available} পিস আছে। কার্ট আপডেট করুন।`);
+      return;
     }
-  }catch(e){console.error('[MetaPixel] InitiateCheckout error:',e);}
+  }
+
+  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   const btn=document.getElementById('omSubmitBtn');
   btn.disabled=true;btn.textContent='⏳ Placing order...';
-  // Save to Supabase
-  const items=[{id:p.id,name:p.name,category:p.category,size,qty,price:Number(p.price)}];
+
+  // Save to Supabase — items array holds every product/size/qty in this order
+  const items=cart.map(i=>({id:i.id,name:i.name,category:i.category,size:i.size,qty:i.qty,price:Number(i.price)}));
   const{error:dbErr}=await sb.from('orders').insert([{
     customer_name:name,customer_phone:phone,customer_address:addr,
     items,total_amount:total,status:'pending'
   }]);
   if(dbErr){toast('Error saving order: '+dbErr.message);btn.disabled=false;btn.textContent='✅ Confirm Order';return;}
-  // Send email via Edge Function
+
+  // Decrement per-size stock for every item, one product at a time
+  for(const item of cart){
+    const prod=products.find(x=>x.id===item.id);
+    if(!prod)continue;
+    const newSizeStock=Object.assign({},prod.size_stock||{});
+    const cur=getSizeStock(prod,item.size);
+    newSizeStock[item.size]=Math.max(cur-item.qty,0);
+    const newTotal=Object.keys(newSizeStock).length
+      ?Object.values(newSizeStock).reduce((s,v)=>s+(Number(v)||0),0)
+      :Math.max((prod.stock||0)-item.qty,0);
+    await sb.from('products').update({size_stock:newSizeStock,stock:newTotal}).eq('id',item.id);
+    prod.size_stock=newSizeStock;prod.stock=newTotal; // keep local copy in sync until next reload
+  }
+
+  // Send email via Edge Function — summarise every item in one note
   try{
+    const itemsSummary=cart.map(i=>`${i.name}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty}`).join(', ');
     await fetch(`${SURL}/functions/v1/send-order-email`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SKEY},
       body:JSON.stringify({
-        productName:p.name,
+        productName:itemsSummary,
         customerName:name,
-        phone,address:addr,size,qty,total:total.toLocaleString(),note
+        phone,address:addr,size:'',qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),note
       })
     });
   }catch(e){console.log('Email error:',e);}
+
   btn.disabled=false;btn.textContent='✅ Confirm Order';
   document.getElementById('omForm').style.display='none';
   document.getElementById('omSuccess').style.display='block';
   // Meta Pixel: Purchase — fires ONLY after Supabase confirms the order saved
-  // and the success message is already visible on screen
-  // FIX: try/catch so a pixel error never breaks the success flow; eventID deduplicates if CAPI added later
   try{
     if(typeof fbq==='function'){
       fbq('track','Purchase',{
-        content_ids:[String(p.id)],
-        content_name:p.name,
-        content_type:'product',
-        value:total,
-        currency:'BDT'
+        content_ids:cart.map(i=>String(i.id)),
+        contents:cart.map(i=>({id:String(i.id),quantity:i.qty})),
+        value:total,currency:'BDT',
+        num_items:cart.reduce((s,i)=>s+i.qty,0)
       },{eventID:'bbd_order_'+Date.now()});
-      console.log('[MetaPixel] Purchase fired →',p.name,'total ৳'+total);
+      console.log('[MetaPixel] Purchase fired → total ৳'+total);
     }
   }catch(e){console.error('[MetaPixel] Purchase error:',e);}
+
+  // Clear cart and refresh listings so updated stock shows right away
+  cart=[];
+  saveCart();
+  renderCart();
+  renderProducts(curFilter);
 }
 // BANGLADESH GEO DATA
 const BD_GEO = {
@@ -1220,22 +1402,46 @@ async function updateOrderStatus(el){
 function toggleCart(){document.getElementById('drawerOverlay').classList.toggle('open');document.getElementById('cartDrawer').classList.toggle('open');renderCart();}
 function renderCart(){
   const el=document.getElementById('cartItems');
-  if(!cart.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Your cart is empty</p></div>`;document.getElementById('cartTotal').textContent='৳0';return;}
-  el.innerHTML=cart.map((item,i)=>`<div class="cart-item"><div class="ci-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">${item.category}${item.size?' · '+item.size:''}</div><div class="ci-price">৳${Number(item.price).toLocaleString()}</div></div><button class="ci-remove" onclick="removeCart(${i})">✕</button></div>`).join('');
-  document.getElementById('cartTotal').textContent='৳'+cart.reduce((s,i)=>s+Number(i.price),0).toLocaleString();
-  document.getElementById('cartBadge').textContent=cart.length;
+  if(!cart.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Your cart is empty</p></div>`;document.getElementById('cartTotal').textContent='৳0';document.getElementById('cartBadge').textContent='0';return;}
+  el.innerHTML=cart.map((item,i)=>`
+    <div class="cart-item">
+      <div class="ci-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div>
+      <div class="ci-info">
+        <div class="ci-top-row">
+          <div>
+            <div class="ci-name">${item.name}</div>
+            <div class="ci-meta">${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''}</div>
+          </div>
+          <button class="ci-remove" onclick="removeCart(${i})">✕</button>
+        </div>
+        <div class="ci-qty-row">
+          <button class="ci-qty-btn" onclick="changeCartQty(${i},-1)">−</button>
+          <span class="ci-qty-num">${item.qty}</span>
+          <button class="ci-qty-btn" onclick="changeCartQty(${i},1)">+</button>
+        </div>
+        <div class="ci-sub">৳${Number(item.price).toLocaleString()} × ${item.qty} = <strong>৳${(Number(item.price)*item.qty).toLocaleString()}</strong></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('cartTotal').textContent='৳'+cart.reduce((s,i)=>s+Number(i.price)*i.qty,0).toLocaleString();
+  document.getElementById('cartBadge').textContent=cart.reduce((s,i)=>s+i.qty,0);
 }
-function removeCart(i){cart.splice(i,1);localStorage.setItem('bbd_cart',JSON.stringify(cart));renderCart();document.getElementById('cartBadge').textContent=cart.length;}
+function changeCartQty(i,delta){
+  const item=cart[i];if(!item)return;
+  const prod=products.find(x=>x.id===item.id);
+  const stock=prod?getSizeStock(prod,item.size):Infinity;
+  const next=item.qty+delta;
+  if(next<=0){cart.splice(i,1);}
+  else if(next>stock){toast(`দুঃখিত, মাত্র ${stock} পিস স্টকে আছে!`);return;}
+  else{item.qty=next;}
+  saveCart();
+  renderCart();
+}
+function removeCart(i){cart.splice(i,1);saveCart();renderCart();}
 function cartCheckout(){
   if(!cart.length){toast('Cart is empty!');return;}
-  // Open order modal with cart as a virtual product
-  const total=cart.reduce((s,i)=>s+Number(i.price),0);
-  const fakeProduct={
-    id:'cart',name:`Cart (${cart.length} items)`,category:'Multiple',
-    price:total,sizes:[],image_url:null,
-    _cartItems:cart
-  };
-  openOrderModal(fakeProduct);
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('cartDrawer').classList.remove('open');
+  openOrderModal();
 }
 
 // REVIEWS
@@ -1318,15 +1524,26 @@ function previewSlot(input,i){
     r.readAsDataURL(input.files[0]);
   }
 }
+function formatSizeStock(p){
+  if(p.size_stock&&Object.keys(p.size_stock).length){
+    return Object.entries(p.size_stock).map(([s,v])=>`${s}:${v}`).join('  ');
+  }
+  return `Total: ${p.stock||0}`;
+}
 async function addProduct(){
   const name=document.getElementById('pName').value.trim();
   const description=document.getElementById('pDesc').value.trim()||null;
   const category=document.getElementById('pCat').value;
   const price=document.getElementById('pPrice').value;
   const old_price=document.getElementById('pOldPrice').value||null;
-  const stock=document.getElementById('pStock').value||0;
   const badge=document.getElementById('pBadge').value||null;
   const sizes=[...document.querySelectorAll('.sc:checked')].map(c=>c.value);
+  const size_stock={};
+  sizes.forEach(s=>{
+    const inp=document.querySelector(`.ss-stock[data-size="${s}"]`);
+    size_stock[s]=inp?(Number(inp.value)||0):0;
+  });
+  const stock=Object.values(size_stock).reduce((s,v)=>s+v,0);
   if(!name||!price){toast('Name and price required!');return;}
   loading(true);
   // Upload all images
@@ -1340,7 +1557,7 @@ async function addProduct(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock)}]);
+  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
@@ -1348,7 +1565,7 @@ async function addProduct(){
   document.getElementById('pDesc').value='';
   document.getElementById('pPrice').value='';
   document.getElementById('pOldPrice').value='';
-  document.getElementById('pStock').value='';
+  document.querySelectorAll('.ss-stock').forEach(inp=>inp.value='');
   imgFiles=[null,null,null,null];
   for(let i=0;i<4;i++){
     document.getElementById('pImg'+i).value='';
@@ -1367,7 +1584,10 @@ async function deleteProduct(id){
 function renderAdminList(){
   const el=document.getElementById('adminList');
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
-  el.innerHTML=products.map(p=>`<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${(p.stock||0)<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 Stock: ${p.stock||0} pcs${(p.stock||0)===0?' - Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`).join('');
+  el.innerHTML=products.map(p=>{
+    const total=getTotalStock(p);
+    return `<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${total<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 ${formatSizeStock(p)} ${total===0?' - Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`;
+  }).join('');
 }
 
 // EDIT
@@ -1380,10 +1600,13 @@ function openEdit(id){
   document.getElementById('eDesc').value=p.description||'';
   document.getElementById('ePrice').value=p.price||'';
   document.getElementById('eOldPrice').value=p.old_price||'';
-  document.getElementById('eStock').value=p.stock||0;
   document.getElementById('eBadge').value=p.badge||'';
   document.getElementById('eCat').value=p.category||'Jersey';
-  document.querySelectorAll('.esc').forEach(c=>c.checked=(p.sizes||[]).includes(c.value));
+  document.querySelectorAll('.esc').forEach(c=>{
+    c.checked=(p.sizes||[]).includes(c.value);
+    const inp=document.querySelector(`.ess-stock[data-size="${c.value}"]`);
+    if(inp)inp.value=getSizeStock(p,c.value)||'';
+  });
   // show existing images
   const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
   for(let i=0;i<4;i++){
@@ -1412,9 +1635,14 @@ async function saveEdit(){
   const category=document.getElementById('eCat').value;
   const price=document.getElementById('ePrice').value;
   const old_price=document.getElementById('eOldPrice').value||null;
-  const stock=document.getElementById('eStock').value||0;
   const badge=document.getElementById('eBadge').value||null;
   const sizes=[...document.querySelectorAll('.esc:checked')].map(c=>c.value);
+  const size_stock={};
+  sizes.forEach(s=>{
+    const inp=document.querySelector(`.ess-stock[data-size="${s}"]`);
+    size_stock[s]=inp?(Number(inp.value)||0):0;
+  });
+  const stock=Object.values(size_stock).reduce((s,v)=>s+v,0);
   if(!name||!price){toast('Name and price required!');return;}
   loading(true);
   // upload new images, keep old ones
@@ -1428,7 +1656,7 @@ async function saveEdit(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock)}).eq('id',editId);
+  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock}).eq('id',editId);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product updated!');
@@ -1439,7 +1667,7 @@ function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle
 
 // INIT
 loadProducts();
-document.getElementById('cartBadge').textContent=cart.length;
+document.getElementById('cartBadge').textContent=cart.reduce((s,c)=>s+c.qty,0);
 // Mobile 5-tap footer trigger
 (function(){let taps=0,timer=null;const el=document.getElementById('footerBrand');if(!el)return;el.addEventListener('click',function(){taps++;if(timer)clearTimeout(timer);timer=setTimeout(()=>{taps=0;},2000);if(taps>=5){taps=0;clearTimeout(timer);document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});})();
 
