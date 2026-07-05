@@ -322,6 +322,48 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 .ci-qty-btn:hover{background:var(--black);color:var(--white);border-color:var(--black)}
 .ci-qty-num{font-size:13px;font-weight:600;min-width:18px;text-align:center}
 .ci-sub{font-size:12px;color:var(--mid);margin-top:2px}
+.free-delivery-banner{margin:0 24px 12px;padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.free-delivery-banner.hit{background:#e6f7ed;color:#1a7a3d}
+.free-delivery-banner.miss{background:var(--off);color:var(--mid)}
+.free-delivery-progress{height:5px;border-radius:3px;background:var(--border);margin-top:6px;overflow:hidden}
+.free-delivery-progress-bar{height:100%;background:#1a7a3d;transition:width .3s}
+.low-stock-banner{background:#fff4e5;border:1px solid #f0b862;color:#8a5a00;padding:12px 16px;border-radius:8px;font-size:12.5px;line-height:1.6;margin-bottom:16px}
+/* SEARCH BAR */
+.search-bar-wrap{position:relative;margin-bottom:20px}
+.search-bar-wrap input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;background:var(--off);color:var(--black);box-sizing:border-box;transition:border-color .2s}
+.search-bar-wrap input:focus{border-color:var(--black);outline:none}
+/* WISHLIST */
+.wish-heart-btn{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:transform .15s;z-index:2}
+.wish-heart-btn:hover{transform:scale(1.12)}
+.nav-wish{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);color:var(--black);padding:8px 14px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.nav-wish:hover{border-color:var(--black)}
+.wish-badge{background:var(--accent,#c0392b);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.ppage-wish-btn{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.92);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;z-index:3}
+/* RELATED PRODUCTS */
+.related-section{padding:28px 40px 8px;border-top:1px solid var(--border)}
+.related-section h4{font-size:15px;font-weight:700;margin-bottom:14px}
+.related-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px}
+.related-card{flex:0 0 140px;cursor:pointer}
+.related-card .r-img{width:140px;height:170px;background:var(--off);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:8px}
+.related-card .r-img img{width:100%;height:100%;object-fit:cover}
+.related-card .r-name{font-size:12.5px;font-weight:600;line-height:1.3;margin-bottom:2px}
+.related-card .r-price{font-size:12.5px;color:var(--mid)}
+/* COUPON */
+.coupon-msg-ok{color:#1a7a3d}
+.coupon-msg-err{color:#c0392b}
+.om-discount-row{display:flex;justify-content:space-between;font-size:13px;color:#1a7a3d;font-weight:600;margin-top:4px}
+/* ORDER TRACKING */
+.track-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;display:none;align-items:flex-start;justify-content:center;padding:60px 16px;overflow-y:auto}
+.track-overlay.open{display:flex}
+.track-box{background:var(--white);border-radius:12px;width:100%;max-width:480px;padding:28px}
+.track-box h3{font-size:19px;font-weight:700;margin-bottom:6px}
+.track-order-item{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px}
+.track-status{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;text-transform:capitalize}
+.track-status.pending{background:#fff4e5;color:#8a5a00}
+.track-status.confirmed{background:#e6f0ff;color:#1a4d99}
+.track-status.shipped{background:#eee6ff;color:#5a2ea6}
+.track-status.delivered{background:#e6f7ed;color:#1a7a3d}
+.track-status.cancelled{background:#fde8e8;color:#c0392b}
 .drawer-foot{padding:20px 24px;border-top:1px solid var(--border)}
 .cart-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .cart-row span{font-size:14px;color:var(--mid)}
@@ -430,6 +472,9 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     <button class="nav-cat" onclick="filterCat('Jacket',this)">Jacket</button>
   </div>
   <div class="nav-right">
+    <button class="nav-wish" onclick="toggleWishlistDrawer()" title="Wishlist">
+      ❤️ <span class="wish-badge" id="wishBadge">0</span>
+    </button>
     <button class="nav-cart" onclick="toggleCart()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       Cart <span class="cart-badge" id="cartBadge">0</span>
@@ -448,6 +493,8 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <button onclick="filterCat('Hoodie',null);toggleMobileNav()">Hoodie / Sweater</button>
   <button onclick="filterCat('Pants',null);toggleMobileNav()">Pants / Shorts</button>
   <button onclick="filterCat('Jacket',null);toggleMobileNav()">Jacket</button>
+  <button onclick="toggleWishlistDrawer();toggleMobileNav()">❤️ Wishlist</button>
+  <button onclick="openTrackOrder();toggleMobileNav()">📦 Track Order</button>
 </div>
 
 <!-- HERO -->
@@ -500,6 +547,9 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <h2 class="section-title">All Products</h2>
     </div>
   </div>
+  <div class="search-bar-wrap">
+    <input type="text" id="searchInput" placeholder="🔍 পণ্য খুঁজুন... (e.g. Jersey, Polo, Nike)" oninput="searchProducts(this.value)">
+  </div>
   <div class="cat-pills">
     <button class="cat-pill active" onclick="filterCat('all',this)">All Items</button>
     <button class="cat-pill" onclick="filterCat('Jersey',this)">⚽ Jersey</button>
@@ -547,6 +597,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <a href="#" onclick="openInfoModal('shipping');return false;">Shipping Policy</a>
         <a href="#" onclick="openInfoModal('return');return false;">Return Policy</a>
         <a href="#" onclick="openInfoModal('size');return false;">Size Guide</a>
+        <a href="#" onclick="openTrackOrder();return false;">📦 Track My Order</a>
       </div>
       <div class="footer-col">
         <h5>Contact</h5>
@@ -582,6 +633,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="drawer-head"><h3>Your Cart</h3><button class="drawer-close" onclick="toggleCart()">✕</button></div>
+  <div id="cartDeliveryBanner"></div>
   <div class="drawer-items" id="cartItems"></div>
   <div class="drawer-foot">
     <div class="cart-row"><span>Total</span><strong id="cartTotal">৳0</strong></div>
@@ -591,12 +643,34 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </div>
 
+<!-- WISHLIST DRAWER (reuses cart-drawer styling) -->
+<div class="drawer-overlay" id="wishDrawerOverlay" onclick="toggleWishlistDrawer()"></div>
+<div class="cart-drawer" id="wishDrawer">
+  <div class="drawer-head"><h3>Your Wishlist</h3><button class="drawer-close" onclick="toggleWishlistDrawer()">✕</button></div>
+  <div class="drawer-items" id="wishItems"></div>
+</div>
+
+<!-- ORDER TRACKING -->
+<div class="track-overlay" id="trackOverlay" onclick="if(event.target===this)closeTrackOrder()">
+  <div class="track-box">
+    <h3>📦 আপনার অর্ডার ট্র্যাক করুন</h3>
+    <p style="font-size:13px;color:var(--mid);margin-bottom:16px;">অর্ডার করার সময় যে ফোন নম্বর দিয়েছিলেন সেটা লিখুন।</p>
+    <div style="display:flex;gap:8px;">
+      <input type="tel" id="trackPhone" placeholder="01XXXXXXXXX" style="flex:1;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
+      <button onclick="searchOrders()" style="flex:none;padding:0 18px;background:var(--black);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">খুঁজুন</button>
+    </div>
+    <div id="trackResults"></div>
+    <button class="om-cancel" style="margin-top:16px;" onclick="closeTrackOrder()">Close</button>
+  </div>
+</div>
+
 <!-- PRODUCT PAGE -->
 <div class="ppage-overlay" id="ppageOverlay">
   <div class="ppage">
     <div class="ppage-inner">
       <div class="ppage-img" id="ppageImg">
         <button class="ppage-close" onclick="closePpage()">✕</button>
+        <button class="ppage-wish-btn" id="ppageWishBtn" onclick="toggleWishlistFromPpage()">🤍</button>
       </div>
       <div class="ppage-info">
         <div class="ppage-cat" id="ppageCat"></div>
@@ -618,8 +692,16 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <button class="ppage-order-btn" id="ppageAddBtn" onclick="addToCartFromPpage()">
           🛒 Add to Cart
         </button>
+        <button class="ppage-order-btn" id="ppageNotifyBtn" style="display:none;background:#444;margin-top:10px;" onclick="notifyRestockFromPpage()">
+          🔔 স্টকে আসলে জানান
+        </button>
         <div class="ppage-cod">🚚 Cash on Delivery | সারা বাংলাদেশে ডেলিভারি</div>
       </div>
+    </div>
+    <!-- RELATED PRODUCTS -->
+    <div class="related-section" id="relatedSection" style="display:none;">
+      <h4>এটাও দেখতে পারেন</h4>
+      <div class="related-scroll" id="relatedScroll"></div>
     </div>
     <!-- REVIEW SECTION -->
     <div class="review-section" id="ppageReviews">
@@ -639,6 +721,11 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           </div>
         </div>
         <div class="field" style="margin-top:10px;"><label style="font-size:12px;font-weight:600;">Comment</label><textarea id="rComment" rows="2" placeholder="e.g. খুব সুন্দর jersey, quality অনেক ভালো!" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:9px 12px;border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;margin-top:4px;resize:vertical;"></textarea></div>
+        <div class="field" style="margin-top:10px;">
+          <label style="font-size:12px;font-weight:600;">Photo (optional)</label>
+          <input type="file" id="rPhoto" accept="image/*" style="display:block;margin-top:4px;font-size:12px;" onchange="previewReviewPhoto(this)">
+          <div id="rPhotoPreview" style="margin-top:6px;"></div>
+        </div>
         <div style="display:flex;gap:8px;margin-top:12px;">
           <button onclick="toggleAddReview()" style="flex:1;padding:9px;border:1px solid var(--border);background:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;">Cancel</button>
           <button onclick="submitReview()" style="flex:2;padding:9px;background:var(--black);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;">Submit Review</button>
@@ -728,6 +815,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="om-field" id="omQtyField"><label>Quantity</label>
         <select id="omQty"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
+      <div class="om-field"><label>Coupon Code (optional)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="omCoupon" placeholder="e.g. WELCOME10" style="text-transform:uppercase;flex:1;">
+          <button type="button" onclick="applyCoupon()" style="flex:none;padding:0 16px;background:var(--black);color:white;border:none;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Apply</button>
+        </div>
+        <div id="omCouponMsg" style="font-size:12px;margin-top:6px;"></div>
+      </div>
       <div class="om-field"><label>Note (optional)</label><input type="text" id="omNote" placeholder="কোনো বিশেষ চাহিদা..."></div>
       <button class="om-submit-btn" id="omSubmitBtn" onclick="submitOrderForm()">✅ Confirm Order</button>
       <button class="om-cancel" onclick="closeOrderModal()">Cancel</button>
@@ -760,6 +854,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border);">
         <button id="tabProducts" onclick="switchAdminTab('products')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid var(--black);margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--black);">Products</button>
         <button id="tabOrders" onclick="switchAdminTab('orders')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">Orders</button>
+        <button id="tabCoupons" onclick="switchAdminTab('coupons')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">Coupons</button>
       </div>
       <!-- PRODUCTS TAB -->
       <div id="adminTabProducts">
@@ -823,7 +918,12 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <button class="cancel-btn" style="flex:none;padding:12px 20px;" onclick="closeAdmin()">Close</button>
       </div>
       <div style="margin-top:32px;">
-        <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Current Products</h3>
+        <div id="lowStockBanner"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+          <h3 style="font-size:16px;font-weight:600;">Current Products</h3>
+          <button class="cancel-btn" style="flex:none;padding:8px 14px;font-size:12px;" onclick="toggleBulkStock()">📦 Bulk Stock Update</button>
+        </div>
+        <div id="bulkStockPanel" style="display:none;margin-bottom:20px;border:1px solid var(--border);border-radius:8px;padding:16px;background:var(--off);"></div>
         <div id="adminList"></div>
       </div>
       </div><!-- end adminTabProducts -->
@@ -834,6 +934,28 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           <button onclick="loadAdminOrders()" style="background:none;border:1px solid var(--border);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Refresh</button>
         </div>
         <div id="adminOrdersList"><p style="color:var(--mid);font-size:13px;">Loading orders...</p></div>
+      </div>
+      <div id="adminTabCoupons" style="display:none;">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Add Coupon</h3>
+        <div class="form-row">
+          <div class="field"><label>Code *</label><input type="text" id="cpCode" placeholder="e.g. WELCOME10" style="text-transform:uppercase;"></div>
+          <div class="field"><label>Type *</label>
+            <select id="cpType"><option value="percent">Percent (%)</option><option value="fixed">Fixed (৳)</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Discount Value *</label><input type="number" id="cpValue" placeholder="e.g. 10"></div>
+          <div class="field"><label>Min Order (৳)</label><input type="number" id="cpMinOrder" placeholder="e.g. 500 (optional)"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Usage Limit</label><input type="number" id="cpUsageLimit" placeholder="Leave blank = unlimited"></div>
+          <div class="field"><label>Expires On</label><input type="date" id="cpExpiry"></div>
+        </div>
+        <button class="add-btn" onclick="addCoupon()">Add Coupon</button>
+        <div style="margin-top:28px;">
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Active Coupons</h3>
+          <div id="couponsList"><p style="color:var(--mid);font-size:13px;">Loading...</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -874,6 +996,61 @@ function qtyAlreadyInCart(id,size){
   return cart.filter(c=>c.id===id&&c.size===size).reduce((s,c)=>s+c.qty,0);
 }
 
+// WISHLIST (localStorage, no login needed)
+let wishlist=JSON.parse(localStorage.getItem('bbd_wishlist')||'[]');
+let curSearch='';
+function isWished(id){return wishlist.some(w=>w.id===id);}
+function saveWishlist(){
+  localStorage.setItem('bbd_wishlist',JSON.stringify(wishlist));
+  document.getElementById('wishBadge').textContent=wishlist.length;
+}
+function toggleWishlist(id,btn){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const idx=wishlist.findIndex(w=>w.id===id);
+  if(idx>-1){wishlist.splice(idx,1);toast('💔 উইশলিস্ট থেকে সরানো হয়েছে');}
+  else{wishlist.push({id:p.id,name:p.name,category:p.category,price:Number(p.price),image_url:p.image_url});toast('❤️ উইশলিস্টে যোগ হয়েছে!');}
+  saveWishlist();
+  const wished=isWished(id);
+  if(btn){btn.textContent=wished?'❤️':'🤍';}
+  if(curProduct&&curProduct.id===id){
+    const pbtn=document.getElementById('ppageWishBtn');
+    if(pbtn)pbtn.textContent=wished?'❤️':'🤍';
+  }
+}
+function toggleWishlistFromPpage(){
+  if(!curProduct)return;
+  toggleWishlist(curProduct.id,document.getElementById('ppageWishBtn'));
+}
+function toggleWishlistDrawer(){
+  document.getElementById('wishDrawerOverlay').classList.toggle('open');
+  document.getElementById('wishDrawer').classList.toggle('open');
+  renderWishlist();
+}
+function renderWishlist(){
+  const el=document.getElementById('wishItems');
+  if(!wishlist.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">❤️</div><p>Your wishlist is empty</p></div>`;return;}
+  el.innerHTML=wishlist.map((item,i)=>`
+    <div class="cart-item">
+      <div class="ci-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div>
+      <div class="ci-info">
+        <div class="ci-top-row">
+          <div><div class="ci-name">${item.name}</div><div class="ci-meta">${item.category} · ৳${Number(item.price).toLocaleString()}</div></div>
+          <button class="ci-remove" onclick="removeWishlist(${i})">✕</button>
+        </div>
+        <button class="prod-order" style="margin-top:8px;" onclick="moveWishToCart(${i})">🛒 Add to Cart</button>
+      </div>
+    </div>`).join('');
+}
+function removeWishlist(i){wishlist.splice(i,1);saveWishlist();renderWishlist();}
+function moveWishToCart(i){
+  const item=wishlist[i];if(!item)return;
+  quickAddToCart(item.id);
+}
+function searchProducts(val){
+  curSearch=val.trim();
+  renderProducts(curFilter);
+}
+
 async function loadProducts(){
   const{data,error}=await sb.from('products').select('*').order('created_at',{ascending:false});
   if(error){toast('Error loading products');return;}
@@ -884,19 +1061,25 @@ async function loadProducts(){
 function renderProducts(f){
   curFilter=f;
   const g=document.getElementById('productsGrid');
-  const list=f==='all'?products:products.filter(p=>p.category===f);
+  let list=f==='all'?products:products.filter(p=>p.category===f);
+  if(curSearch){
+    const q=curSearch.toLowerCase();
+    list=list.filter(p=>p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q));
+  }
   if(!list.length){
-    g.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><p>${f==='all'?'No products yet. Add via Admin Panel.':'No products in this category.'}</p></div>`;
+    g.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><p>${curSearch?'কোনো পণ্য পাওয়া যায়নি।':(f==='all'?'No products yet. Add via Admin Panel.':'No products in this category.')}</p></div>`;
     return;
   }
   g.innerHTML=list.map(p=>{
     const totalStock=getTotalStock(p);
     const outOfStock=totalStock<=0;
+    const wished=isWished(p.id);
     return `
     <div class="prod-card" onclick="openPpage(${p.id})">
       <div class="prod-img">
         ${p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
         ${outOfStock?`<div class="prod-badge badge-sale">Out of Stock</div>`:(p.badge?`<div class="prod-badge badge-${p.badge}">${p.badge}</div>`:'')}
+        <button class="wish-heart-btn" onclick="event.stopPropagation();toggleWishlist(${p.id},this)">${wished?'❤️':'🤍'}</button>
       </div>
       <div class="prod-category">${p.category}</div>
       <div class="prod-name">${p.name}</div>
@@ -906,7 +1089,7 @@ function renderProducts(f){
           <span class="prod-price-now">৳${Number(p.price).toLocaleString()}</span>
           ${p.old_price?`<span class="prod-price-old">৳${Number(p.old_price).toLocaleString()}</span>`:''}
         </div>
-        <button class="prod-order" ${outOfStock?'disabled style="background:var(--mid);cursor:not-allowed;"':''} onclick="event.stopPropagation();quickAddToCart(${p.id})">${outOfStock?'Sold Out':'🛒 Add to Cart'}</button>
+        <button class="prod-order" ${outOfStock?'style="background:#444;"':''} data-pid="${p.id}" data-pname="${String(p.name).replace(/"/g,'&quot;')}" onclick="event.stopPropagation();${outOfStock?'notifyRestockBtn(this)':`quickAddToCart(${p.id})`}">${outOfStock?'🔔 Notify Me':'🛒 Add to Cart'}</button>
       </div>
     </div>`;
   }).join('');
@@ -946,12 +1129,13 @@ async function openPpage(id){
   if(imgs.length){
     imgEl.innerHTML=`
       <button class="ppage-close" onclick="closePpage()">✕</button>
+      <button class="ppage-wish-btn" id="ppageWishBtn" onclick="toggleWishlistFromPpage()">${isWished(p.id)?'❤️':'🤍'}</button>
       <div class="gallery-wrap" style="width:100%;height:100%;min-height:400px;">
         <div class="gallery-track" id="gTrack">${imgs.map(u=>`<div class="gallery-slide"><img src="${u}" alt="${p.name}"></div>`).join('')}</div>
         ${imgs.length>1?`<button class="gallery-btn gallery-prev" onclick="gSlide(-1)">‹</button><button class="gallery-btn gallery-next" onclick="gSlide(1)">›</button><div class="gallery-dots">${imgs.map((_,i)=>`<div class="gallery-dot${i===0?' on':''}" onclick="gGoto(${i})"></div>`).join('')}</div>`:''}
       </div>`;
   }else{
-    imgEl.innerHTML=`<button class="ppage-close" onclick="closePpage()">✕</button><span style="font-size:100px">${icon(p.category)}</span>`;
+    imgEl.innerHTML=`<button class="ppage-close" onclick="closePpage()">✕</button><button class="ppage-wish-btn" id="ppageWishBtn" onclick="toggleWishlistFromPpage()">${isWished(p.id)?'❤️':'🤍'}</button><span style="font-size:100px">${icon(p.category)}</span>`;
   }
   galleryIdx=0;
   document.getElementById('ppageCat').textContent=p.category;
@@ -981,7 +1165,21 @@ async function openPpage(id){
   curRating=5;
   document.querySelectorAll('.rev-star-btn').forEach(b=>b.classList.add('on'));
   document.getElementById('addReviewForm').classList.remove('open');
+  renderRelatedProducts(p);
   await loadReviews(p.id);
+}
+function renderRelatedProducts(p){
+  const section=document.getElementById('relatedSection');
+  const scroll=document.getElementById('relatedScroll');
+  const related=products.filter(x=>x.id!==p.id&&x.category===p.category).slice(0,8);
+  if(!related.length){section.style.display='none';return;}
+  section.style.display='block';
+  scroll.innerHTML=related.map(r=>`
+    <div class="related-card" onclick="openPpage(${r.id})">
+      <div class="r-img">${r.image_url?`<img src="${r.image_url}" alt="${r.name}">`:`<span>${icon(r.category)}</span>`}</div>
+      <div class="r-name">${r.name}</div>
+      <div class="r-price">৳${Number(r.price).toLocaleString()}</div>
+    </div>`).join('');
 }
 function gSlide(dir){
   const track=document.getElementById('gTrack');if(!track)return;
@@ -1024,17 +1222,20 @@ function updatePpageStockNote(){
   const p=curProduct;if(!p)return;
   const note=document.getElementById('ppageStockNote');
   const addBtn=document.getElementById('ppageAddBtn');
+  const notifyBtn=document.getElementById('ppageNotifyBtn');
   const sizeBtn=document.querySelector('.ppage-size-btn.on');
   if(!sizeBtn){
     if((p.sizes||[]).length){
       // sizes exist but none selectable (all out of stock)
       note.textContent='দুঃখিত, এই মুহূর্তে সব সাইজ স্টক আউট';
       addBtn.disabled=true;addBtn.textContent='❌ স্টক নেই';
+      notifyBtn.style.display='block';
       return;
     }
     const stock=getTotalStock(p);
     note.textContent=stock>0?`স্টকে আছে: ${stock} পিস`:'স্টক নেই';
     addBtn.disabled=stock<=0;addBtn.textContent=stock<=0?'❌ স্টক নেই':'🛒 Add to Cart';
+    notifyBtn.style.display=stock<=0?'block':'none';
     return;
   }
   const size=sizeBtn.dataset.size;
@@ -1044,10 +1245,50 @@ function updatePpageStockNote(){
   note.textContent=stock>0?`"${size}" স্টকে আছে: ${stock} পিস${already?` (কার্টে আছে ${already})`:''}`:'এই সাইজ স্টকে নেই';
   addBtn.disabled=remaining<=0;
   addBtn.textContent=remaining<=0?'❌ স্টক নেই':'🛒 Add to Cart';
+  notifyBtn.style.display=remaining<=0?'block':'none';
+}
+async function notifyRestock(productId,productName,size){
+  const phone=prompt(`"${productName}"${size?' ('+size+')':''} আবার স্টকে আসলে জানাতে আপনার হোয়াটসঅ্যাপ/ফোন নম্বর দিন:`);
+  if(!phone)return;
+  const cleaned=phone.trim();
+  if(cleaned.length<10){toast('সঠিক ফোন নম্বর দিন!');return;}
+  try{
+    const{error}=await sb.from('restock_requests').insert([{product_id:productId,product_name:productName,size:size||null,phone:cleaned}]);
+    if(error){toast('দুঃখিত, একটু পরে আবার চেষ্টা করুন।');console.error('[Restock]',error);return;}
+    toast('✅ ধন্যবাদ! স্টকে আসলে আপনাকে জানানো হবে।');
+  }catch(e){toast('দুঃখিত, একটু পরে আবার চেষ্টা করুন।');console.error('[Restock]',e);}
+}
+function notifyRestockFromPpage(){
+  const p=curProduct;if(!p)return;
+  const sizeBtn=document.querySelector('.ppage-size-btn.on');
+  const size=sizeBtn?sizeBtn.dataset.size:'';
+  notifyRestock(p.id,p.name,size);
+}
+function notifyRestockBtn(btn){
+  notifyRestock(Number(btn.dataset.pid),btn.dataset.pname,'');
 }
 function saveCart(){
   localStorage.setItem('bbd_cart',JSON.stringify(cart));
   document.getElementById('cartBadge').textContent=cart.reduce((s,c)=>s+c.qty,0);
+}
+// Cart items auto-expire after 2 days of inactivity; free delivery banner shows above this total
+const CART_EXPIRE_MS=2*24*60*60*1000;
+const FREE_DELIVERY_THRESHOLD=1500;
+function pruneExpiredCart(){
+  const now=Date.now();
+  const before=cart.length;
+  cart=cart.filter(c=>!c.addedAt||(now-c.addedAt)<CART_EXPIRE_MS);
+  if(cart.length!==before){saveCart();}
+}
+function maybeShowCartReminder(){
+  if(!cart.length)return;
+  if(sessionStorage.getItem('bbd_cart_reminder_shown'))return;
+  const now=Date.now();
+  const hasOldItem=cart.some(c=>c.addedAt&&(now-c.addedAt)>(20*60*60*1000));
+  if(hasOldItem){
+    sessionStorage.setItem('bbd_cart_reminder_shown','1');
+    setTimeout(()=>toast('🛒 আপনার কার্টে পণ্য রাখা আছে, ২ দিন পর এগুলো সরে যাবে — এখনই অর্ডার করুন!'),1200);
+  }
 }
 function addToCartFromPpage(){
   const p=curProduct;if(!p)return;
@@ -1059,7 +1300,7 @@ function addToCartFromPpage(){
   if(stock-already<qty){toast(`দুঃখিত, মাত্র ${Math.max(stock-already,0)} পিস স্টকে আছে!`);return;}
   const existing=cart.find(c=>c.id===p.id&&c.size===size);
   if(existing){existing.qty+=qty;}else{
-    cart.push({id:p.id,name:p.name,category:p.category,size,qty,price:Number(p.price),image_url:p.image_url});
+    cart.push({id:p.id,name:p.name,category:p.category,size,qty,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
   }
   saveCart();
   toast('✅ কার্টে যোগ হয়েছে!');
@@ -1080,7 +1321,7 @@ function quickAddToCart(id){
   if(stock-already<1){toast('দুঃখিত, স্টক নেই!');return;}
   const existing=cart.find(c=>c.id===p.id&&c.size===size);
   if(existing){existing.qty+=1;}else{
-    cart.push({id:p.id,name:p.name,category:p.category,size,qty:1,price:Number(p.price),image_url:p.image_url});
+    cart.push({id:p.id,name:p.name,category:p.category,size,qty:1,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
   }
   saveCart();
   toast('✅ কার্টে যোগ হয়েছে!');
@@ -1095,6 +1336,50 @@ function quickAddToCart(id){
 // CHECKOUT MODAL (always built from current cart items)
 const RESEND_KEY='re_iwVY5PBY_5bCAmdTmB4mDmmHbUUeoQ4T2';
 const ADMIN_EMAIL='brinebd75@gmail.com';
+
+// COUPONS
+let appliedCoupon=null;
+function computeCartSubtotal(){return cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);}
+function computeDiscount(subtotal){
+  if(!appliedCoupon)return 0;
+  const raw=appliedCoupon.discount_type==='percent'
+    ?subtotal*Number(appliedCoupon.discount_value)/100
+    :Number(appliedCoupon.discount_value);
+  return Math.min(Math.round(raw),subtotal);
+}
+function updateCheckoutTotals(){
+  const subtotal=computeCartSubtotal();
+  const discount=computeDiscount(subtotal);
+  const finalTotal=subtotal-discount;
+  const totalBlock=document.querySelector('#omProduct .om-cart-total');
+  if(!totalBlock)return;
+  totalBlock.parentElement.querySelectorAll('.om-discount-row').forEach(e=>e.remove());
+  if(discount>0){
+    const row=document.createElement('div');
+    row.className='om-discount-row';
+    row.innerHTML=`<span>Coupon Discount (${appliedCoupon.code})</span><span>-৳${discount.toLocaleString()}</span>`;
+    totalBlock.insertAdjacentElement('beforebegin',row);
+  }
+  const lastSpan=totalBlock.querySelector('span:last-child');
+  if(lastSpan)lastSpan.textContent='৳'+finalTotal.toLocaleString();
+}
+async function applyCoupon(){
+  const msg=document.getElementById('omCouponMsg');
+  const code=document.getElementById('omCoupon').value.trim().toUpperCase();
+  if(!code){msg.textContent='';msg.className='';appliedCoupon=null;updateCheckoutTotals();return;}
+  const{data,error}=await sb.from('coupons').select('*').eq('code',code).maybeSingle();
+  if(error||!data){msg.textContent='❌ কুপন কোড খুঁজে পাওয়া যায়নি।';msg.className='coupon-msg-err';appliedCoupon=null;updateCheckoutTotals();return;}
+  if(data.active===false){msg.textContent='❌ এই কুপন আর সক্রিয় নেই।';msg.className='coupon-msg-err';appliedCoupon=null;updateCheckoutTotals();return;}
+  if(data.expires_at&&new Date(data.expires_at)<new Date()){msg.textContent='❌ কুপনের মেয়াদ শেষ।';msg.className='coupon-msg-err';appliedCoupon=null;updateCheckoutTotals();return;}
+  if(data.usage_limit!=null&&data.used_count>=data.usage_limit){msg.textContent='❌ কুপনের ব্যবহার সীমা শেষ।';msg.className='coupon-msg-err';appliedCoupon=null;updateCheckoutTotals();return;}
+  const subtotal=computeCartSubtotal();
+  if(data.min_order&&subtotal<data.min_order){msg.textContent=`❌ ন্যূনতম অর্ডার ৳${data.min_order} হতে হবে।`;msg.className='coupon-msg-err';appliedCoupon=null;updateCheckoutTotals();return;}
+  appliedCoupon=data;
+  const discount=computeDiscount(subtotal);
+  msg.textContent=`✅ কুপন প্রযোজ্য! ৳${discount.toLocaleString()} ছাড় পাবেন।`;
+  msg.className='coupon-msg-ok';
+  updateCheckoutTotals();
+}
 
 function openOrderModal(){
   if(!cart.length){toast('কার্ট খালি! আগে পণ্য যোগ করুন।');return;}
@@ -1111,7 +1396,8 @@ function openOrderModal(){
         <div><div class="om-name">${item.name}</div><div class="om-meta">${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''} · Qty ${item.qty}</div></div>
         <div class="om-price" style="margin-left:auto;">৳${(Number(item.price)*item.qty).toLocaleString()}</div>
       </div>`).join('')}</div>
-    <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>`;
+    <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>
+    ${freeDeliveryBannerHTML(total).replace('margin:0 24px 12px','margin:0 0 16px')}`;
   document.getElementById('omName').value='';
   document.getElementById('omPhone').value='';
   document.getElementById('omDivision').value='';
@@ -1126,6 +1412,10 @@ function openOrderModal(){
   window._thanas=[];
   document.getElementById('omAddress').value='';
   document.getElementById('omNote').value='';
+  document.getElementById('omCoupon').value='';
+  document.getElementById('omCouponMsg').textContent='';
+  document.getElementById('omCouponMsg').className='';
+  appliedCoupon=null;
   document.getElementById('orderModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   // InitiateCheckout — fires as soon as the checkout form opens with real cart contents
@@ -1167,7 +1457,9 @@ async function submitOrderForm(){
     }
   }
 
-  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  const subtotal=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  const discount=computeDiscount(subtotal);
+  const total=subtotal-discount;
   const btn=document.getElementById('omSubmitBtn');
   btn.disabled=true;btn.textContent='⏳ Placing order...';
 
@@ -1175,9 +1467,18 @@ async function submitOrderForm(){
   const items=cart.map(i=>({id:i.id,name:i.name,category:i.category,size:i.size,qty:i.qty,price:Number(i.price)}));
   const{error:dbErr}=await sb.from('orders').insert([{
     customer_name:name,customer_phone:phone,customer_address:addr,
-    items,total_amount:total,status:'pending'
+    items,total_amount:total,status:'pending',
+    coupon_code:appliedCoupon?appliedCoupon.code:null,
+    discount_amount:discount
   }]);
   if(dbErr){toast('Error saving order: '+dbErr.message);btn.disabled=false;btn.textContent='✅ Confirm Order';return;}
+
+  // Bump coupon usage count if one was applied
+  if(appliedCoupon){
+    try{
+      await sb.from('coupons').update({used_count:(appliedCoupon.used_count||0)+1}).eq('code',appliedCoupon.code);
+    }catch(e){console.log('Coupon usage update error:',e);}
+  }
 
   // Decrement per-size stock for every item, one product at a time
   for(const item of cart){
@@ -1225,6 +1526,7 @@ async function submitOrderForm(){
 
   // Clear cart and refresh listings so updated stock shows right away
   cart=[];
+  appliedCoupon=null;
   saveCart();
   renderCart();
   renderProducts(curFilter);
@@ -1356,9 +1658,12 @@ function closeOrder(){closeOrderModal();}
 function switchAdminTab(tab){
   document.getElementById('adminTabProducts').style.display = tab==='products'?'block':'none';
   document.getElementById('adminTabOrders').style.display = tab==='orders'?'block':'none';
+  document.getElementById('adminTabCoupons').style.display = tab==='coupons'?'block':'none';
   document.getElementById('tabProducts').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='products'?'var(--black)':'transparent')+';color:'+(tab==='products'?'var(--black)':'var(--mid)');
   document.getElementById('tabOrders').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='orders'?'var(--black)':'transparent')+';color:'+(tab==='orders'?'var(--black)':'var(--mid)');
+  document.getElementById('tabCoupons').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='coupons'?'var(--black)':'transparent')+';color:'+(tab==='coupons'?'var(--black)':'var(--mid)');
   if(tab==='orders') loadAdminOrders();
+  if(tab==='coupons') loadCoupons();
 }
 
 async function loadAdminOrders(){
@@ -1390,6 +1695,39 @@ async function loadAdminOrders(){
 }
 
 
+// ORDER TRACKING (public — customer looks up by their own phone number)
+function openTrackOrder(){
+  document.getElementById('trackOverlay').classList.add('open');
+  document.getElementById('trackPhone').value='';
+  document.getElementById('trackResults').innerHTML='';
+}
+function closeTrackOrder(){
+  document.getElementById('trackOverlay').classList.remove('open');
+}
+async function searchOrders(){
+  const phone=document.getElementById('trackPhone').value.trim();
+  const el=document.getElementById('trackResults');
+  if(!phone||phone.length<10){toast('সঠিক ফোন নম্বর দিন!');return;}
+  el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">খোঁজা হচ্ছে...</p>';
+  const{data,error}=await sb.from('orders_public').select('*').eq('customer_phone',phone).order('created_at',{ascending:false});
+  if(error){el.innerHTML='<p style="color:red;font-size:13px;margin-top:14px;">দুঃখিত, একটু পরে আবার চেষ্টা করুন।</p>';console.error(error);return;}
+  if(!data||!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">এই নম্বরে কোনো অর্ডার পাওয়া যায়নি।</p>';return;}
+  el.innerHTML=data.map(o=>{
+    const items=Array.isArray(o.items)?o.items:[];
+    const itemText=items.map(i=>`${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}`).join(', ');
+    const date=new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const status=(o.status||'pending').toLowerCase();
+    return `<div class="track-order-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong>#${String(o.id).slice(0,8).toUpperCase()}</strong>
+        <span class="track-status ${status}">${status}</span>
+      </div>
+      <div>📦 ${itemText||'-'}</div>
+      <div style="margin-top:4px;">💰 ৳${Number(o.total_amount).toLocaleString()} &nbsp;·&nbsp; 🕐 ${date}</div>
+    </div>`;
+  }).join('');
+}
+
 async function updateOrderStatus(el){
   const id=el.dataset.id;
   const status=el.dataset.status;
@@ -1400,9 +1738,24 @@ async function updateOrderStatus(el){
 
 // CART
 function toggleCart(){document.getElementById('drawerOverlay').classList.toggle('open');document.getElementById('cartDrawer').classList.toggle('open');renderCart();}
+function freeDeliveryBannerHTML(total){
+  if(total<=0)return'';
+  if(total>=FREE_DELIVERY_THRESHOLD){
+    return`<div class="free-delivery-banner hit">🚚 অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।</div>`;
+  }
+  const remaining=FREE_DELIVERY_THRESHOLD-total;
+  const pct=Math.min(100,Math.round((total/FREE_DELIVERY_THRESHOLD)*100));
+  return`<div class="free-delivery-banner miss">
+    <div style="width:100%;">
+      🚚 আরও ৳${remaining.toLocaleString()} যোগ করলে ফ্রি ডেলিভারি!
+      <div class="free-delivery-progress"><div class="free-delivery-progress-bar" style="width:${pct}%"></div></div>
+    </div>
+  </div>`;
+}
 function renderCart(){
   const el=document.getElementById('cartItems');
-  if(!cart.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Your cart is empty</p></div>`;document.getElementById('cartTotal').textContent='৳0';document.getElementById('cartBadge').textContent='0';return;}
+  const banner=document.getElementById('cartDeliveryBanner');
+  if(!cart.length){el.innerHTML=`<div class="empty-cart"><div class="empty-cart-icon">🛒</div><p>Your cart is empty</p></div>`;document.getElementById('cartTotal').textContent='৳0';document.getElementById('cartBadge').textContent='0';banner.innerHTML='';return;}
   el.innerHTML=cart.map((item,i)=>`
     <div class="cart-item">
       <div class="ci-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div>
@@ -1422,8 +1775,10 @@ function renderCart(){
         <div class="ci-sub">৳${Number(item.price).toLocaleString()} × ${item.qty} = <strong>৳${(Number(item.price)*item.qty).toLocaleString()}</strong></div>
       </div>
     </div>`).join('');
-  document.getElementById('cartTotal').textContent='৳'+cart.reduce((s,i)=>s+Number(i.price)*i.qty,0).toLocaleString();
+  const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  document.getElementById('cartTotal').textContent='৳'+total.toLocaleString();
   document.getElementById('cartBadge').textContent=cart.reduce((s,i)=>s+i.qty,0);
+  banner.innerHTML=freeDeliveryBannerHTML(total);
 }
 function changeCartQty(i,delta){
   const item=cart[i];if(!item)return;
@@ -1471,6 +1826,7 @@ async function loadReviews(productId){
         </div>
       </div>
       ${r.comment?`<div class="review-comment">${r.comment}</div>`:''}
+      ${r.photo_url?`<img src="${r.photo_url}" style="max-width:140px;border-radius:8px;margin-top:8px;display:block;">`:''}
     </div>`).join('');
 }
 function toggleAddReview(){document.getElementById('addReviewForm').classList.toggle('open');}
@@ -1478,16 +1834,35 @@ function setRating(n){
   curRating=n;
   document.querySelectorAll('.rev-star-btn').forEach((b,i)=>b.classList.toggle('on',i<n));
 }
+let rPhotoFile=null;
+function previewReviewPhoto(input){
+  if(input.files&&input.files[0]){
+    rPhotoFile=input.files[0];
+    const r=new FileReader();
+    r.onload=e=>{document.getElementById('rPhotoPreview').innerHTML=`<img src="${e.target.result}" style="max-width:100px;border-radius:8px;">`;};
+    r.readAsDataURL(input.files[0]);
+  }
+}
 async function submitReview(){
   const name=document.getElementById('rName').value.trim();
   const comment=document.getElementById('rComment').value.trim();
   if(!name){toast('Name required!');return;}
   if(!curProduct){return;}
-  const{error}=await sb.from('reviews').insert([{product_id:curProduct.id,reviewer_name:name,rating:curRating,comment:comment||null}]);
+  let photo_url=null;
+  if(rPhotoFile){
+    const ext=rPhotoFile.name.split('.').pop();
+    const fn=`review_${Date.now()}.${ext}`;
+    const{error:ue}=await sb.storage.from('product-images').upload(fn,rPhotoFile,{contentType:rPhotoFile.type});
+    if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);photo_url=ud.publicUrl;}
+  }
+  const{error}=await sb.from('reviews').insert([{product_id:curProduct.id,reviewer_name:name,rating:curRating,comment:comment||null,photo_url}]);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Review added!');
   document.getElementById('rName').value='';
   document.getElementById('rComment').value='';
+  document.getElementById('rPhoto').value='';
+  document.getElementById('rPhotoPreview').innerHTML='';
+  rPhotoFile=null;
   document.getElementById('addReviewForm').classList.remove('open');
   await loadReviews(curProduct.id);
 }
@@ -1526,9 +1901,86 @@ function previewSlot(input,i){
 }
 function formatSizeStock(p){
   if(p.size_stock&&Object.keys(p.size_stock).length){
-    return Object.entries(p.size_stock).map(([s,v])=>`${s}:${v}`).join('  ');
+    return Object.entries(p.size_stock).map(([s,v])=>{
+      const n=Number(v)||0;
+      const color=n<=0?'#e53e3e':(n<=3?'#dd8b00':'#38a169');
+      return `<span style="color:${color}">${s}:${n}</span>`;
+    }).join('&nbsp;&nbsp;');
   }
   return `Total: ${p.stock||0}`;
+}
+function lowStockSizesFor(p){
+  if(!p.size_stock||!Object.keys(p.size_stock).length)return[];
+  return Object.entries(p.size_stock).filter(([s,v])=>Number(v)>0&&Number(v)<=3).map(([s,v])=>`${s}(${v})`);
+}
+function renderLowStockBanner(){
+  const el=document.getElementById('lowStockBanner');
+  if(!el)return;
+  const lines=[];
+  products.forEach(p=>{
+    const low=lowStockSizesFor(p);
+    if(low.length)lines.push(`<strong>${p.name}</strong>: ${low.join(', ')}`);
+  });
+  if(!lines.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="low-stock-banner">⚠️ <strong>Low Stock Alert</strong> — এই সাইজগুলোতে ৩ পিস বা তার কম বাকি আছে:<br>${lines.map(t=>'• '+t).join('<br>')}</div>`;
+}
+const BULK_SIZES=['S','M','L','XL','XXL'];
+function toggleBulkStock(){
+  const panel=document.getElementById('bulkStockPanel');
+  const willOpen=panel.style.display==='none'||!panel.style.display;
+  panel.style.display=willOpen?'block':'none';
+  if(willOpen)renderBulkStockPanel();
+}
+function renderBulkStockPanel(){
+  const panel=document.getElementById('bulkStockPanel');
+  if(!products.length){panel.innerHTML='<p style="font-size:12px;color:var(--mid);">No products yet.</p>';return;}
+  panel.innerHTML=`
+    <p style="font-size:12px;color:var(--mid);margin-bottom:12px;">সব পণ্যের স্টক একসাথে এখান থেকে বদলান। শুধু যেসব সাইজ পণ্যে যোগ করা আছে সেগুলোই এডিট করা যাবে।</p>
+    <div style="max-height:360px;overflow-y:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="text-align:left;border-bottom:1px solid var(--border);">
+        <th style="padding:6px 4px;">Product</th>
+        ${BULK_SIZES.map(s=>`<th style="padding:6px 4px;text-align:center;">${s}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+      ${products.map(p=>`
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:6px 4px;max-width:130px;">${p.name}</td>
+          ${BULK_SIZES.map(s=>{
+            const has=(p.sizes||[]).includes(s);
+            if(!has)return `<td style="padding:6px 4px;text-align:center;color:var(--border);">—</td>`;
+            const val=getSizeStock(p,s);
+            return `<td style="padding:6px 4px;text-align:center;"><input type="number" min="0" data-pid="${p.id}" data-size="${s}" class="bulk-stock-input" value="${val}" style="width:48px;padding:4px;border:1px solid var(--border);border-radius:4px;font-size:12px;text-align:center;font-family:'Inter',sans-serif;"></td>`;
+          }).join('')}
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+    <button class="add-btn" style="margin-top:12px;" onclick="saveBulkStock()">💾 Save All Changes</button>
+  `;
+}
+async function saveBulkStock(){
+  const inputs=[...document.querySelectorAll('.bulk-stock-input')];
+  if(!inputs.length)return;
+  const byProduct={};
+  inputs.forEach(inp=>{
+    const pid=inp.dataset.pid,size=inp.dataset.size,val=Number(inp.value)||0;
+    if(!byProduct[pid])byProduct[pid]={};
+    byProduct[pid][size]=val;
+  });
+  loading(true);
+  for(const pid in byProduct){
+    const prod=products.find(x=>String(x.id)===String(pid));
+    if(!prod)continue;
+    const size_stock=Object.assign({},prod.size_stock||{},byProduct[pid]);
+    const stock=Object.values(size_stock).reduce((s,v)=>s+(Number(v)||0),0);
+    await sb.from('products').update({size_stock,stock}).eq('id',prod.id);
+    prod.size_stock=size_stock;prod.stock=stock;
+  }
+  loading(false);
+  toast('✅ সব পণ্যের স্টক আপডেট হয়েছে!');
+  renderAdminList();
+  renderProducts(curFilter);
 }
 async function addProduct(){
   const name=document.getElementById('pName').value.trim();
@@ -1583,11 +2035,80 @@ async function deleteProduct(id){
 }
 function renderAdminList(){
   const el=document.getElementById('adminList');
+  renderLowStockBanner();
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
   el.innerHTML=products.map(p=>{
     const total=getTotalStock(p);
-    return `<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;color:${total<=3?'#e53e3e':'#38a169'};font-weight:600;">📦 ${formatSizeStock(p)} ${total===0?' - Out of stock':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`;
+    return `<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;font-weight:600;">📦 ${formatSizeStock(p)}${total===0?' <span style=\"color:#e53e3e;\">— Out of stock</span>':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`;
   }).join('');
+}
+
+// COUPONS (admin)
+let coupons=[];
+async function loadCoupons(){
+  const el=document.getElementById('couponsList');
+  el.innerHTML='<p style="color:var(--mid);font-size:13px;">Loading...</p>';
+  const{data,error}=await sb.from('coupons').select('*').order('created_at',{ascending:false});
+  if(error){el.innerHTML='<p style="color:red;font-size:13px;">Error: '+error.message+'</p>';return;}
+  coupons=data||[];
+  renderCouponsList();
+}
+function renderCouponsList(){
+  const el=document.getElementById('couponsList');
+  if(!coupons.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No coupons yet.</p>';return;}
+  el.innerHTML=coupons.map(c=>{
+    const expired=c.expires_at&&new Date(c.expires_at)<new Date();
+    const usedUp=c.usage_limit!=null&&c.used_count>=c.usage_limit;
+    const statusText=!c.active?'Disabled':(expired?'Expired':(usedUp?'Used up':'Active'));
+    const statusColor=statusText==='Active'?'#38a169':'#e53e3e';
+    return `<div class="admin-list-item">
+      <div class="ali-info">
+        <div class="ali-name">${c.code} ${c.discount_type==='percent'?c.discount_value+'%':'৳'+c.discount_value}</div>
+        <div class="ali-meta">Used ${c.used_count||0}${c.usage_limit!=null?'/'+c.usage_limit:''}${c.min_order?' · Min ৳'+c.min_order:''}${c.expires_at?' · Expires '+new Date(c.expires_at).toLocaleDateString('en-GB'):''}</div>
+        <div style="font-size:12px;margin-top:3px;font-weight:600;color:${statusColor};">${statusText}</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="ali-edit" onclick="toggleCouponActive(${c.id},${!c.active})">${c.active?'Disable':'Enable'}</button>
+        <button class="ali-del" onclick="deleteCoupon(${c.id})">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function addCoupon(){
+  const code=document.getElementById('cpCode').value.trim().toUpperCase();
+  const discount_type=document.getElementById('cpType').value;
+  const discount_value=document.getElementById('cpValue').value;
+  const min_order=document.getElementById('cpMinOrder').value||null;
+  const usage_limit=document.getElementById('cpUsageLimit').value||null;
+  const expiryDate=document.getElementById('cpExpiry').value;
+  const expires_at=expiryDate?new Date(expiryDate+'T23:59:59').toISOString():null;
+  if(!code||!discount_value){toast('Code and discount value required!');return;}
+  loading(true);
+  const{error}=await sb.from('coupons').insert([{
+    code,discount_type,discount_value:Number(discount_value),
+    min_order:min_order?Number(min_order):null,
+    usage_limit:usage_limit?Number(usage_limit):null,
+    expires_at,active:true,used_count:0
+  }]);
+  loading(false);
+  if(error){toast('Error: '+error.message);return;}
+  toast('✅ Coupon added!');
+  document.getElementById('cpCode').value='';
+  document.getElementById('cpValue').value='';
+  document.getElementById('cpMinOrder').value='';
+  document.getElementById('cpUsageLimit').value='';
+  document.getElementById('cpExpiry').value='';
+  await loadCoupons();
+}
+async function toggleCouponActive(id,newActive){
+  await sb.from('coupons').update({active:newActive}).eq('id',id);
+  await loadCoupons();
+}
+async function deleteCoupon(id){
+  if(!confirm('Delete this coupon?'))return;
+  await sb.from('coupons').delete().eq('id',id);
+  toast('Coupon deleted!');
+  await loadCoupons();
 }
 
 // EDIT
@@ -1666,8 +2187,11 @@ async function saveEdit(){
 function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle('open');}
 
 // INIT
+pruneExpiredCart();
 loadProducts();
 document.getElementById('cartBadge').textContent=cart.reduce((s,c)=>s+c.qty,0);
+document.getElementById('wishBadge').textContent=wishlist.length;
+maybeShowCartReminder();
 // Mobile 5-tap footer trigger
 (function(){let taps=0,timer=null;const el=document.getElementById('footerBrand');if(!el)return;el.addEventListener('click',function(){taps++;if(timer)clearTimeout(timer);timer=setTimeout(()=>{taps=0;},2000);if(taps>=5){taps=0;clearTimeout(timer);document.getElementById('adminOverlay').classList.add('open');window._adminOpen=true;}});})();
 
