@@ -115,9 +115,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
 .prod-card:hover .prod-img img{transform:scale(1.04)}
 .prod-badge{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:3px;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
-.badge-new{background:var(--black);color:var(--white)}
-.badge-sale{background:var(--red);color:var(--white)}
+.badge-new-arrival{background:var(--black);color:var(--white)}
 .badge-hot{background:var(--accent);color:var(--white)}
+.badge-limited{background:#7b3fe4;color:var(--white)}
+.badge-flash-sale{background:var(--red);color:var(--white)}
+.badge-high-rating{background:#e0a800;color:var(--white)}
+.badge-demandable{background:#0d7a5f;color:var(--white)}
+.badge-out-of-stock{background:#555;color:var(--white)}
 .prod-category{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:4px}
 .prod-name{font-size:15px;font-weight:500;color:var(--black);margin-bottom:8px;line-height:1.3}
 .prod-sizes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
@@ -146,6 +150,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .ppage-desc{font-size:14px;color:var(--mid);line-height:1.7;margin-bottom:20px;flex:1}
 .ppage-size-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
 .ppage-sizes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.ppage-size-guide{display:none;margin:-14px 0 16px;padding:10px 12px;background:#f7f7f7;border-radius:8px;font-size:12.5px}
+.ppage-size-guide.show{display:block}
+.ppage-size-guide table{width:100%;border-collapse:collapse}
+.ppage-size-guide th,.ppage-size-guide td{text-align:left;padding:3px 6px;color:var(--mid)}
+.ppage-size-guide th{font-weight:700;color:var(--black);border-bottom:1px solid #e0e0e0}
 .ppage-size-btn{background:none;border:1px solid var(--border);color:var(--black);padding:8px 16px;border-radius:4px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}
 .ppage-size-btn:hover,.ppage-size-btn.on{background:var(--black);color:var(--white);border-color:var(--black)}
 .ppage-order-btn{width:100%;background:var(--black);color:white;border:none;padding:14px;border-radius:6px;font-weight:600;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s;font-family:'Inter',sans-serif}
@@ -162,6 +171,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .ss-row{display:flex;align-items:center;gap:8px;background:var(--off);border:1px solid var(--border);border-radius:6px;padding:6px 10px}
 .ss-row label{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--mid);cursor:pointer;white-space:nowrap}
 .ss-row input[type=number]{width:56px;background:var(--white);border:1px solid var(--border);border-radius:4px;padding:4px 6px;font-size:12px;font-family:'Inter',sans-serif}
+.ss-row input[type=text]{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:4px 6px;font-size:12px;font-family:'Inter',sans-serif}
 /* ORDER FORM MODAL */
 .order-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
 .order-modal-overlay.open{display:flex}
@@ -352,6 +362,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 .coupon-msg-ok{color:#1a7a3d}
 .coupon-msg-err{color:#c0392b}
 .om-discount-row{display:flex;justify-content:space-between;font-size:13px;color:#1a7a3d;font-weight:600;margin-top:4px}
+.om-delivery-row{display:flex;justify-content:space-between;font-size:13px;color:var(--mid);font-weight:600;margin-top:4px}
 /* ORDER TRACKING */
 .track-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;display:none;align-items:flex-start;justify-content:center;padding:60px 16px;overflow-y:auto}
 .track-overlay.open{display:flex}
@@ -682,6 +693,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="ppage-desc" id="ppageDesc"></div>
         <div class="ppage-size-label">Select Size</div>
         <div class="ppage-sizes" id="ppageSizes"></div>
+        <div class="ppage-size-guide" id="ppageSizeGuide"></div>
         <div class="ppage-stock-note" id="ppageStockNote"></div>
         <div class="ppage-size-label">Quantity</div>
         <div class="ppage-qty-row">
@@ -752,18 +764,19 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     </div>
     <div class="field"><label>Badge</label>
       <select id="eBadge" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
-        <option value="">No badge</option><option value="New">New</option><option value="Hot">Hot</option><option value="Sale">Sale</option><option value="Limited">Limited</option>
+        <option value="">No badge</option><option value="New Arrival">New Arrival</option><option value="Hot">Hot</option><option value="Limited">Limited</option><option value="Flash Sale">Flash Sale</option><option value="High Rating">High Rating</option><option value="Demandable">Demandable</option>
       </select>
     </div>
     <div class="field"><label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="XS"> XS</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XS"></div>
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="S"> S</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="S"></div>
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="M"> M</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="M"></div>
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="L"> L</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="L"></div>
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="XL"> XL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XL"></div>
-        <div class="ss-row"><label><input type="checkbox" class="esc" value="XXL"> XXL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XXL"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XS"> XS</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XS"><input type="text" placeholder="যেমন: ২৮-৩০ ইঞ্চি" class="ess-guide" data-size="XS" style="width:100px;"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="S"> S</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="S"><input type="text" placeholder="যেমন: ৩০-৩২ ইঞ্চি" class="ess-guide" data-size="S" style="width:100px;"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="M"> M</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="M"><input type="text" placeholder="যেমন: ৩২-৩৪ ইঞ্চি" class="ess-guide" data-size="M" style="width:100px;"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="L"> L</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="L"><input type="text" placeholder="যেমন: ৩৪-৩৬ ইঞ্চি" class="ess-guide" data-size="L" style="width:100px;"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XL"> XL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XL"><input type="text" placeholder="যেমন: ৩৬-৩৮ ইঞ্চি" class="ess-guide" data-size="XL" style="width:100px;"></div>
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="XXL"> XXL</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XXL"><input type="text" placeholder="যেমন: ৩৮-৪০ ইঞ্চি" class="ess-guide" data-size="XXL" style="width:100px;"></div>
       </div>
+      <p style="font-size:11px;color:var(--mid);margin-top:4px;">সাইজের পাশে ইঞ্চি লিখলে সেটা customer কে product page এ দেখানো হবে (না লিখলে দেখানো হবে না)</p>
     </div>
     <div class="field">
       <label>Images (নতুন ছবি দিলে replace হবে)</label>
@@ -872,7 +885,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           </select>
         </div>
         <div class="field"><label>Badge</label>
-          <select id="pBadge"><option value="">None</option><option value="new">New</option><option value="sale">Sale</option><option value="hot">Hot</option></select>
+          <select id="pBadge"><option value="">None</option><option value="New Arrival">New Arrival</option><option value="Hot">Hot</option><option value="Limited">Limited</option><option value="Flash Sale">Flash Sale</option><option value="High Rating">High Rating</option><option value="Demandable">Demandable</option></select>
         </div>
       </div>
       <div class="form-row">
@@ -883,13 +896,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="field">
         <label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div class="ss-row"><label><input type="checkbox" value="S" class="sc"> S</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="S"></div>
-          <div class="ss-row"><label><input type="checkbox" value="M" class="sc" checked> M</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="M"></div>
-          <div class="ss-row"><label><input type="checkbox" value="L" class="sc" checked> L</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="L"></div>
-          <div class="ss-row"><label><input type="checkbox" value="XL" class="sc" checked> XL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XL"></div>
-          <div class="ss-row"><label><input type="checkbox" value="XXL" class="sc"> XXL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XXL"></div>
+          <div class="ss-row"><label><input type="checkbox" value="S" class="sc"> S</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="S"><input type="text" placeholder="যেমন: ৩০-৩২ ইঞ্চি" class="ss-guide" data-size="S" style="width:100px;"></div>
+          <div class="ss-row"><label><input type="checkbox" value="M" class="sc" checked> M</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="M"><input type="text" placeholder="যেমন: ৩২-৩৪ ইঞ্চি" class="ss-guide" data-size="M" style="width:100px;"></div>
+          <div class="ss-row"><label><input type="checkbox" value="L" class="sc" checked> L</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="L"><input type="text" placeholder="যেমন: ৩৪-৩৬ ইঞ্চি" class="ss-guide" data-size="L" style="width:100px;"></div>
+          <div class="ss-row"><label><input type="checkbox" value="XL" class="sc" checked> XL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XL"><input type="text" placeholder="যেমন: ৩৬-৩৮ ইঞ্চি" class="ss-guide" data-size="XL" style="width:100px;"></div>
+          <div class="ss-row"><label><input type="checkbox" value="XXL" class="sc"> XXL</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="XXL"><input type="text" placeholder="যেমন: ৩৮-৪০ ইঞ্চি" class="ss-guide" data-size="XXL" style="width:100px;"></div>
         </div>
-        <p style="font-size:11px;color:var(--mid);margin-top:6px;">যে সাইজ বিক্রি করবেন সেটা টিক দিয়ে পাশে কত পিস স্টকে আছে লিখুন।</p>
+        <p style="font-size:11px;color:var(--mid);margin-top:6px;">যে সাইজ বিক্রি করবেন সেটা টিক দিয়ে পাশে কত পিস স্টকে আছে লিখুন। ইঞ্চি লিখলে সেটা customer কে দেখানো হবে (ঐচ্ছিক)।</p>
       </div>
       <div class="field">
         <label>Images (সর্বোচ্চ ৪টা)</label>
@@ -1058,6 +1071,7 @@ async function loadProducts(){
   renderProducts(curFilter);
 }
 
+function badgeSlug(b){return(b||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
 function renderProducts(f){
   curFilter=f;
   const g=document.getElementById('productsGrid');
@@ -1066,6 +1080,11 @@ function renderProducts(f){
     const q=curSearch.toLowerCase();
     list=list.filter(p=>p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q));
   }
+  list=list.slice().sort((a,b)=>{
+    const aOut=getTotalStock(a)<=0?1:0;
+    const bOut=getTotalStock(b)<=0?1:0;
+    return aOut-bOut;
+  });
   if(!list.length){
     g.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><p>${curSearch?'কোনো পণ্য পাওয়া যায়নি।':(f==='all'?'No products yet. Add via Admin Panel.':'No products in this category.')}</p></div>`;
     return;
@@ -1078,7 +1097,7 @@ function renderProducts(f){
     <div class="prod-card" onclick="openPpage(${p.id})">
       <div class="prod-img">
         ${p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
-        ${outOfStock?`<div class="prod-badge badge-sale">Out of Stock</div>`:(p.badge?`<div class="prod-badge badge-${p.badge}">${p.badge}</div>`:'')}
+        ${outOfStock?`<div class="prod-badge badge-out-of-stock">Out of Stock</div>`:(p.badge?`<div class="prod-badge badge-${badgeSlug(p.badge)}">${p.badge}</div>`:'')}
         <button class="wish-heart-btn" onclick="event.stopPropagation();toggleWishlist(${p.id},this)">${wished?'❤️':'🤍'}</button>
       </div>
       <div class="prod-category">${p.category}</div>
@@ -1150,6 +1169,7 @@ async function openPpage(id){
     const out=(stock-already)<=0;
     return `<button class="ppage-size-btn${out?' out':''}" ${out?'disabled':''} onclick="selPpageSize(this)" data-size="${s}">${s}</button>`;
   }).join('');
+  renderSizeGuide(p);
   // auto-select first size that actually has stock
   const sizeBtns=[...document.querySelectorAll('.ppage-size-btn')];
   const firstOk=sizeBtns.find(b=>!b.disabled);
@@ -1167,6 +1187,16 @@ async function openPpage(id){
   document.getElementById('addReviewForm').classList.remove('open');
   renderRelatedProducts(p);
   await loadReviews(p.id);
+}
+function renderSizeGuide(p){
+  const box=document.getElementById('ppageSizeGuide');
+  const guide=p.size_guide||{};
+  const rows=(p.sizes||[]).filter(s=>guide[s]);
+  if(!rows.length){box.classList.remove('show');box.innerHTML='';return;}
+  box.classList.add('show');
+  box.innerHTML=`<table><tr><th>Size</th><th>মাপ (Waist–Length)</th></tr>${
+    rows.map(s=>`<tr><td>${s}</td><td>${guide[s]}</td></tr>`).join('')
+  }</table>`;
 }
 function renderRelatedProducts(p){
   const section=document.getElementById('relatedSection');
@@ -1273,7 +1303,23 @@ function saveCart(){
 }
 // Cart items auto-expire after 2 days of inactivity; free delivery banner shows above this total
 const CART_EXPIRE_MS=2*24*60*60*1000;
-const FREE_DELIVERY_THRESHOLD=1500;
+// DELIVERY CHARGE — 3 tiers: Dhaka City / Dhaka Sub-city / Rest of Bangladesh
+const DHAKA_SUBCITY_THANAS=['আশুলিয়া','ধামরাই','দোহার','হেমায়েতপুর','কেরানীগঞ্জ মডেল','দক্ষিণ কেরানীগঞ্জ','সাভার','নবাবগঞ্জ'];
+const DELIVERY_CHARGE_DHAKA_CITY=70;
+const DELIVERY_CHARGE_DHAKA_SUBCITY=100;
+const DELIVERY_CHARGE_REST_OF_BD=120;
+function computeDeliveryCharge(district,thana){
+  if(!district)return 0;
+  if(district==='ঢাকা'){
+    return DHAKA_SUBCITY_THANAS.includes(thana)?DELIVERY_CHARGE_DHAKA_SUBCITY:DELIVERY_CHARGE_DHAKA_CITY;
+  }
+  return DELIVERY_CHARGE_REST_OF_BD;
+}
+function deliveryInfoBannerHTML(){
+  return`<div class="free-delivery-banner miss" style="display:block;">
+    🚚 ডেলিভারি চার্জ: ঢাকা সিটি ৳${DELIVERY_CHARGE_DHAKA_CITY} · ঢাকা সাব-সিটি ৳${DELIVERY_CHARGE_DHAKA_SUBCITY} · সারা বাংলাদেশ ৳${DELIVERY_CHARGE_REST_OF_BD}
+  </div>`;
+}
 function pruneExpiredCart(){
   const now=Date.now();
   const before=cart.length;
@@ -1334,7 +1380,6 @@ function quickAddToCart(id){
 }
 
 // CHECKOUT MODAL (always built from current cart items)
-const RESEND_KEY='re_iwVY5PBY_5bCAmdTmB4mDmmHbUUeoQ4T2';
 const ADMIN_EMAIL='brinebd75@gmail.com';
 
 // COUPONS
@@ -1350,16 +1395,25 @@ function computeDiscount(subtotal){
 function updateCheckoutTotals(){
   const subtotal=computeCartSubtotal();
   const discount=computeDiscount(subtotal);
-  const finalTotal=subtotal-discount;
+  const district=document.getElementById('omDistrict')?document.getElementById('omDistrict').value:'';
+  const thana=document.getElementById('omThana')?document.getElementById('omThana').value:'';
+  const deliveryCharge=computeDeliveryCharge(district,thana);
+  const finalTotal=subtotal-discount+deliveryCharge;
   const totalBlock=document.querySelector('#omProduct .om-cart-total');
   if(!totalBlock)return;
-  totalBlock.parentElement.querySelectorAll('.om-discount-row').forEach(e=>e.remove());
+  totalBlock.parentElement.querySelectorAll('.om-discount-row,.om-delivery-row').forEach(e=>e.remove());
   if(discount>0){
     const row=document.createElement('div');
     row.className='om-discount-row';
     row.innerHTML=`<span>Coupon Discount (${appliedCoupon.code})</span><span>-৳${discount.toLocaleString()}</span>`;
     totalBlock.insertAdjacentElement('beforebegin',row);
   }
+  const delRow=document.createElement('div');
+  delRow.className='om-delivery-row';
+  delRow.innerHTML=district
+    ?`<span>Delivery Charge</span><span>৳${deliveryCharge.toLocaleString()}</span>`
+    :`<span>Delivery Charge</span><span style="color:var(--mid);font-size:12px;">ঠিকানা দিলে দেখাবে</span>`;
+  totalBlock.insertAdjacentElement('beforebegin',delRow);
   const lastSpan=totalBlock.querySelector('span:last-child');
   if(lastSpan)lastSpan.textContent='৳'+finalTotal.toLocaleString();
 }
@@ -1396,8 +1450,7 @@ function openOrderModal(){
         <div><div class="om-name">${item.name}</div><div class="om-meta">${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''} · Qty ${item.qty}</div></div>
         <div class="om-price" style="margin-left:auto;">৳${(Number(item.price)*item.qty).toLocaleString()}</div>
       </div>`).join('')}</div>
-    <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>
-    ${freeDeliveryBannerHTML(total).replace('margin:0 24px 12px','margin:0 0 16px')}`;
+    <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>`;
   document.getElementById('omName').value='';
   document.getElementById('omPhone').value='';
   document.getElementById('omDivision').value='';
@@ -1416,6 +1469,7 @@ function openOrderModal(){
   document.getElementById('omCouponMsg').textContent='';
   document.getElementById('omCouponMsg').className='';
   appliedCoupon=null;
+  updateCheckoutTotals();
   document.getElementById('orderModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   // InitiateCheckout — fires as soon as the checkout form opens with real cart contents
@@ -1459,7 +1513,8 @@ async function submitOrderForm(){
 
   const subtotal=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   const discount=computeDiscount(subtotal);
-  const total=subtotal-discount;
+  const deliveryCharge=computeDeliveryCharge(division,thana);
+  const total=subtotal-discount+deliveryCharge;
   const btn=document.getElementById('omSubmitBtn');
   btn.disabled=true;btn.textContent='⏳ Placing order...';
 
@@ -1469,7 +1524,8 @@ async function submitOrderForm(){
     customer_name:name,customer_phone:phone,customer_address:addr,
     items,total_amount:total,status:'pending',
     coupon_code:appliedCoupon?appliedCoupon.code:null,
-    discount_amount:discount
+    discount_amount:discount,
+    delivery_charge:deliveryCharge
   }]);
   if(dbErr){toast('Error saving order: '+dbErr.message);btn.disabled=false;btn.textContent='✅ Confirm Order';return;}
 
@@ -1503,7 +1559,8 @@ async function submitOrderForm(){
       body:JSON.stringify({
         productName:itemsSummary,
         customerName:name,
-        phone,address:addr,size:'',qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),note
+        phone,address:addr,size:'',qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),
+        note:`${note?note+' | ':''}Delivery Charge: ৳${deliveryCharge}`
       })
     });
   }catch(e){console.log('Email error:',e);}
@@ -1534,7 +1591,7 @@ async function submitOrderForm(){
 // BANGLADESH GEO DATA
 const BD_GEO = {
   'ঢাকা': {
-    'ঢাকা': ['আদাবর','বাড্ডা','বংশাল','ক্যান্টনমেন্ট','চকবাজার','দেমরা','ধানমন্ডি','গুলশান','হাজারীবাগ','খিলগাঁও','খিলক্ষেত','কোতোয়ালি','লালবাগ','মিরপুর','মোহাম্মদপুর','মতিঝিল','নিউমার্কেট','পল্লবী','পল্টন','রমনা','সবুজবাগ','শাহজাহানপুর','শ্যামপুর','সূত্রাপুর','তেজগাঁও','তেজগাঁও শিল্প এলাকা','উত্তরা পূর্ব','উত্তরা পশ্চিম','ওয়ারী','ডেমরা','কদমতলী','শাহ আলী','তুরাগ','দক্ষিণখান','উত্তরখান'],
+    'ঢাকা': ['আদাবর','বাড্ডা','বংশাল','ক্যান্টনমেন্ট','চকবাজার','দেমরা','ধানমন্ডি','গুলশান','হাজারীবাগ','খিলগাঁও','খিলক্ষেত','কোতোয়ালি','লালবাগ','মিরপুর','মোহাম্মদপুর','মতিঝিল','নিউমার্কেট','পল্লবী','পল্টন','রমনা','সবুজবাগ','শাহজাহানপুর','শ্যামপুর','সূত্রাপুর','তেজগাঁও','তেজগাঁও শিল্প এলাকা','উত্তরা পূর্ব','উত্তরা পশ্চিম','ওয়ারী','ডেমরা','কদমতলী','শাহ আলী','তুরাগ','দক্ষিণখান','উত্তরখান','আশুলিয়া','ধামরাই','দোহার','হেমায়েতপুর','কেরানীগঞ্জ মডেল','দক্ষিণ কেরানীগঞ্জ','সাভার','নবাবগঞ্জ'],
     'গাজীপুর': ['গাজীপুর সদর','কালীগঞ্জ','কাপাসিয়া','শ্রীপুর','টঙ্গী পূর্ব','টঙ্গী পশ্চিম'],
     'নারায়ণগঞ্জ': ['নারায়ণগঞ্জ সদর','আড়াইহাজার','বন্দর','রূপগঞ্জ','সোনারগাঁও'],
     'মানিকগঞ্জ': ['মানিকগঞ্জ সদর','দৌলতপুর','ঘিওর','হরিরামপুর','সাটুরিয়া','শিবালয়','সিঙ্গাইর'],
@@ -1622,7 +1679,7 @@ function onDivisionChange(){
   distSel.innerHTML='<option value="">-- জেলা বেছে নিন --</option>';
   thanaSel.innerHTML='<option value="">-- আগে জেলা বেছে নিন --</option>';
   thanaSel.disabled=true;
-  if(!div){distSel.disabled=true;return;}
+  if(!div){distSel.disabled=true;updateCheckoutTotals();return;}
   distSel.disabled=false;
   const districts=Object.keys(BD_GEO[div]||{});
   districts.forEach(d=>{
@@ -1630,6 +1687,7 @@ function onDivisionChange(){
     o.value=d;o.textContent=d;
     distSel.appendChild(o);
   });
+  updateCheckoutTotals();
 }
 
 function onDistrictChange(){
@@ -1649,6 +1707,7 @@ function onDistrictChange(){
   window._thanas=(BD_GEO[div]||{})[dist]||[];
   search.disabled=false;
   search.placeholder='থানা খুঁজুন... ('+window._thanas.length+' টি)';
+  updateCheckoutTotals();
 }
 
 // Legacy closeOrder (kept for compatibility)
@@ -1684,7 +1743,7 @@ async function loadAdminOrders(){
       </div>
       <div class="oli-name">${o.customer_name}</div>
       <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
-      <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}</div>
+      <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}${o.delivery_charge!=null?' (ডেলিভারি ৳'+Number(o.delivery_charge).toLocaleString()+' সহ)':''}</div>
       <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
       <div class="oli-actions">
         <button class="oli-btn oli-btn-done" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="delivered">Delivered</button>
@@ -1738,20 +1797,6 @@ async function updateOrderStatus(el){
 
 // CART
 function toggleCart(){document.getElementById('drawerOverlay').classList.toggle('open');document.getElementById('cartDrawer').classList.toggle('open');renderCart();}
-function freeDeliveryBannerHTML(total){
-  if(total<=0)return'';
-  if(total>=FREE_DELIVERY_THRESHOLD){
-    return`<div class="free-delivery-banner hit">🚚 অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য।</div>`;
-  }
-  const remaining=FREE_DELIVERY_THRESHOLD-total;
-  const pct=Math.min(100,Math.round((total/FREE_DELIVERY_THRESHOLD)*100));
-  return`<div class="free-delivery-banner miss">
-    <div style="width:100%;">
-      🚚 আরও ৳${remaining.toLocaleString()} যোগ করলে ফ্রি ডেলিভারি!
-      <div class="free-delivery-progress"><div class="free-delivery-progress-bar" style="width:${pct}%"></div></div>
-    </div>
-  </div>`;
-}
 function renderCart(){
   const el=document.getElementById('cartItems');
   const banner=document.getElementById('cartDeliveryBanner');
@@ -1778,7 +1823,7 @@ function renderCart(){
   const total=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   document.getElementById('cartTotal').textContent='৳'+total.toLocaleString();
   document.getElementById('cartBadge').textContent=cart.reduce((s,i)=>s+i.qty,0);
-  banner.innerHTML=freeDeliveryBannerHTML(total);
+  banner.innerHTML=deliveryInfoBannerHTML();
 }
 function changeCartQty(i,delta){
   const item=cart[i];if(!item)return;
@@ -1991,9 +2036,12 @@ async function addProduct(){
   const badge=document.getElementById('pBadge').value||null;
   const sizes=[...document.querySelectorAll('.sc:checked')].map(c=>c.value);
   const size_stock={};
+  const size_guide={};
   sizes.forEach(s=>{
     const inp=document.querySelector(`.ss-stock[data-size="${s}"]`);
     size_stock[s]=inp?(Number(inp.value)||0):0;
+    const gInp=document.querySelector(`.ss-guide[data-size="${s}"]`);
+    if(gInp&&gInp.value.trim())size_guide[s]=gInp.value.trim();
   });
   const stock=Object.values(size_stock).reduce((s,v)=>s+v,0);
   if(!name||!price){toast('Name and price required!');return;}
@@ -2009,7 +2057,7 @@ async function addProduct(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock}]);
+  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
@@ -2018,6 +2066,7 @@ async function addProduct(){
   document.getElementById('pPrice').value='';
   document.getElementById('pOldPrice').value='';
   document.querySelectorAll('.ss-stock').forEach(inp=>inp.value='');
+  document.querySelectorAll('.ss-guide').forEach(inp=>inp.value='');
   imgFiles=[null,null,null,null];
   for(let i=0;i<4;i++){
     document.getElementById('pImg'+i).value='';
@@ -2127,6 +2176,8 @@ function openEdit(id){
     c.checked=(p.sizes||[]).includes(c.value);
     const inp=document.querySelector(`.ess-stock[data-size="${c.value}"]`);
     if(inp)inp.value=getSizeStock(p,c.value)||'';
+    const gInp=document.querySelector(`.ess-guide[data-size="${c.value}"]`);
+    if(gInp)gInp.value=(p.size_guide&&p.size_guide[c.value])||'';
   });
   // show existing images
   const imgs=p.image_urls&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
@@ -2159,9 +2210,12 @@ async function saveEdit(){
   const badge=document.getElementById('eBadge').value||null;
   const sizes=[...document.querySelectorAll('.esc:checked')].map(c=>c.value);
   const size_stock={};
+  const size_guide={};
   sizes.forEach(s=>{
     const inp=document.querySelector(`.ess-stock[data-size="${s}"]`);
     size_stock[s]=inp?(Number(inp.value)||0):0;
+    const gInp=document.querySelector(`.ess-guide[data-size="${s}"]`);
+    if(gInp&&gInp.value.trim())size_guide[s]=gInp.value.trim();
   });
   const stock=Object.values(size_stock).reduce((s,v)=>s+v,0);
   if(!name||!price){toast('Name and price required!');return;}
@@ -2177,7 +2231,7 @@ async function saveEdit(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock}).eq('id',editId);
+  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}).eq('id',editId);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product updated!');
@@ -2220,6 +2274,7 @@ function renderThanaDrop(list){
       document.getElementById('omThana').value=t;
       document.getElementById('omThanaSearch').value=t;
       drop.style.display='none';
+      updateCheckoutTotals();
     });
     el.addEventListener('mouseover',function(){this.style.background='#f5f5f5';});
     el.addEventListener('mouseout',function(){this.style.background='';});
