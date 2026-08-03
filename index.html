@@ -362,7 +362,8 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 .coupon-msg-ok{color:#1a7a3d}
 .coupon-msg-err{color:#c0392b}
 .om-discount-row{display:flex;justify-content:space-between;font-size:13px;color:#1a7a3d;font-weight:600;margin-top:4px}
-.om-delivery-row{display:flex;justify-content:space-between;font-size:13px;color:var(--mid);font-weight:600;margin-top:4px}
+.om-subtotal-row{display:flex;justify-content:space-between;font-size:13.5px;color:var(--black);font-weight:600;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.om-delivery-row{display:flex;justify-content:space-between;font-size:13.5px;color:var(--black);font-weight:600;margin-top:4px}
 /* ORDER TRACKING */
 .track-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;display:none;align-items:flex-start;justify-content:center;padding:60px 16px;overflow-y:auto}
 .track-overlay.open{display:flex}
@@ -769,6 +770,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     </div>
     <div class="field"><label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div class="ss-row"><label><input type="checkbox" class="esc" value="Free Size"> Free Size</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="Free Size"><input type="text" placeholder="ঐচ্ছিক" class="ess-guide" data-size="Free Size" style="width:100px;"></div>
         <div class="ss-row"><label><input type="checkbox" class="esc" value="XS"> XS</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="XS"><input type="text" placeholder="যেমন: ২৮-৩০ ইঞ্চি" class="ess-guide" data-size="XS" style="width:100px;"></div>
         <div class="ss-row"><label><input type="checkbox" class="esc" value="S"> S</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="S"><input type="text" placeholder="যেমন: ৩০-৩২ ইঞ্চি" class="ess-guide" data-size="S" style="width:100px;"></div>
         <div class="ss-row"><label><input type="checkbox" class="esc" value="M"> M</label><input type="number" min="0" placeholder="0" class="ess-stock" data-size="M"><input type="text" placeholder="যেমন: ৩২-৩৪ ইঞ্চি" class="ess-guide" data-size="M" style="width:100px;"></div>
@@ -896,6 +898,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="field">
         <label>Sizes &amp; Stock (প্রতি সাইজে কত পিস আছে)</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="ss-row"><label><input type="checkbox" value="Free Size" class="sc"> Free Size</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="Free Size"><input type="text" placeholder="ঐচ্ছিক" class="ss-guide" data-size="Free Size" style="width:100px;"></div>
           <div class="ss-row"><label><input type="checkbox" value="S" class="sc"> S</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="S"><input type="text" placeholder="যেমন: ৩০-৩২ ইঞ্চি" class="ss-guide" data-size="S" style="width:100px;"></div>
           <div class="ss-row"><label><input type="checkbox" value="M" class="sc" checked> M</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="M"><input type="text" placeholder="যেমন: ৩২-৩৪ ইঞ্চি" class="ss-guide" data-size="M" style="width:100px;"></div>
           <div class="ss-row"><label><input type="checkbox" value="L" class="sc" checked> L</label><input type="number" min="0" placeholder="0" class="ss-stock" data-size="L"><input type="text" placeholder="যেমন: ৩৪-৩৬ ইঞ্চি" class="ss-guide" data-size="L" style="width:100px;"></div>
@@ -1401,7 +1404,11 @@ function updateCheckoutTotals(){
   const finalTotal=subtotal-discount+deliveryCharge;
   const totalBlock=document.querySelector('#omProduct .om-cart-total');
   if(!totalBlock)return;
-  totalBlock.parentElement.querySelectorAll('.om-discount-row,.om-delivery-row').forEach(e=>e.remove());
+  totalBlock.parentElement.querySelectorAll('.om-subtotal-row,.om-discount-row,.om-delivery-row').forEach(e=>e.remove());
+  const subRow=document.createElement('div');
+  subRow.className='om-subtotal-row';
+  subRow.innerHTML=`<span>Product Price</span><span>৳${subtotal.toLocaleString()}</span>`;
+  totalBlock.insertAdjacentElement('beforebegin',subRow);
   if(discount>0){
     const row=document.createElement('div');
     row.className='om-discount-row';
@@ -1559,7 +1566,7 @@ async function submitOrderForm(){
       body:JSON.stringify({
         productName:itemsSummary,
         customerName:name,
-        phone,address:addr,size:'',qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),
+        phone,address:addr,size:cart.map(i=>i.size&&i.size!=='N/A'?i.size:'Free Size').join(', '),qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),
         note:`${note?note+' | ':''}Delivery Charge: ৳${deliveryCharge}`
       })
     });
