@@ -220,6 +220,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
   .ppage-img{min-height:280px}
   .ppage-info{padding:24px 20px}
   .ppage-name{font-size:20px}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+}
+@media(max-width:380px){
+  .products-grid{gap:8px}
 }
 
 .img-slot{background:var(--off);border:1px dashed var(--border);border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:border-color .2s}
