@@ -757,6 +757,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <div class="edit-box">
     <h3>✏️ Edit Product</h3>
     <div class="field"><label>Product Name *</label><input type="text" id="eName" placeholder="Product name"></div>
+    <div class="field"><label>Color</label><input type="text" id="eColor" placeholder="e.g. Teal / Grey / Black"></div>
     <div class="field"><label>Description</label><textarea id="eDesc" rows="2" placeholder="Product description..." style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;"></textarea></div>
     <div class="field"><label>Category</label>
       <select id="eCat" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
@@ -879,6 +880,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div id="adminTabProducts">
       <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Add New Product</h3>
       <div class="field"><label>Product Name *</label><input type="text" id="pName" placeholder="e.g. Argentina 2026 Home Jersey"></div>
+      <div class="field"><label>Color</label><input type="text" id="pColor" placeholder="e.g. Teal / Grey / Black (order e color clear bujhar jonno)"></div>
       <div class="form-row">
         <div class="field"><label>Category *</label>
           <select id="pCat">
@@ -1108,7 +1110,7 @@ function renderProducts(f){
         <button class="wish-heart-btn" onclick="event.stopPropagation();toggleWishlist(${p.id},this)">${wished?'❤️':'🤍'}</button>
       </div>
       <div class="prod-category">${p.category}</div>
-      <div class="prod-name">${p.name}</div>
+      <div class="prod-name">${p.name}${p.color?`<span style="color:var(--mid);font-weight:400;"> — ${p.color}</span>`:''}</div>
       <div class="prod-sizes">${(p.sizes||[]).map(s=>`<span class="prod-size">${s}</span>`).join('')}</div>
       <div class="prod-bottom">
         <div class="prod-price">
@@ -1165,7 +1167,7 @@ async function openPpage(id){
   }
   galleryIdx=0;
   document.getElementById('ppageCat').textContent=p.category;
-  document.getElementById('ppageName').textContent=p.name;
+  document.getElementById('ppageName').textContent=p.name+(p.color?' — '+p.color:'');
   document.getElementById('ppagePrice').textContent='৳'+Number(p.price).toLocaleString();
   const oldEl=document.getElementById('ppageOldPrice');
   oldEl.textContent=p.old_price?'৳'+Number(p.old_price).toLocaleString():'';
@@ -1353,7 +1355,7 @@ function addToCartFromPpage(){
   if(stock-already<qty){toast(`দুঃখিত, মাত্র ${Math.max(stock-already,0)} পিস স্টকে আছে!`);return;}
   const existing=cart.find(c=>c.id===p.id&&c.size===size);
   if(existing){existing.qty+=qty;}else{
-    cart.push({id:p.id,name:p.name,category:p.category,size,qty,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
+    cart.push({id:p.id,name:p.name,color:p.color||null,category:p.category,size,qty,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
   }
   saveCart();
   toast('✅ কার্টে যোগ হয়েছে!');
@@ -1374,7 +1376,7 @@ function quickAddToCart(id){
   if(stock-already<1){toast('দুঃখিত, স্টক নেই!');return;}
   const existing=cart.find(c=>c.id===p.id&&c.size===size);
   if(existing){existing.qty+=1;}else{
-    cart.push({id:p.id,name:p.name,category:p.category,size,qty:1,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
+    cart.push({id:p.id,name:p.name,color:p.color||null,category:p.category,size,qty:1,price:Number(p.price),image_url:p.image_url,addedAt:Date.now()});
   }
   saveCart();
   toast('✅ কার্টে যোগ হয়েছে!');
@@ -1458,7 +1460,7 @@ function openOrderModal(){
     <div class="om-cart-list">${cart.map(item=>`
       <div class="om-product">
         <div class="om-img">${item.image_url?`<img src="${item.image_url}">`:`<span>${icon(item.category)}</span>`}</div>
-        <div><div class="om-name">${item.name}</div><div class="om-meta">${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''} · Qty ${item.qty}</div></div>
+        <div><div class="om-name">${item.name}</div><div class="om-meta">${item.color?item.color+' · ':''}${item.category}${item.size&&item.size!=='N/A'?' · '+item.size:''} · Qty ${item.qty}</div></div>
         <div class="om-price" style="margin-left:auto;">৳${(Number(item.price)*item.qty).toLocaleString()}</div>
       </div>`).join('')}</div>
     <div class="om-cart-total"><span>Total</span><span>৳${total.toLocaleString()}</span></div>`;
@@ -1530,7 +1532,7 @@ async function submitOrderForm(){
   btn.disabled=true;btn.textContent='⏳ Placing order...';
 
   // Save to Supabase — items array holds every product/size/qty in this order
-  const items=cart.map(i=>({id:i.id,name:i.name,category:i.category,size:i.size,qty:i.qty,price:Number(i.price)}));
+  const items=cart.map(i=>({id:i.id,name:i.name,color:i.color||null,category:i.category,size:i.size,qty:i.qty,price:Number(i.price),image_url:i.image_url||null}));
   const{error:dbErr}=await sb.from('orders').insert([{
     customer_name:name,customer_phone:phone,customer_address:addr,
     items,total_amount:total,status:'pending',
@@ -1563,7 +1565,7 @@ async function submitOrderForm(){
 
   // Send email via Edge Function — summarise every item in one note
   try{
-    const itemsSummary=cart.map(i=>`${i.name}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty}`).join(', ');
+    const itemsSummary=cart.map(i=>`${i.name}${i.color?' ['+i.color+']':''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty}`).join(', ');
     await fetch(`${SURL}/functions/v1/send-order-email`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+SKEY},
@@ -1571,7 +1573,8 @@ async function submitOrderForm(){
         productName:itemsSummary,
         customerName:name,
         phone,address:addr,size:cart.map(i=>i.size&&i.size!=='N/A'?i.size:'Free Size').join(', '),qty:cart.reduce((s,i)=>s+i.qty,0),total:total.toLocaleString(),
-        note:`${note?note+' | ':''}Delivery Charge: ৳${deliveryCharge}`
+        note:`${note?note+' | ':''}Delivery Charge: ৳${deliveryCharge}`,
+        items:cart.map(i=>({name:i.name,color:i.color||null,size:i.size,qty:i.qty,image_url:i.image_url||null}))
       })
     });
   }catch(e){console.log('Email error:',e);}
@@ -1744,7 +1747,7 @@ async function loadAdminOrders(){
   if(!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No orders yet.</p>';return;}
   el.innerHTML=data.map(o=>{
     const items=Array.isArray(o.items)?o.items:[];
-    const itemText=items.map(i=>`${i.name||''} (${i.size||''}×${i.qty||1})`).join(', ');
+    const itemText=items.map(i=>`${i.name||''}${i.color?' ['+i.color+']':''} (${i.size||''}×${i.qty||1})`).join(', ');
     const date=new Date(o.created_at).toLocaleString('en-BD',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
     const statusColor=o.status==='delivered'?'#22c55e':o.status==='cancelled'?'#ef4444':'#f59e0b';
     return `<div class="order-list-item">
@@ -1754,6 +1757,7 @@ async function loadAdminOrders(){
       </div>
       <div class="oli-name">${o.customer_name}</div>
       <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
+      ${items.some(i=>i.image_url)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">${items.map(i=>i.image_url?`<img src="${i.image_url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" title="${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}">`:'').join('')}</div>`:''}
       <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}${o.delivery_charge!=null?' (ডেলিভারি ৳'+Number(o.delivery_charge).toLocaleString()+' সহ)':''}</div>
       <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
       <div class="oli-actions">
@@ -1784,7 +1788,7 @@ async function searchOrders(){
   if(!data||!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">এই নম্বরে কোনো অর্ডার পাওয়া যায়নি।</p>';return;}
   el.innerHTML=data.map(o=>{
     const items=Array.isArray(o.items)?o.items:[];
-    const itemText=items.map(i=>`${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}`).join(', ');
+    const itemText=items.map(i=>`${i.name||''}${i.color?' ['+i.color+']':''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}`).join(', ');
     const date=new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
     const status=(o.status||'pending').toLowerCase();
     return `<div class="track-order-item">
@@ -2040,6 +2044,7 @@ async function saveBulkStock(){
 }
 async function addProduct(){
   const name=document.getElementById('pName').value.trim();
+  const color=document.getElementById('pColor').value.trim()||null;
   const description=document.getElementById('pDesc').value.trim()||null;
   const category=document.getElementById('pCat').value;
   const price=document.getElementById('pPrice').value;
@@ -2068,11 +2073,12 @@ async function addProduct(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').insert([{name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}]);
+  const{error}=await sb.from('products').insert([{name,color,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
   document.getElementById('pName').value='';
+  document.getElementById('pColor').value='';
   document.getElementById('pDesc').value='';
   document.getElementById('pPrice').value='';
   document.getElementById('pOldPrice').value='';
@@ -2178,6 +2184,7 @@ function openEdit(id){
   editId=id;
   // fill fields
   document.getElementById('eName').value=p.name||'';
+  document.getElementById('eColor').value=p.color||'';
   document.getElementById('eDesc').value=p.description||'';
   document.getElementById('ePrice').value=p.price||'';
   document.getElementById('eOldPrice').value=p.old_price||'';
@@ -2214,6 +2221,7 @@ function ePreviewSlot(input,i){
 async function saveEdit(){
   if(!editId)return;
   const name=document.getElementById('eName').value.trim();
+  const color=document.getElementById('eColor').value.trim()||null;
   const description=document.getElementById('eDesc').value.trim()||null;
   const category=document.getElementById('eCat').value;
   const price=document.getElementById('ePrice').value;
@@ -2242,7 +2250,7 @@ async function saveEdit(){
     }
   }
   const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').update({name,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}).eq('id',editId);
+  const{error}=await sb.from('products').update({name,color,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}).eq('id',editId);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product updated!');
