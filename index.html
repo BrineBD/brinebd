@@ -1526,7 +1526,7 @@ async function submitOrderForm(){
 
   const subtotal=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   const discount=computeDiscount(subtotal);
-  const deliveryCharge=computeDeliveryCharge(division,thana);
+  const deliveryCharge=computeDeliveryCharge(district,thana);
   const total=subtotal-discount+deliveryCharge;
   const btn=document.getElementById('omSubmitBtn');
   btn.disabled=true;btn.textContent='⏳ Placing order...';
