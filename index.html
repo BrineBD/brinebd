@@ -802,6 +802,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="img-slot" id="eslot2" onclick="document.getElementById('epImg2').click()"><input type="file" id="epImg2" accept="image/*" style="display:none" onchange="ePreviewSlot(this,2)"><div class="slot-prev" id="eprev2"><span>📷</span><small>Photo 3</small></div><button type="button" class="img-slot-del" id="edel2" onclick="event.stopPropagation();deleteImgSlot(2)">✕</button></div>
         <div class="img-slot" id="eslot3" onclick="document.getElementById('epImg3').click()"><input type="file" id="epImg3" accept="image/*" style="display:none" onchange="ePreviewSlot(this,3)"><div class="slot-prev" id="eprev3"><span>📷</span><small>Photo 4</small></div><button type="button" class="img-slot-del" id="edel3" onclick="event.stopPropagation();deleteImgSlot(3)">✕</button></div>
       </div>
+      <div style="margin-top:10px;padding:10px;background:var(--off);border-radius:8px;">
+        <label style="font-size:12px;font-weight:600;">অথবা ছবির লিংক পেস্ট করুন (GitHub/অন্য কোথাও হোস্ট করা থাকলে)</label>
+        <input type="text" id="eImgUrl0" placeholder="Photo 1 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+        <input type="text" id="eImgUrl1" placeholder="Photo 2 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+        <input type="text" id="eImgUrl2" placeholder="Photo 3 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+        <input type="text" id="eImgUrl3" placeholder="Photo 4 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+      </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:8px;">
       <button onclick="closeEdit()" style="flex:1;padding:12px;border:1px solid var(--border);background:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
@@ -943,6 +950,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           </div>
         </div>
         <p style="font-size:11px;color:var(--mid);margin-top:6px;">প্রথম ছবিটা product card এ দেখাবে।</p>
+        <div style="margin-top:10px;padding:10px;background:var(--off);border-radius:8px;">
+          <label style="font-size:12px;font-weight:600;">অথবা ছবির লিংক পেস্ট করুন (GitHub/অন্য কোথাও হোস্ট করা থাকলে, Supabase storage ব্যবহার হবে না)</label>
+          <input type="text" id="pImgUrl0" placeholder="Photo 1 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+          <input type="text" id="pImgUrl1" placeholder="Photo 2 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+          <input type="text" id="pImgUrl2" placeholder="Photo 3 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+          <input type="text" id="pImgUrl3" placeholder="Photo 4 URL" style="width:100%;margin-top:6px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;">
+        </div>
       </div>
       <div style="display:flex;gap:12px;margin-top:8px;">
         <button class="add-btn" onclick="addProduct()">Add Product</button>
@@ -950,6 +964,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       </div>
       <div style="margin-top:32px;">
         <div id="lowStockBanner"></div>
+        <div id="inventoryValueBox"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
           <h3 style="font-size:16px;font-weight:600;">Current Products</h3>
           <button class="cancel-btn" style="flex:none;padding:8px 14px;font-size:12px;" onclick="toggleBulkStock()">📦 Bulk Stock Update</button>
@@ -1980,14 +1995,45 @@ function adminLogin(){
   }else toast('Wrong password!');
 }
 let imgFiles=[null,null,null,null];
-function previewSlot(input,i){
+function compressImageFile(file,maxDim=1000,quality=0.75){
+  return new Promise((resolve)=>{
+    if(!file||!file.type.startsWith('image/')){resolve(file);return;}
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onload=e=>{
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        if(Math.max(w,h)>maxDim){
+          const scale=maxDim/Math.max(w,h);
+          w=Math.round(w*scale);h=Math.round(h*scale);
+        }
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        canvas.toBlob(blob=>{
+          if(!blob){resolve(file);return;}
+          const compressedFile=new File([blob],(file.name.replace(/\.[^.]+$/,''))+'.jpg',{type:'image/jpeg'});
+          resolve(compressedFile);
+        },'image/jpeg',quality);
+      };
+      img.onerror=()=>resolve(file);
+      img.src=e.target.result;
+    };
+    reader.onerror=()=>resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
+async function previewSlot(input,i){
   if(input.files&&input.files[0]){
-    imgFiles[i]=input.files[0];
+    const compressed=await compressImageFile(input.files[0]);
+    imgFiles[i]=compressed;
     const r=new FileReader();
     r.onload=e=>{
       document.getElementById('prev'+i).innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;
     };
-    r.readAsDataURL(input.files[0]);
+    r.readAsDataURL(compressed);
   }
 }
 function formatSizeStock(p){
@@ -2093,18 +2139,23 @@ async function addProduct(){
   const stock=Object.values(size_stock).reduce((s,v)=>s+v,0);
   if(!name||!price){toast('Name and price required!');return;}
   loading(true);
-  // Upload all images
+  // Build images: pasted URL takes priority over uploaded file (saves Supabase storage/egress)
   const image_urls=[];
   for(let i=0;i<4;i++){
-    if(imgFiles[i]){
+    const urlInp=document.getElementById('pImgUrl'+i);
+    const pastedUrl=urlInp?urlInp.value.trim():'';
+    if(pastedUrl){
+      image_urls[i]=pastedUrl;
+    }else if(imgFiles[i]){
       const ext=imgFiles[i].name.split('.').pop();
       const fn=`${Date.now()}_${i}.${ext}`;
       const{error:ue}=await sb.storage.from('product-images').upload(fn,imgFiles[i],{contentType:imgFiles[i].type});
-      if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);image_urls.push(ud.publicUrl);}
+      if(!ue){const{data:ud}=sb.storage.from('product-images').getPublicUrl(fn);image_urls[i]=ud.publicUrl;}
     }
   }
-  const image_url=image_urls[0]||null;
-  const{error}=await sb.from('products').insert([{name,color,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls,stock:Number(stock),size_stock,size_guide}]);
+  const cleanImageUrls=image_urls.filter(Boolean);
+  const image_url=cleanImageUrls[0]||null;
+  const{error}=await sb.from('products').insert([{name,color,description,category,price:Number(price),old_price:old_price?Number(old_price):null,badge,sizes,image_url,image_urls:cleanImageUrls,stock:Number(stock),size_stock,size_guide}]);
   loading(false);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Product added!');
@@ -2119,6 +2170,8 @@ async function addProduct(){
   for(let i=0;i<4;i++){
     document.getElementById('pImg'+i).value='';
     document.getElementById('prev'+i).innerHTML=`<span>📷</span><small>Photo ${i+1}</small>`;
+    const urlInp=document.getElementById('pImgUrl'+i);
+    if(urlInp)urlInp.value='';
   }
   document.querySelectorAll('.sc').forEach(c=>c.checked=['M','L','XL'].includes(c.value));
   await loadProducts();renderAdminList();
@@ -2133,11 +2186,35 @@ async function deleteProduct(id){
 function renderAdminList(){
   const el=document.getElementById('adminList');
   renderLowStockBanner();
+  renderInventoryValueBox();
   if(!products.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No products yet.</p>';return;}
   el.innerHTML=products.map(p=>{
     const total=getTotalStock(p);
     return `<div class="admin-list-item"><div class="ali-img">${p.image_url?`<img src="${p.image_url}">`:`<span>${icon(p.category)}</span>`}</div><div class="ali-info"><div class="ali-name">${p.name}</div><div class="ali-meta">${p.category} · ৳${Number(p.price).toLocaleString()}</div><div class="ali-stock" style="font-size:12px;margin-top:3px;font-weight:600;">📦 ${formatSizeStock(p)}${total===0?' <span style=\"color:#e53e3e;\">— Out of stock</span>':''}</div></div><div style="display:flex;gap:6px;"><button class="ali-edit" onclick="openEdit(${p.id})">Edit</button><button class="ali-del" onclick="deleteProduct(${p.id})">Delete</button></div></div>`;
   }).join('');
+}
+function renderInventoryValueBox(){
+  const box=document.getElementById('inventoryValueBox');
+  if(!box)return;
+  if(!products.length){box.innerHTML='';return;}
+  let totalValue=0,totalPieces=0,inStockCount=0,outStockCount=0;
+  products.forEach(p=>{
+    const stock=getTotalStock(p);
+    totalValue+=stock*Number(p.price||0);
+    totalPieces+=stock;
+    if(stock>0)inStockCount++;else outStockCount++;
+  });
+  box.innerHTML=`<div style="background:linear-gradient(135deg,var(--black),#2a2a2a);color:#fff;border-radius:12px;padding:18px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+    <div>
+      <div style="font-size:12px;opacity:.7;letter-spacing:.5px;">TOTAL STOCK VALUE</div>
+      <div style="font-size:26px;font-weight:700;">৳${totalValue.toLocaleString()}</div>
+    </div>
+    <div style="width:1px;align-self:stretch;background:rgba(255,255,255,.2);"></div>
+    <div><div style="font-size:12px;opacity:.7;">Total Pieces</div><div style="font-size:18px;font-weight:600;">${totalPieces.toLocaleString()}</div></div>
+    <div><div style="font-size:12px;opacity:.7;">Products</div><div style="font-size:18px;font-weight:600;">${products.length}</div></div>
+    <div><div style="font-size:12px;opacity:.7;">In Stock</div><div style="font-size:18px;font-weight:600;color:#7dd87d;">${inStockCount}</div></div>
+    <div><div style="font-size:12px;opacity:.7;">Out of Stock</div><div style="font-size:18px;font-weight:600;color:#ff8a8a;">${outStockCount}</div></div>
+  </div>`;
 }
 
 // COUPONS (admin)
@@ -2238,21 +2315,26 @@ function openEdit(id){
   }
   eImgFiles=[null,null,null,null];
   eKeepUrls=imgs.slice();
+  for(let i=0;i<4;i++){
+    const urlInp=document.getElementById('eImgUrl'+i);
+    if(urlInp)urlInp.value='';
+  }
   document.getElementById('editOverlay').classList.add('open');
 }
 function closeEdit(){document.getElementById('editOverlay').classList.remove('open');editId=null;}
 let eImgFiles=[null,null,null,null];
 let eKeepUrls=[];
-function ePreviewSlot(input,i){
+async function ePreviewSlot(input,i){
   if(input.files&&input.files[0]){
-    eImgFiles[i]=input.files[0];
+    const compressed=await compressImageFile(input.files[0]);
+    eImgFiles[i]=compressed;
     const r=new FileReader();
     r.onload=e=>{
       document.getElementById('eprev'+i).innerHTML=`<img src="${e.target.result}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;
       const slot=document.getElementById('eslot'+i);
       if(slot)slot.classList.add('has-img');
     };
-    r.readAsDataURL(input.files[0]);
+    r.readAsDataURL(compressed);
   }
 }
 function deleteImgSlot(i){
@@ -2287,7 +2369,11 @@ async function saveEdit(){
   // upload new images, keep old ones
   const image_urls=[...eKeepUrls];
   for(let i=0;i<4;i++){
-    if(eImgFiles[i]){
+    const urlInp=document.getElementById('eImgUrl'+i);
+    const pastedUrl=urlInp?urlInp.value.trim():'';
+    if(pastedUrl){
+      image_urls[i]=pastedUrl;
+    }else if(eImgFiles[i]){
       const ext=eImgFiles[i].name.split('.').pop();
       const fn=`${Date.now()}_e${i}.${ext}`;
       const{error:ue}=await sb.storage.from('product-images').upload(fn,eImgFiles[i],{contentType:eImgFiles[i].type});
