@@ -61,6 +61,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .nav-cat{background:none;border:none;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;color:var(--mid);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Inter',sans-serif}
 .nav-cat:hover{color:var(--black);background:var(--off)}
 .nav-cat.active{background:var(--black);color:var(--white)}
+.nav-dropdown{position:relative;}
+.nav-dropdown-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;padding:8px;z-index:50;flex-direction:column;}
+.nav-dropdown-menu.open{display:flex;}
+.nav-dropdown-menu a{padding:9px 12px;border-radius:6px;font-size:13.5px;color:var(--black);cursor:pointer;text-decoration:none;white-space:nowrap;}
+.nav-dropdown-menu a:hover{background:var(--off);}
+.mobile-nav-label{padding:10px 20px 4px;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--mid);}
 .nav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
 .nav-cart{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);padding:7px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;color:var(--black);transition:all .2s;white-space:nowrap;font-family:'Inter',sans-serif}
 .nav-cart:hover{background:var(--black);color:var(--white);border-color:var(--black)}
@@ -487,13 +493,19 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 <nav>
   <a href="#" class="nav-logo">Brine <span>BD</span></a>
   <div class="nav-cats" id="navCats">
-    <button class="nav-cat active" onclick="filterCat('all',this)">All</button>
-    <button class="nav-cat" onclick="filterCat('Jersey',this)">Jersey</button>
-    <button class="nav-cat" onclick="filterCat('T-Shirt',this)">T-Shirt</button>
-    <button class="nav-cat" onclick="filterCat('Polo',this)">Polo</button>
-    <button class="nav-cat" onclick="filterCat('Hoodie',this)">Hoodie</button>
-    <button class="nav-cat" onclick="filterCat('Pants',this)">Men's Shorts</button>
-    <button class="nav-cat" onclick="filterCat('Jacket',this)">Jacket</button>
+    <div class="nav-dropdown">
+      <button class="nav-cat active" id="mensMenuBtn" onclick="toggleMensMenu(event)">Men's ▾</button>
+      <div class="nav-dropdown-menu" id="mensDropdownMenu">
+        <a onclick="filterCat('all',null);closeMensMenu()">All Products</a>
+        <a onclick="filterCat('Trousers',null);closeMensMenu()">Trousers</a>
+        <a onclick="filterCat('Pants',null);closeMensMenu()">Shorts</a>
+        <a onclick="filterCat('T-Shirt',null);closeMensMenu()">T-Shirt</a>
+        <a onclick="filterCat('Polo',null);closeMensMenu()">Polo</a>
+        <a onclick="filterCat('Hoodie',null);closeMensMenu()">Hoodie</a>
+        <a onclick="filterCat('Jersey',null);closeMensMenu()">Jersey</a>
+        <a onclick="filterCat('Jacket',null);closeMensMenu()">Jacket</a>
+      </div>
+    </div>
   </div>
   <div class="nav-right">
     <button class="nav-wish" onclick="toggleWishlistDrawer()" title="Wishlist">
@@ -511,11 +523,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 
 <div class="mobile-nav" id="mobileNav">
   <button onclick="filterCat('all',null);toggleMobileNav()">All Products</button>
-  <button onclick="filterCat('Jersey',null);toggleMobileNav()">Football Jersey</button>
+  <div class="mobile-nav-label">MEN'S</div>
+  <button onclick="filterCat('Trousers',null);toggleMobileNav()">Trousers</button>
+  <button onclick="filterCat('Pants',null);toggleMobileNav()">Shorts</button>
   <button onclick="filterCat('T-Shirt',null);toggleMobileNav()">T-Shirt</button>
   <button onclick="filterCat('Polo',null);toggleMobileNav()">Polo Shirt</button>
   <button onclick="filterCat('Hoodie',null);toggleMobileNav()">Hoodie / Sweater</button>
-  <button onclick="filterCat('Pants',null);toggleMobileNav()">Men's Shorts</button>
+  <button onclick="filterCat('Jersey',null);toggleMobileNav()">Football Jersey</button>
   <button onclick="filterCat('Jacket',null);toggleMobileNav()">Jacket</button>
   <button onclick="toggleWishlistDrawer();toggleMobileNav()">❤️ Wishlist</button>
   <button onclick="openTrackOrder();toggleMobileNav()">📦 Track Order</button>
@@ -576,11 +590,12 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
   <div class="cat-pills">
     <button class="cat-pill active" onclick="filterCat('all',this)">All Items</button>
-    <button class="cat-pill" onclick="filterCat('Jersey',this)">⚽ Jersey</button>
+    <button class="cat-pill" onclick="filterCat('Trousers',this)">👖 Trousers</button>
+    <button class="cat-pill" onclick="filterCat('Pants',this)">🩳 Shorts</button>
     <button class="cat-pill" onclick="filterCat('T-Shirt',this)">👕 T-Shirt</button>
     <button class="cat-pill" onclick="filterCat('Polo',this)">🎽 Polo</button>
     <button class="cat-pill" onclick="filterCat('Hoodie',this)">🧥 Hoodie</button>
-    <button class="cat-pill" onclick="filterCat('Pants',this)">👖 Men's Shorts</button>
+    <button class="cat-pill" onclick="filterCat('Jersey',this)">⚽ Jersey</button>
     <button class="cat-pill" onclick="filterCat('Jacket',this)">🧤 Jacket</button>
   </div>
   <div class="products-grid" id="productsGrid">
@@ -777,7 +792,13 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     <div class="field"><label>Description</label><textarea id="eDesc" rows="2" placeholder="Product description..." style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;resize:vertical;"></textarea></div>
     <div class="field"><label>Category</label>
       <select id="eCat" style="width:100%;background:var(--off);border:1px solid var(--border);color:var(--black);padding:11px 14px;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;">
-        <option>Jersey</option><option>Hoodie</option><option>T-Shirt</option><option>Polo</option><option>Pants</option><option>Shorts</option><option>Accessories</option>
+        <option value="Jersey">Football Jersey</option>
+        <option value="T-Shirt">T-Shirt</option>
+        <option value="Polo">Polo Shirt</option>
+        <option value="Hoodie">Hoodie / Sweater</option>
+        <option value="Pants">Shorts</option>
+        <option value="Trousers">Trousers</option>
+        <option value="Jacket">Jacket</option>
       </select>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -911,7 +932,8 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
             <option value="T-Shirt">T-Shirt</option>
             <option value="Polo">Polo Shirt</option>
             <option value="Hoodie">Hoodie / Sweater</option>
-            <option value="Pants">Pants / Shorts</option>
+            <option value="Pants">Shorts</option>
+            <option value="Trousers">Trousers</option>
             <option value="Jacket">Jacket</option>
           </select>
         </div>
@@ -1024,9 +1046,9 @@ const sb=createClient(SURL,SKEY);
 
 let products=[],cart=JSON.parse(localStorage.getItem('bbd_cart')||'[]'),curFilter='all',curProduct=null,imgFile=null;
 
-const icons={Jersey:'⚽','T-Shirt':'👕',Polo:'🎽',Hoodie:'🧥',Pants:'👖',Jacket:'🧤'};
+const icons={Jersey:'⚽','T-Shirt':'👕',Polo:'🎽',Hoodie:'🧥',Pants:'👖',Jacket:'🧤',Trousers:'👖'};
 function categoryLabel(cat){
-  const labels={'Pants':"Men's Shorts",'T-Shirt':"Men's T-Shirt",'Polo':"Men's Polo Shirt",'Jersey':'Football Jersey',Hoodie:"Men's Hoodie",Jacket:"Men's Jacket"};
+  const labels={'Pants':"Shorts",'T-Shirt':"Men's T-Shirt",'Polo':"Men's Polo Shirt",'Jersey':'Football Jersey',Hoodie:"Men's Hoodie",Jacket:"Men's Jacket",Trousers:"Men's Trousers"};
   return labels[cat]||cat;
 }
 const icon=c=>icons[c]||'👔';
@@ -1166,6 +1188,20 @@ function filterCat(f,el){
   if(el){el.classList.add('active');}
   document.getElementById('shop').scrollIntoView({behavior:'smooth'});
 }
+function toggleMensMenu(e){
+  e.stopPropagation();
+  document.getElementById('mensDropdownMenu').classList.toggle('open');
+}
+function closeMensMenu(){
+  document.getElementById('mensDropdownMenu').classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('mensDropdownMenu');
+  const btn=document.getElementById('mensMenuBtn');
+  if(menu&&menu.classList.contains('open')&&!menu.contains(e.target)&&e.target!==btn){
+    menu.classList.remove('open');
+  }
+});
 
 // PRODUCT PAGE
 let galleryIdx=0;
