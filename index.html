@@ -887,9 +887,10 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div id="omCouponMsg" style="font-size:12px;margin-top:6px;"></div>
       </div>
       <div class="om-field"><label>Note (optional)</label><input type="text" id="omNote" placeholder="কোনো বিশেষ চাহিদা..."></div>
-      <button class="om-submit-btn" id="omSubmitBtn" onclick="submitOrderForm()">✅ Confirm Order</button>
+      <button class="om-submit-btn" id="omSubmitBtn" onclick="reviewOrderForm()">✅ Confirm Order</button>
       <button class="om-cancel" onclick="closeOrderModal()">Cancel</button>
     </div>
+    <div id="omReview" style="display:none;"></div>
     <div class="om-success" id="omSuccess" style="display:none;">
       <div class="om-tick">✅</div>
       <h4>Order Placed!</h4>
@@ -1550,6 +1551,7 @@ async function applyCoupon(){
 function openOrderModal(){
   if(!cart.length){toast('কার্ট খালি! আগে পণ্য যোগ করুন।');return;}
   document.getElementById('omForm').style.display='block';
+  document.getElementById('omReview').style.display='none';
   document.getElementById('omSuccess').style.display='none';
   // hide legacy single-size/qty fields — cart items already carry their own size & qty
   document.getElementById('omSizeField').style.display='none';
@@ -1602,7 +1604,55 @@ function closeOrderModal(){
   document.getElementById('orderModalOverlay').classList.remove('open');
   document.body.style.overflow='';
 }
-async function submitOrderForm(){
+function reviewOrderForm(){
+  const name=document.getElementById('omName').value.trim();
+  const phone=document.getElementById('omPhone').value.trim();
+  const division=document.getElementById('omDivision').value;
+  const district=document.getElementById('omDistrict').value;
+  const thana=document.getElementById('omThana').value||document.getElementById('omThanaSearch').value;
+  const addrLine=document.getElementById('omAddress').value.trim();
+  if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');return;}
+  if(!cart.length){toast('কার্ট খালি!');return;}
+  if(!/^01[0-9]{9}$/.test(phone)){toast('সঠিক ফোন নম্বর দিন (01XXXXXXXXX)!');return;}
+
+  const subtotal=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
+  const discount=computeDiscount(subtotal);
+  const deliveryCharge=computeDeliveryCharge(district,thana);
+  const total=subtotal-discount+deliveryCharge;
+  const addr=`${addrLine}, ${thana}, ${district}, ${division}`.replace(/^,\s*/,'');
+
+  const itemsHtml=cart.map(i=>`<div style="display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0;"><span>${i.name}${i.color?' — '+i.color:''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} × ${i.qty}</span><span>৳${(Number(i.price)*i.qty).toLocaleString()}</span></div>`).join('');
+
+  document.getElementById('omReview').innerHTML=`
+    <h3>🧾 অর্ডার নিশ্চিত করার আগে দেখে নিন</h3>
+    <p class="om-sub" style="color:#c0392b;font-weight:600;">অনুগ্রহ করে Delivery Charge সহ Total টাকার পরিমাণ ভালো করে দেখে নিন</p>
+    <div style="background:var(--off);border-radius:10px;padding:14px 16px;margin:14px 0;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px;">📦 আপনার পণ্য</div>
+      ${itemsHtml}
+      <div style="border-top:1px dashed var(--border);margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-size:13.5px;"><span>🛍️ Product Price</span><span>৳${subtotal.toLocaleString()}</span></div>
+      ${discount>0?`<div style="display:flex;justify-content:space-between;font-size:13.5px;color:#1a7a3d;font-weight:600;padding:3px 0;"><span>Coupon Discount</span><span>-৳${discount.toLocaleString()}</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0;"><span>🚚 Delivery Charge</span><span>৳${deliveryCharge.toLocaleString()}</span></div>
+    </div>
+    <div style="background:var(--black);color:#fff;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:14px;">সর্বমোট পরিশোধযোগ্য (Cash on Delivery)</span>
+      <span style="font-size:22px;font-weight:700;">৳${total.toLocaleString()}</span>
+    </div>
+    <div style="font-size:13px;color:var(--mid);margin-bottom:16px;">
+      <div><b>নাম:</b> ${name}</div>
+      <div><b>ফোন:</b> ${phone}</div>
+      <div><b>ঠিকানা:</b> ${addr}</div>
+    </div>
+    <button class="om-submit-btn" onclick="confirmSubmitOrder()">✅ হ্যাঁ, Order Confirm করুন — ৳${total.toLocaleString()}</button>
+    <button class="om-cancel" onclick="backToOrderForm()">← ফিরে গিয়ে ঠিক করি</button>
+  `;
+  document.getElementById('omForm').style.display='none';
+  document.getElementById('omReview').style.display='block';
+}
+function backToOrderForm(){
+  document.getElementById('omReview').style.display='none';
+  document.getElementById('omForm').style.display='block';
+}
+async function confirmSubmitOrder(){
   const name=document.getElementById('omName').value.trim();
   const phone=document.getElementById('omPhone').value.trim();
   const division=document.getElementById('omDivision').value;
@@ -1611,7 +1661,7 @@ async function submitOrderForm(){
   const addrLine=document.getElementById('omAddress').value.trim();
   const addr=`${addrLine}, ${thana}, ${district}, ${division}`.replace(/^,\s*/,'');
   const note=document.getElementById('omNote').value.trim();
-  if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');return;}
+  if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');backToOrderForm();return;}
   if(!cart.length){toast('কার্ট খালি!');return;}
 
   // Re-check stock right before placing the order in case it changed since items were added
@@ -1621,6 +1671,7 @@ async function submitOrderForm(){
     const available=getSizeStock(prod,item.size);
     if(available<item.qty){
       toast(`দুঃখিত, "${item.name}"${item.size&&item.size!=='N/A'?' ('+item.size+')':''} এখন মাত্র ${available} পিস আছে। কার্ট আপডেট করুন।`);
+      backToOrderForm();
       return;
     }
   }
@@ -1629,8 +1680,8 @@ async function submitOrderForm(){
   const discount=computeDiscount(subtotal);
   const deliveryCharge=computeDeliveryCharge(district,thana);
   const total=subtotal-discount+deliveryCharge;
-  const btn=document.getElementById('omSubmitBtn');
-  btn.disabled=true;btn.textContent='⏳ Placing order...';
+  const reviewBtn=document.querySelector('#omReview .om-submit-btn');
+  if(reviewBtn){reviewBtn.disabled=true;reviewBtn.textContent='⏳ Placing order...';}
 
   // Save to Supabase — items array holds every product/size/qty in this order
   const items=cart.map(i=>({id:i.id,name:i.name,color:i.color||null,category:i.category,size:i.size,qty:i.qty,price:Number(i.price),image_url:i.image_url||null}));
@@ -1641,7 +1692,7 @@ async function submitOrderForm(){
     discount_amount:discount,
     delivery_charge:deliveryCharge
   }]);
-  if(dbErr){toast('Error saving order: '+dbErr.message);btn.disabled=false;btn.textContent='✅ Confirm Order';return;}
+  if(dbErr){toast('Error saving order: '+dbErr.message);if(reviewBtn){reviewBtn.disabled=false;reviewBtn.textContent='✅ হ্যাঁ, Order Confirm করুন — ৳'+total.toLocaleString();}return;}
 
   // Bump coupon usage count if one was applied
   if(appliedCoupon){
@@ -1680,8 +1731,7 @@ async function submitOrderForm(){
     });
   }catch(e){console.log('Email error:',e);}
 
-  btn.disabled=false;btn.textContent='✅ Confirm Order';
-  document.getElementById('omForm').style.display='none';
+  document.getElementById('omReview').style.display='none';
   document.getElementById('omSuccess').style.display='block';
   // Meta Pixel: Purchase — fires ONLY after Supabase confirms the order saved
   try{
