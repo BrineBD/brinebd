@@ -349,9 +349,9 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 .ci-remove{background:none;border:none;color:var(--mid);cursor:pointer;font-size:16px;line-height:1;padding:2px}
 .ci-top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .ci-qty-row{display:flex;align-items:center;gap:10px;margin-top:8px}
-.ci-qty-btn{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:var(--off);color:var(--black);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:'Inter',sans-serif}
+.ci-qty-btn{width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:var(--off);color:var(--black);font-size:18px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:'Inter',sans-serif}
 .ci-qty-btn:hover{background:var(--black);color:var(--white);border-color:var(--black)}
-.ci-qty-num{font-size:13px;font-weight:600;min-width:18px;text-align:center}
+.ci-qty-num{font-size:14px;font-weight:600;min-width:24px;text-align:center}
 .ci-sub{font-size:12px;color:var(--mid);margin-top:2px}
 .free-delivery-banner{margin:0 24px 12px;padding:10px 14px;border-radius:8px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px}
 .free-delivery-banner.hit{background:#e6f7ed;color:#1a7a3d}
@@ -508,6 +508,9 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
     </div>
   </div>
   <div class="nav-right">
+    <button class="nav-cart" id="navSignupBtn" onclick="openSignupModal()" style="border-color:var(--accent);color:var(--accent2);">
+      🎁 Sign Up
+    </button>
     <button class="nav-wish" onclick="toggleWishlistDrawer()" title="Wishlist">
       ❤️ <span class="wish-badge" id="wishBadge">0</span>
     </button>
@@ -522,6 +525,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
 </nav>
 
 <div class="mobile-nav" id="mobileNav">
+  <button onclick="openSignupModal();toggleMobileNav()" style="color:var(--accent2);font-weight:700;">🎁 Sign Up — ৳10 off/piece</button>
   <button onclick="filterCat('all',null);toggleMobileNav()">All Products</button>
   <div class="mobile-nav-label">MEN'S</div>
   <button onclick="filterCat('Trousers',null);toggleMobileNav()">Trousers</button>
@@ -900,6 +904,33 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </div>
 
+<!-- SIGN UP / MEMBER DISCOUNT -->
+<div class="order-modal-overlay" id="signupModalOverlay">
+  <div class="order-modal-box">
+    <div id="signupForm">
+      <h3>🎁 Sign Up & Save ৳10/Piece</h3>
+      <p class="om-sub">সাইন আপ করলে সাথে সাথে পাবেন আপনার নিজের ছাড়ের কোড — প্রতিটা পণ্যে ৳১০ ছাড়, বারবার ব্যবহার করা যাবে।</p>
+      <div class="om-field"><label>আপনার নাম *</label><input type="text" id="suName" placeholder="Full name"></div>
+      <div class="om-field"><label>ফোন নম্বর *</label><input type="tel" id="suPhone" placeholder="01XXXXXXXXX"></div>
+      <div class="om-field"><label>ইমেইল *</label><input type="email" id="suEmail" placeholder="you@example.com"></div>
+      <div id="signupMsg" style="font-size:13px;margin-bottom:10px;"></div>
+      <button class="om-submit-btn" id="signupSubmitBtn" onclick="submitSignup()">🎁 Sign Up & Get My Code</button>
+      <button class="om-cancel" onclick="closeSignupModal()">Cancel</button>
+    </div>
+    <div class="om-success" id="signupSuccess" style="display:none;">
+      <div class="om-tick">🎉</div>
+      <h4>স্বাগতম!</h4>
+      <p>আপনার personal discount code:</p>
+      <div style="background:var(--off);border:2px dashed var(--accent);border-radius:10px;padding:16px;margin:14px 0;text-align:center;">
+        <div id="signupCodeDisplay" style="font-size:24px;font-weight:800;letter-spacing:2px;color:var(--accent2);"></div>
+      </div>
+      <p style="font-size:13px;color:var(--mid);">এই code টা screenshot নিয়ে রাখুন — checkout এর সময় "Coupon Code" বক্সে বসিয়ে দিলেই প্রতি পিস-এ ৳১০ ছাড় পাবেন, প্রতিবার!</p>
+      <button class="om-submit-btn" id="signupCopyBtn" style="margin-top:14px;" onclick="copySignupCode()">📋 Code Copy করুন</button>
+      <button class="om-submit-btn" style="margin-top:8px;background:var(--off);color:var(--black);border:1px solid var(--border);" onclick="closeSignupModal()">Shopping Continue করুন</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADMIN -->
 <div class="admin-overlay" id="adminOverlay">
   <div class="admin-panel">
@@ -1016,7 +1047,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
         <div class="form-row">
           <div class="field"><label>Code *</label><input type="text" id="cpCode" placeholder="e.g. WELCOME10" style="text-transform:uppercase;"></div>
           <div class="field"><label>Type *</label>
-            <select id="cpType"><option value="percent">Percent (%)</option><option value="fixed">Fixed (৳)</option></select>
+            <select id="cpType"><option value="percent">Percent (%)</option><option value="fixed">Fixed (৳)</option><option value="per_piece">Per Piece (৳ per item)</option></select>
           </div>
         </div>
         <div class="form-row">
@@ -1496,9 +1527,15 @@ let appliedCoupon=null;
 function computeCartSubtotal(){return cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);}
 function computeDiscount(subtotal){
   if(!appliedCoupon)return 0;
-  const raw=appliedCoupon.discount_type==='percent'
-    ?subtotal*Number(appliedCoupon.discount_value)/100
-    :Number(appliedCoupon.discount_value);
+  let raw;
+  if(appliedCoupon.discount_type==='percent'){
+    raw=subtotal*Number(appliedCoupon.discount_value)/100;
+  }else if(appliedCoupon.discount_type==='per_piece'){
+    const totalQty=cart.reduce((s,i)=>s+i.qty,0);
+    raw=Number(appliedCoupon.discount_value)*totalQty;
+  }else{
+    raw=Number(appliedCoupon.discount_value);
+  }
   return Math.min(Math.round(raw),subtotal);
 }
 function updateCheckoutTotals(){
@@ -1547,6 +1584,81 @@ async function applyCoupon(){
   msg.className='coupon-msg-ok';
   updateCheckoutTotals();
 }
+
+// SIGN UP / MEMBER DISCOUNT
+function openSignupModal(){
+  document.getElementById('signupForm').style.display='block';
+  document.getElementById('signupSuccess').style.display='none';
+  document.getElementById('signupMsg').textContent='';
+  const savedCode=localStorage.getItem('bd_member_code');
+  const savedName=localStorage.getItem('bd_member_name');
+  if(savedCode){
+    document.getElementById('signupForm').style.display='none';
+    document.getElementById('signupSuccess').style.display='block';
+    document.getElementById('signupSuccess').querySelector('h4').textContent=savedName?`স্বাগতম, ${savedName}!`:'স্বাগতম!';
+    document.getElementById('signupCodeDisplay').textContent=savedCode;
+  }
+  document.getElementById('signupModalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSignupModal(){
+  document.getElementById('signupModalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function copySignupCode(){
+  const code=document.getElementById('signupCodeDisplay').textContent;
+  navigator.clipboard.writeText(code).then(()=>{toast('✅ Code copy হয়েছে!');}).catch(()=>{toast('কোড: '+code);});
+}
+async function submitSignup(){
+  const name=document.getElementById('suName').value.trim();
+  const phone=document.getElementById('suPhone').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  const msg=document.getElementById('signupMsg');
+  msg.textContent='';msg.style.color='';
+  if(!name||!phone||!email){msg.textContent='নাম, ফোন নম্বর ও ইমেইল দিন।';msg.style.color='#c0392b';return;}
+  if(!/^01[0-9]{9}$/.test(phone)){msg.textContent='সঠিক ফোন নম্বর দিন (01XXXXXXXXX)।';msg.style.color='#c0392b';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){msg.textContent='সঠিক ইমেইল ঠিকানা দিন।';msg.style.color='#c0392b';return;}
+  const btn=document.getElementById('signupSubmitBtn');
+  btn.disabled=true;btn.textContent='⏳ Processing...';
+
+  const baseCode='BD'+phone.slice(-6);
+  let finalCode=null;
+  for(let attempt=0;attempt<3;attempt++){
+    const tryCode=attempt===0?baseCode:baseCode+Math.floor(Math.random()*9+1);
+    const{error}=await sb.from('coupons').insert([{code:tryCode,discount_type:'per_piece',discount_value:10,active:true}]);
+    if(!error){finalCode=tryCode;break;}
+    if(!String(error.message||'').toLowerCase().includes('duplicate')){
+      btn.disabled=false;btn.textContent='🎁 Sign Up & Get My Code';
+      msg.textContent='Error: '+error.message;msg.style.color='#c0392b';
+      return;
+    }
+  }
+  if(!finalCode){
+    btn.disabled=false;btn.textContent='🎁 Sign Up & Get My Code';
+    msg.textContent='দুঃখিত, একটু পরে আবার চেষ্টা করুন।';msg.style.color='#c0392b';
+    return;
+  }
+
+  const{error:custErr}=await sb.from('customers').insert([{name,phone,email:email||null,coupon_code:finalCode}]);
+  btn.disabled=false;btn.textContent='🎁 Sign Up & Get My Code';
+  if(custErr){
+    await sb.from('coupons').delete().eq('code',finalCode);
+    if(String(custErr.message||'').toLowerCase().includes('duplicate')){
+      msg.textContent='এই ফোন নম্বর দিয়ে আগেই সাইন আপ করা হয়েছে! কোড ভুলে গেলে WhatsApp করে জানান, আমরা পাঠিয়ে দেব।';
+      msg.style.color='#c0392b';
+    }else{
+      msg.textContent='Error: '+custErr.message;msg.style.color='#c0392b';
+    }
+    return;
+  }
+  localStorage.setItem('bd_member_code',finalCode);
+  localStorage.setItem('bd_member_name',name);
+  document.getElementById('signupForm').style.display='none';
+  document.getElementById('signupSuccess').style.display='block';
+  document.getElementById('signupSuccess').querySelector('h4').textContent=`স্বাগতম, ${name}!`;
+  document.getElementById('signupCodeDisplay').textContent=finalCode;
+}
+document.getElementById('signupModalOverlay').addEventListener('click',function(e){if(e.target===this)closeSignupModal();});
 
 function openOrderModal(){
   if(!cart.length){toast('কার্ট খালি! আগে পণ্য যোগ করুন।');return;}
@@ -1621,7 +1733,7 @@ function reviewOrderForm(){
   const total=subtotal-discount+deliveryCharge;
   const addr=`${addrLine}, ${thana}, ${district}, ${division}`.replace(/^,\s*/,'');
 
-  const itemsHtml=cart.map(i=>`<div style="display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0;"><span>${i.name}${i.color?' — '+i.color:''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} × ${i.qty}</span><span>৳${(Number(i.price)*i.qty).toLocaleString()}</span></div>`).join('');
+  const itemsHtml=cart.map(i=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;"><div style="width:44px;height:44px;flex:none;border-radius:6px;overflow:hidden;background:var(--off);display:flex;align-items:center;justify-content:center;">${i.image_url?`<img src="${i.image_url}" style="width:100%;height:100%;object-fit:cover;">`:`<span>${icon(i.category)}</span>`}</div><div style="flex:1;font-size:13.5px;">${i.name}${i.color?' — '+i.color:''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} × ${i.qty}</div><div style="font-size:13.5px;font-weight:600;">৳${(Number(i.price)*i.qty).toLocaleString()}</div></div>`).join('');
 
   document.getElementById('omReview').innerHTML=`
     <h3>🧾 অর্ডার নিশ্চিত করার আগে দেখে নিন</h3>
@@ -2342,7 +2454,7 @@ function renderCouponsList(){
     const statusColor=statusText==='Active'?'#38a169':'#e53e3e';
     return `<div class="admin-list-item">
       <div class="ali-info">
-        <div class="ali-name">${c.code} ${c.discount_type==='percent'?c.discount_value+'%':'৳'+c.discount_value}</div>
+        <div class="ali-name">${c.code} ${c.discount_type==='percent'?c.discount_value+'%':c.discount_type==='per_piece'?'৳'+c.discount_value+'/piece':'৳'+c.discount_value}</div>
         <div class="ali-meta">Used ${c.used_count||0}${c.usage_limit!=null?'/'+c.usage_limit:''}${c.min_order?' · Min ৳'+c.min_order:''}${c.expires_at?' · Expires '+new Date(c.expires_at).toLocaleDateString('en-GB'):''}</div>
         <div style="font-size:12px;margin-top:3px;font-weight:600;color:${statusColor};">${statusText}</div>
       </div>
