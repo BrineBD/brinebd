@@ -1787,9 +1787,14 @@ async function confirmSubmitOrder(){
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');backToOrderForm();return;}
   if(!cart.length){toast('কার্ট খালি!');return;}
 
-  // Re-check stock right before placing the order in case it changed since items were added
+  // Re-check stock right before placing the order, using FRESH data straight
+  // from the database (not the possibly-stale local copy) — this closes the
+  // gap where two customers race for the very last piece of a product
+  const liveIds=[...new Set(cart.map(i=>i.id))];
+  const{data:liveProducts,error:liveErr}=await sb.from('products').select('id,size_stock,stock').in('id',liveIds);
+  if(liveErr){toast('স্টক চেক করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।');backToOrderForm();return;}
   for(const item of cart){
-    const prod=products.find(x=>x.id===item.id);
+    const prod=liveProducts.find(x=>x.id===item.id);
     if(!prod)continue;
     const available=getSizeStock(prod,item.size);
     if(available<item.qty){
