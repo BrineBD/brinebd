@@ -155,6 +155,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .badge-out-of-stock{background:#555;color:var(--white)}
 .prod-category{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:4px}
 .prod-name{font-size:15px;font-weight:500;color:var(--black);margin-bottom:8px;line-height:1.3}
+.prod-sold{font-size:11.5px;font-weight:600;color:#d9480f;margin:0 0 6px}
+.ppage-sold{font-size:13px;font-weight:600;color:#d9480f;margin:0 0 12px}
 .prod-sizes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
 .prod-size{font-size:10px;border:1px solid var(--border);color:var(--mid);padding:2px 7px;border-radius:3px}
 .prod-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
@@ -750,6 +752,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           <span class="ppage-price-now" id="ppagePrice"></span>
           <span class="ppage-price-old" id="ppageOldPrice"></span>
         </div>
+        <div class="ppage-sold" id="ppageSold" style="display:none"></div>
         <div class="ppage-desc" id="ppageDesc"></div>
         <div class="ppage-size-label">Select Size</div>
         <div class="ppage-sizes" id="ppageSizes"></div>
@@ -1192,6 +1195,48 @@ async function loadProducts(){
   if(error){toast('Error loading products');return;}
   products=data||[];
   renderProducts(curFilter);
+  // "কতবার অর্ডার হয়েছে" counts — loads after products, then refreshes the cards
+  loadOrderCounts().then(ok=>{if(ok){renderProducts(curFilter);if(typeof curProduct!=='undefined'&&curProduct)showPpageSold(curProduct);}});
+}
+
+// ===== PRODUCT ORDER COUNT (social proof) =====
+let orderCounts={};
+const OC_KEY='bbd_order_counts',OC_TTL=10*60*1000;
+function toBn(n){return String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);}
+async function loadOrderCounts(){
+  try{
+    const c=JSON.parse(sessionStorage.getItem(OC_KEY)||'null');
+    if(c&&Date.now()-c.t<OC_TTL){orderCounts=c.d||{};return true;}
+  }catch(e){}
+  try{
+    const counts={};
+    for(let from=0;from<10000;from+=1000){
+      const{data,error}=await sb.from('orders_public').select('items,status').order('created_at',{ascending:true}).range(from,from+999);
+      if(error||!data)return false;           // fail quietly: nothing is shown
+      data.forEach(o=>{
+        const st=(o.status||'').toLowerCase();
+        if(st==='cancelled'||st==='canceled'||st==='rejected'||st==='deleted')return;
+        const seen=new Set();
+        (Array.isArray(o.items)?o.items:[]).forEach(i=>{if(i&&i.id!=null)seen.add(String(i.id));});
+        seen.forEach(id=>{counts[id]=(counts[id]||0)+1;});
+      });
+      if(data.length<1000)break;
+    }
+    orderCounts=counts;
+    try{sessionStorage.setItem(OC_KEY,JSON.stringify({t:Date.now(),d:counts}));}catch(e){}
+    return true;
+  }catch(e){return false;}
+}
+function orderCountText(p){
+  const n=orderCounts[String(p.id)]||0;
+  return n>0?`🔥 ${toBn(n)} বার অর্ডার হয়েছে`:'';   // 0 hole kichu dekhabe na
+}
+function showPpageSold(p){
+  const el=document.getElementById('ppageSold');
+  if(!el)return;
+  const t=orderCountText(p);
+  el.textContent=t;
+  el.style.display=t?'block':'none';
 }
 
 function badgeSlug(b){return(b||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
@@ -1225,6 +1270,7 @@ function renderProducts(f){
       </div>
       <div class="prod-category">${categoryLabel(p.category)}</div>
       <div class="prod-name">${p.name}${p.color?`<span style="color:var(--mid);font-weight:400;"> — ${p.color}</span>`:''}</div>
+      ${orderCountText(p)?`<div class="prod-sold">${orderCountText(p)}</div>`:''}
       <div class="prod-sizes">${(p.sizes||[]).map(s=>`<span class="prod-size">${s}</span>`).join('')}</div>
       <div class="prod-bottom">
         <div class="prod-price">
@@ -1313,6 +1359,7 @@ async function openPpage(id){
   document.getElementById('ppageCat').textContent=categoryLabel(p.category);
   document.getElementById('ppageName').textContent=p.name+(p.color?' — '+p.color:'');
   document.getElementById('ppagePrice').textContent='৳'+Number(p.price).toLocaleString();
+  showPpageSold(p);
   const oldEl=document.getElementById('ppageOldPrice');
   oldEl.textContent=p.old_price?'৳'+Number(p.old_price).toLocaleString():'';
   document.getElementById('ppageDesc').textContent=p.description||'Premium quality product from Brine BD. Order now and get Cash on Delivery anywhere in Bangladesh.';
@@ -1825,7 +1872,74 @@ function backToOrderForm(){
   document.getElementById('omReview').style.display='none';
   document.getElementById('omForm').style.display='block';
 }
+// ===== DUPLICATE ORDER PROTECTION =====
+let orderInFlight=false;
+const RECENT_ORDER_KEY='bbd_recent_orders';
+const DUP_WINDOW_MS=24*60*60*1000; // 24 hours
+function orderSignature(items){
+  return items.map(i=>`${i.id}|${i.size||''}|${i.qty}`).sort().join(';');
+}
+function getRecentOrders(){
+  try{
+    const arr=JSON.parse(localStorage.getItem(RECENT_ORDER_KEY)||'[]');
+    return arr.filter(o=>Date.now()-o.time<DUP_WINDOW_MS);
+  }catch(e){return [];}
+}
+function rememberOrder(phone,sig){
+  try{
+    const arr=getRecentOrders();
+    arr.push({phone,sig,time:Date.now()});
+    localStorage.setItem(RECENT_ORDER_KEY,JSON.stringify(arr.slice(-20)));
+  }catch(e){}
+}
+async function findDuplicateOrder(phone,sig){
+  // 1) fast check: this device already placed the same order recently
+  if(getRecentOrders().some(o=>o.phone===phone&&o.sig===sig))return true;
+  // 2) database check: same phone + same items in the last 24h (covers refresh / other device)
+  try{
+    const since=new Date(Date.now()-DUP_WINDOW_MS).toISOString();
+    const{data,error}=await sb.from('orders_public').select('items,status,created_at').eq('customer_phone',phone).gte('created_at',since);
+    if(error||!data)return false; // never block a real order because the check failed
+    return data.some(o=>{
+      const st=(o.status||'').toLowerCase();
+      if(st==='cancelled'||st==='canceled'||st==='rejected'||st==='deleted')return false;
+      const its=Array.isArray(o.items)?o.items:[];
+      return its.length&&orderSignature(its)===sig;
+    });
+  }catch(e){return false;}
+}
+function showDuplicateOrderMsg(){
+  // order already exists — empty the cart so it can't be re-sent
+  cart=[];appliedCoupon=null;saveCart();renderCart();
+  document.getElementById('omForm').style.display='none';
+  document.getElementById('omSuccess').style.display='none';
+  const r=document.getElementById('omReview');
+  r.style.display='block';
+  r.innerHTML=`
+    <div style="text-align:center;padding:10px 0;">
+      <div style="font-size:46px;">✅</div>
+      <h4 style="font-size:18px;margin:10px 0 8px;">আপনার অর্ডারটি আগেই নেওয়া হয়েছে!</h4>
+      <p style="font-size:14px;color:var(--mid);line-height:1.7;">আপনি এই পণ্যটি ইতোমধ্যে অর্ডার করেছেন। আবার অর্ডার করার দরকার নেই।<br>আমরা শীঘ্রই কল করে আপনার অর্ডার কনফার্ম করবো।</p>
+      <button class="om-submit-btn" style="margin-top:18px;" onclick="closeOrderModal()">ঠিক আছে</button>
+      <button class="om-cancel" onclick="closeOrderModal();openTrackOrder()">📦 আমার অর্ডার ট্র্যাক করুন</button>
+    </div>`;
+}
 async function confirmSubmitOrder(){
+  if(orderInFlight)return;            // extra taps are ignored
+  orderInFlight=true;                 // lock immediately (before any await)
+  const btn=document.querySelector('#omReview .om-submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ অর্ডার হচ্ছে... একটু অপেক্ষা করুন';}
+  try{
+    await _confirmSubmitOrderInner();
+  }catch(e){
+    console.error('Order error:',e);
+    toast('নেট সমস্যা হয়েছে, আবার চেষ্টা করুন।');
+    if(btn){btn.disabled=false;btn.textContent='✅ হ্যাঁ, Order Confirm করুন';}
+  }finally{
+    orderInFlight=false;
+  }
+}
+async function _confirmSubmitOrderInner(){
   const name=document.getElementById('omName').value.trim();
   const phone=document.getElementById('omPhone').value.trim();
   const division=document.getElementById('omDivision').value;
@@ -1836,6 +1950,10 @@ async function confirmSubmitOrder(){
   const note=document.getElementById('omNote').value.trim();
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');backToOrderForm();return;}
   if(!cart.length){toast('কার্ট খালি!');return;}
+
+  // Duplicate protection: same phone + same items already ordered recently?
+  const orderSig=orderSignature(cart);
+  if(await findDuplicateOrder(phone,orderSig)){showDuplicateOrderMsg();return;}
 
   // Re-check stock right before placing the order, using FRESH data straight
   // from the database (not the possibly-stale local copy) — this closes the
@@ -1871,6 +1989,8 @@ async function confirmSubmitOrder(){
     delivery_charge:deliveryCharge
   }]);
   if(dbErr){toast('Error saving order: '+dbErr.message);if(reviewBtn){reviewBtn.disabled=false;reviewBtn.textContent='✅ হ্যাঁ, Order Confirm করুন — ৳'+total.toLocaleString();}return;}
+
+  rememberOrder(phone,orderSig); // saved on this device so repeat taps/reloads are caught
 
   // Bump coupon usage count if one was applied
   if(appliedCoupon){
@@ -2112,7 +2232,7 @@ function switchAdminTab(tab){
 async function loadAdminOrders(){
   const el=document.getElementById('adminOrdersList');
   el.innerHTML='<p style="color:var(--mid);font-size:13px;">Loading...</p>';
-  const {data,error}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(50);
+  const {data,error}=await sb.from('orders').select('*').or('status.is.null,status.neq.deleted').order('created_at',{ascending:false}).limit(50);
   if(error){el.innerHTML='<p style="color:red;font-size:13px;">Error: '+error.message+'</p>';return;}
   if(!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No orders yet.</p>';return;}
   el.innerHTML=data.map(o=>{
@@ -2137,9 +2257,17 @@ async function loadAdminOrders(){
       <div class="oli-actions">
         <button class="oli-btn oli-btn-done" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="delivered">Delivered</button>
         <button class="oli-btn oli-btn-del" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="cancelled">Cancel</button>
+        <button class="oli-btn" style="background:#444;color:#fff;" onclick="deleteOrder('${o.id}')">🗑 Delete</button>
       </div>
     </div>`;
   }).join('');
+}
+async function deleteOrder(id){
+  if(!confirm('এই অর্ডারটি Delete করবেন? (লিস্ট থেকে সরে যাবে)'))return;
+  const{error}=await sb.from('orders').update({status:'deleted'}).eq('id',id);
+  if(error){toast('Error: '+error.message);return;}
+  loadAdminOrders();
+  toast('🗑 Order deleted');
 }
 async function saveTrackingCode(id){
   const input=document.getElementById('track-'+id);
@@ -2166,8 +2294,9 @@ async function searchOrders(){
   el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">খোঁজা হচ্ছে...</p>';
   const{data,error}=await sb.from('orders_public').select('*').eq('customer_phone',phone).order('created_at',{ascending:false});
   if(error){el.innerHTML='<p style="color:red;font-size:13px;margin-top:14px;">দুঃখিত, একটু পরে আবার চেষ্টা করুন।</p>';console.error(error);return;}
-  if(!data||!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">এই নম্বরে কোনো অর্ডার পাওয়া যায়নি।</p>';return;}
-  el.innerHTML=data.map(o=>{
+  const visible=(data||[]).filter(o=>(o.status||'').toLowerCase()!=='deleted');
+  if(!visible.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;margin-top:14px;">এই নম্বরে কোনো অর্ডার পাওয়া যায়নি।</p>';return;}
+  el.innerHTML=visible.map(o=>{
     const items=Array.isArray(o.items)?o.items:[];
     const itemText=items.map(i=>`${i.name||''}${i.color?' ['+i.color+']':''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}`).join(', ');
     const date=new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
