@@ -67,6 +67,41 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 }(window, document, 'ttq');
 </script>
 <!-- TikTok Pixel Code End -->
+<!-- TikTok Advanced Matching: customer phone (hashed) -> ttq.identify -->
+<script>
+function ttNormPhone(raw){
+  var d=String(raw||'').replace(/\D/g,'');
+  if(d.indexOf('880')===0)d=d.slice(3);
+  if(d.charAt(0)==='0')d=d.slice(1);
+  return /^1\d{9}$/.test(d)?'+880'+d:''; // valid BD mobile only, E.164 format
+}
+async function ttSha256(v){
+  var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+}
+async function ttIdentifyPhone(rawPhone,rawEmail){
+  try{
+    if(typeof ttq==='undefined')return;
+    var can=!!(window.crypto&&crypto.subtle);
+    var data={};
+    var p=ttNormPhone(rawPhone);
+    var em=String(rawEmail||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em))em='';
+    if(p)data.phone_number=can?await ttSha256(p):p;
+    if(em)data.email=can?await ttSha256(em):em;
+    if(!data.phone_number&&!data.email)return;
+    ttq.identify(data);
+    console.log('[TikTokPixel] identify (advanced matching) sent');
+  }catch(e){console.error('[TikTokPixel] identify error:',e);}
+}
+document.addEventListener('change',function(e){
+  if(e.target&&(e.target.id==='omPhone'||e.target.id==='omEmail')){
+    var ph=document.getElementById('omPhone'),em=document.getElementById('omEmail');
+    ttIdentifyPhone(ph?ph.value:'',em?em.value:'');
+  }
+});
+</script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -886,6 +921,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
       <div class="om-product" id="omProduct"></div>
       <div class="om-field"><label>আপনার নাম *</label><input type="text" id="omName" placeholder="Full name"></div>
       <div class="om-field"><label>ফোন নম্বর *</label><input type="tel" id="omPhone" placeholder="01XXXXXXXXX"></div>
+      <div class="om-field"><label>ইমেইল (optional)</label><input type="email" id="omEmail" placeholder="you@example.com" autocomplete="email"></div>
       <div class="om-field"><label>বিভাগ *</label>
         <select id="omDivision" onchange="onDivisionChange()">
           <option value="">-- বিভাগ বেছে নিন --</option>
@@ -1780,6 +1816,7 @@ function openOrderModal(){
     </div>`;
   document.getElementById('omName').value='';
   document.getElementById('omPhone').value='';
+  document.getElementById('omEmail').value='';
   document.getElementById('omDivision').value='';
   document.getElementById('omDistrict').innerHTML='<option value="">-- আগে বিভাগ বেছে নিন --</option>';
   document.getElementById('omDistrict').disabled=true;
@@ -1834,6 +1871,7 @@ function reviewOrderForm(){
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');return;}
   if(!cart.length){toast('কার্ট খালি!');return;}
   if(!/^01[0-9]{9}$/.test(phone)){toast('সঠিক ফোন নম্বর দিন (01XXXXXXXXX)!');return;}
+  {const em=document.getElementById('omEmail').value.trim();if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){toast('সঠিক ইমেইল দিন, অথবা ফাঁকা রাখুন!');return;}}
 
   const subtotal=cart.reduce((s,i)=>s+Number(i.price)*i.qty,0);
   const discount=computeDiscount(subtotal);
@@ -1947,7 +1985,7 @@ async function _confirmSubmitOrderInner(){
   const thana=document.getElementById('omThana').value||document.getElementById('omThanaSearch').value;
   const addrLine=document.getElementById('omAddress').value.trim();
   const addr=`${addrLine}, ${thana}, ${district}, ${division}`.replace(/^,\s*/,'');
-  const note=document.getElementById('omNote').value.trim();
+  const note=[document.getElementById('omNote').value.trim(),(document.getElementById('omEmail').value.trim()?'Email: '+document.getElementById('omEmail').value.trim():'')].filter(Boolean).join(' | ');
   if(!name||!phone||!division||!district||!thana||!addrLine){toast('সব তথ্য পূরণ করুন!');backToOrderForm();return;}
   if(!cart.length){toast('কার্ট খালি!');return;}
 
@@ -2060,6 +2098,8 @@ async function _confirmSubmitOrderInner(){
   // TikTok Pixel + Events API: CompletePayment — fires ONLY after Supabase confirms the order saved
   // Same event_id sent to both Pixel (browser) and Events API (server) so TikTok deduplicates them
   const ttEventId='bbd_tt_'+Date.now();
+  const custEmail=(document.getElementById('omEmail')||{value:''}).value.trim();
+  await ttIdentifyPhone(phone,custEmail); // advanced matching right before the purchase event
   try{
     if(typeof ttq!=='undefined'){
       ttq.track('CompletePayment',{
@@ -2077,6 +2117,7 @@ async function _confirmSubmitOrderInner(){
       body:JSON.stringify({
         event_id:ttEventId,
         phone,
+        email:custEmail||undefined,
         value:total,
         currency:'BDT',
         contents:cart.map(i=>({content_id:String(i.id),content_name:i.name,quantity:i.qty,price:Number(i.price)})),
