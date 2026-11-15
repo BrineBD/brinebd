@@ -200,6 +200,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,
 .prod-price-old{font-size:13px;color:var(--mid);text-decoration:line-through}
 .prod-order{background:var(--black);color:var(--white);border:none;padding:8px 12px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;letter-spacing:.3px;white-space:nowrap}
 .prod-order:hover{background:var(--accent)}
+.prod-bottom .prod-price{width:100%}
+.prod-actions{display:flex;gap:6px;width:100%}
+.prod-actions .prod-order{flex:1;padding:12px 8px;font-size:12.5px;border-radius:6px;text-align:center}
+.prod-order-ghost{background:var(--white);color:var(--black);border:1.5px solid var(--black)}
+.prod-order-ghost:hover{background:var(--black);color:var(--white)}
+.prod-order-buy{background:var(--accent,#c9a24b);color:var(--black)}
+.prod-order-buy:hover{background:var(--accent,#c9a24b);filter:brightness(.92)}
+@media(max-width:640px){.prod-actions{flex-direction:column}.prod-actions .prod-order{padding:13px 8px;font-size:13px}}
 
 /* PRODUCT PAGE */
 .ppage-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:350;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
@@ -1323,7 +1331,12 @@ function renderProducts(f){
           <span class="prod-price-now">৳${Number(p.price).toLocaleString()}</span>
           ${p.old_price?`<span class="prod-price-old">৳${Number(p.old_price).toLocaleString()}</span>`:''}
         </div>
-        <button class="prod-order" ${outOfStock?'style="background:#444;"':''} data-pid="${p.id}" data-pname="${String(p.name).replace(/"/g,'&quot;')}" onclick="event.stopPropagation();${outOfStock?'notifyRestockBtn(this)':`quickAddToCart(${p.id})`}">${outOfStock?'🔔 Notify Me':'🛒 Add to Cart'}</button>
+        <div class="prod-actions">
+          ${outOfStock
+            ?`<button class="prod-order" style="background:#444;" data-pid="${p.id}" data-pname="${String(p.name).replace(/"/g,'&quot;')}" onclick="event.stopPropagation();notifyRestockBtn(this)">🔔 Notify Me</button>`
+            :`<button class="prod-order prod-order-ghost" onclick="event.stopPropagation();quickAddToCart(${p.id})">🛒 Add to Cart</button>
+              <button class="prod-order prod-order-buy" onclick="event.stopPropagation();quickBuyNow(${p.id})">⚡ Order Now</button>`}
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1680,6 +1693,19 @@ function quickAddToCart(id){
       console.log('[TikTokPixel] AddToCart fired →',p.name);
     }
   }catch(e){console.error('[TikTokPixel] AddToCart error:',e);}
+  return true;
+}
+// "Order Now" straight from the product card
+function quickBuyNow(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  const sizes=(p.sizes||[]).filter(x=>x&&x!=='N/A');
+  if(sizes.length>1){ // customer must pick their own size, so open the product page
+    openPpage(id);
+    setTimeout(()=>toast('অনুগ্রহ করে আপনার সাইজ সিলেক্ট করুন'),300);
+    return;
+  }
+  if(quickAddToCart(id)!==true)return; // out of stock etc.
+  setTimeout(()=>{openOrderModal();},150);
 }
 
 // CHECKOUT MODAL (always built from current cart items)
