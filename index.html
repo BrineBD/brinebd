@@ -2321,6 +2321,10 @@ async function loadAdminOrders(){
         <input type="text" value="${o.courier_tracking_code||''}" placeholder="Steadfast Tracking Code/Link" id="track-${o.id}" style="flex:1;background:var(--off);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;font-family:'Inter',sans-serif;">
         <button class="oli-btn" style="background:var(--black);color:#fff;" onclick="saveTrackingCode('${o.id}')">Save</button>
       </div>
+      ${o.consignment_id
+        ?`<div class="oli-meta" style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">🚚 Steadfast #${o.consignment_id} · <b>${o.steadfast_status||'in_review'}</b> <button class="oli-btn" style="background:#444;color:#fff;" onclick="steadfastStatus('${o.id}',this)">🔄 Status</button></div>`
+        :((o.status==='cancelled'||o.status==='delivered')?''
+          :`<button class="oli-btn" style="background:#0a7d4f;color:#fff;margin-top:8px;width:100%;padding:10px;" onclick="steadfastSend('${o.id}',this)">🚚 Steadfast এ পাঠান</button>`)}
       <div class="oli-actions">
         <button class="oli-btn oli-btn-done" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="delivered">Delivered</button>
         <button class="oli-btn oli-btn-del" onclick="updateOrderStatus(this)" data-id="${o.id}" data-status="cancelled">Cancel</button>
@@ -2342,6 +2346,41 @@ async function saveTrackingCode(id){
   const{error}=await sb.from('orders').update({courier_tracking_code:code||null}).eq('id',id);
   if(error){toast('Error: '+error.message);return;}
   toast('✅ Tracking code saved!');
+}
+// ---- Steadfast courier (API keys stay on the server, inside the Edge Function) ----
+function sfToken(){
+  let t=localStorage.getItem('bbd_sf_token');
+  if(!t){t=(prompt('Steadfast Admin Token দিন (একবারই লাগবে):')||'').trim();if(t)localStorage.setItem('bbd_sf_token',t);}
+  return t;
+}
+async function sfCall(action,id){
+  const token=sfToken();if(!token)return null;
+  const r=await fetch(`${SURL}/functions/v1/steadfast-create-order`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+SKEY,'x-admin-token':token},
+    body:JSON.stringify({action,order_id:id})
+  });
+  let j={};try{j=await r.json();}catch(e){}
+  if(r.status===401)localStorage.removeItem('bbd_sf_token'); // wrong token -> ask again next time
+  return j;
+}
+async function steadfastSend(id,btn){
+  if(!confirm('এই অর্ডারটি Steadfast এ পাঠাবেন? (কনফার্মেশন কল শেষ তো?)'))return;
+  btn.disabled=true;btn.textContent='⏳ পাঠানো হচ্ছে...';
+  try{
+    const j=await sfCall('create',id);
+    if(j&&j.ok)toast(j.already_sent?'আগেই পাঠানো হয়েছে':'✅ Steadfast এ গেছে! Tracking: '+j.tracking_code);
+    else if(j)toast('❌ '+(j.error||'Steadfast error'));
+  }catch(e){toast('❌ Network error, আবার চেষ্টা করুন');}
+  loadAdminOrders();
+}
+async function steadfastStatus(id,btn){
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    const j=await sfCall('status',id);
+    if(j&&j.ok)toast('Status: '+j.status);else if(j)toast('❌ '+(j.error||'Status error'));
+  }catch(e){toast('❌ Network error');}
+  loadAdminOrders();
 }
 
 
