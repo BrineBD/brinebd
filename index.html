@@ -543,6 +543,45 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   .form-row{grid-template-columns:1fr}
   .hero-visual{grid-template-columns:1fr}
 }
+
+/* ===== SMART CATEGORIES + MOBILE UX ===== */
+button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.cat-showcase{max-width:1200px;margin:0 auto;padding:36px 0 8px}
+.cs-head{padding:0 20px 12px}
+.cs-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--black);line-height:1.2}
+.cs-row{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 20px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cs-row::-webkit-scrollbar{display:none}
+.cs-card{position:relative;flex:0 0 42%;max-width:190px;aspect-ratio:4/5;border-radius:14px;overflow:hidden;cursor:pointer;scroll-snap-align:start;background:var(--off);box-shadow:0 2px 10px rgba(0,0,0,.08);transition:transform .2s}
+.cs-card:active{transform:scale(.97)}
+.cs-card img{width:100%;height:100%;object-fit:cover;display:block}
+.cs-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:44px}
+.cs-info{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 12px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff;display:flex;flex-direction:column;gap:2px}
+.cs-info b{font-size:15px;font-weight:700;letter-spacing:.3px}
+.cs-info span{font-size:11.5px;opacity:.85}
+.cat-pills{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-bottom:14px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.cat-pills::-webkit-scrollbar{display:none}
+.cat-pill{white-space:nowrap;flex:0 0 auto}
+.shop-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px}
+#resultCount{font-size:13px;color:var(--mid);font-weight:500}
+#sortSel{border:1px solid var(--border);border-radius:20px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;background:var(--white);color:var(--black)}
+.prod-order.added,.ppage-order-btn.added{background:#1f8a4c!important;color:#fff!important;border-color:#1f8a4c!important}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+.cart-badge.bump{animation:bump .4s}
+@media(min-width:900px){
+  .cs-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));overflow:visible;padding:4px 32px 14px}
+  .cs-card{flex:none;max-width:none}.cs-head{padding:0 32px 12px}
+}
+@media(max-width:900px){.hero-visual{display:none}.hero-inner{gap:24px}}
+@media(max-width:640px){
+  nav{gap:8px}.nav-logo{font-size:18px}
+  .hide-sm{display:none}
+  .nav-right{gap:6px}.nav-cart,.nav-wish{padding:7px 10px}
+  .hero-inner{padding:36px 20px 28px}
+  .section{padding:40px 16px}
+  .ppage-actions{position:sticky;bottom:0;z-index:5;background:var(--white,#fff);padding:10px 0 calc(10px + env(safe-area-inset-bottom));margin-top:12px;box-shadow:0 -8px 16px -10px rgba(0,0,0,.25)}
+  .ppage-actions:not(:has(button:not([style*="display:none"]):not([style*="display: none"]))){display:none!important}
+  .ppage-actions .ppage-order-btn{padding:15px 8px;font-size:15px}
+}
 </style>
 <script type="application/ld+json">
 {
@@ -589,7 +628,7 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
   <div class="nav-right">
     <button class="nav-cart" id="navSignupBtn" onclick="openSignupModal()" style="border-color:var(--accent);color:var(--accent2);">
-      🎁 Sign Up
+      🎁<span class="hide-sm"> Sign Up</span>
     </button>
     <button class="nav-wish" onclick="toggleWishlistDrawer()" title="Wishlist">
       ❤️ <span class="wish-badge" id="wishBadge">0</span>
@@ -643,6 +682,12 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   </div>
 </section>
 
+<!-- CATEGORY SHOWCASE (filled by JS) -->
+<section class="cat-showcase" id="catShowcase">
+  <div class="cs-head"><div class="section-eyebrow">Shop by Category</div><h2 class="cs-title">কী খুঁজছেন?</h2></div>
+  <div class="cs-row" id="csRow"></div>
+</section>
+
 <!-- MARQUEE -->
 <div class="marquee-wrap">
   <div class="marquee-track">
@@ -672,15 +717,15 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
   <div class="search-bar-wrap">
     <input type="text" id="searchInput" placeholder="🔍 পণ্য খুঁজুন... (e.g. Jersey, Polo, Nike)" oninput="searchProducts(this.value)">
   </div>
-  <div class="cat-pills">
-    <button class="cat-pill active" onclick="filterCat('all',this)">All Items</button>
-    <button class="cat-pill" onclick="filterCat('Trousers',this)">👖 Trousers</button>
-    <button class="cat-pill" onclick="filterCat('Pants',this)">🩳 Shorts</button>
-    <button class="cat-pill" onclick="filterCat('T-Shirt',this)">👕 T-Shirt</button>
-    <button class="cat-pill" onclick="filterCat('Polo',this)">🎽 Polo</button>
-    <button class="cat-pill" onclick="filterCat('Hoodie',this)">🧥 Hoodie</button>
-    <button class="cat-pill" onclick="filterCat('Jersey',this)">⚽ Jersey</button>
-    <button class="cat-pill" onclick="filterCat('Jacket',this)">🧤 Jacket</button>
+  <div class="cat-pills"></div>
+  <div class="shop-tools">
+    <span id="resultCount"></span>
+    <select id="sortSel" onchange="curSort=this.value;renderProducts(curFilter)" aria-label="সাজান">
+      <option value="">সাজান: ডিফল্ট</option>
+      <option value="plh">দাম: কম → বেশি</option>
+      <option value="phl">দাম: বেশি → কম</option>
+      <option value="new">নতুন আগে</option>
+    </select>
   </div>
   <div class="products-grid" id="productsGrid">
     <div class="empty-state"><div class="empty-icon">⏳</div><p>Loading products...</p></div>
@@ -817,8 +862,8 @@ footer{background:var(--off);border-top:1px solid var(--border);padding:60px 32p
           <input class="qty-input sm" id="ppageQtyNum" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" value="1" aria-label="পরিমাণ" onfocus="this.select()" onkeydown="if(event.key==='Enter'){this.blur();}" onchange="ppageQtySet(this.value)">
           <button class="ppage-qty-btn" onclick="ppageQtyChange(1)">+</button>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="ppage-order-btn" id="ppageAddBtn" style="background:var(--off);color:var(--black);border:1.5px solid var(--black);" onclick="addToCartFromPpage()">
+        <div class="ppage-actions" style="display:flex;gap:8px;">
+          <button class="ppage-order-btn" id="ppageAddBtn" style="background:var(--off);color:var(--black);border:1.5px solid var(--black);" onclick="if(addToCartFromPpage()===true)flashAdded(this)">
             🛒 Add to Cart
           </button>
           <button class="ppage-order-btn" id="ppageBuyNowBtn" style="background:var(--accent,#c9a24b);" onclick="buyNowFromPpage()">
@@ -1294,8 +1339,10 @@ function showPpageSold(p){
 }
 
 function badgeSlug(b){return(b||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
+let curSort='';
 function renderProducts(f){
   curFilter=f;
+  renderCatUI();
   const g=document.getElementById('productsGrid');
   let list=f==='all'?products:products.filter(p=>p.category===f);
   if(curSearch){
@@ -1305,8 +1352,13 @@ function renderProducts(f){
   list=list.slice().sort((a,b)=>{
     const aOut=getTotalStock(a)<=0?1:0;
     const bOut=getTotalStock(b)<=0?1:0;
-    return aOut-bOut;
+    if(aOut!==bOut)return aOut-bOut;
+    if(curSort==='plh')return Number(a.price)-Number(b.price);
+    if(curSort==='phl')return Number(b.price)-Number(a.price);
+    if(curSort==='new')return Number(b.id)-Number(a.id);
+    return 0;
   });
+  const rc=document.getElementById('resultCount');if(rc)rc.textContent=list.length+' টি পণ্য';
   if(!list.length){
     g.innerHTML=`<div class="empty-state"><div class="empty-icon">📦</div><p>${curSearch?'কোনো পণ্য পাওয়া যায়নি।':(f==='all'?'No products yet. Add via Admin Panel.':'No products in this category.')}</p></div>`;
     return;
@@ -1318,7 +1370,7 @@ function renderProducts(f){
     return `
     <div class="prod-card" onclick="openPpage(${p.id})">
       <div class="prod-img">
-        ${p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
+        ${p.image_url?`<img loading="lazy" decoding="async" src="${p.image_url}" alt="${p.name}" loading="lazy">`:`<span>${icon(p.category)}</span>`}
         ${outOfStock?`<div class="prod-badge badge-out-of-stock">Out of Stock</div>`:(p.badge?`<div class="prod-badge badge-${badgeSlug(p.badge)}">${p.badge}</div>`:'')}
         <button class="wish-heart-btn" onclick="event.stopPropagation();toggleWishlist(${p.id},this)">${wished?'❤️':'🤍'}</button>
       </div>
@@ -1334,7 +1386,7 @@ function renderProducts(f){
         <div class="prod-actions">
           ${outOfStock
             ?`<button class="prod-order" style="background:#444;" data-pid="${p.id}" data-pname="${String(p.name).replace(/"/g,'&quot;')}" onclick="event.stopPropagation();notifyRestockBtn(this)">🔔 Notify Me</button>`
-            :`<button class="prod-order prod-order-ghost" onclick="event.stopPropagation();quickAddToCart(${p.id})">🛒 Add to Cart</button>
+            :`<button class="prod-order prod-order-ghost" onclick="event.stopPropagation();if(quickAddToCart(${p.id})===true)flashAdded(this)">🛒 Add to Cart</button>
               <button class="prod-order prod-order-buy" onclick="event.stopPropagation();quickBuyNow(${p.id})">⚡ Order Now</button>`}
         </div>
       </div>
@@ -1342,12 +1394,35 @@ function renderProducts(f){
   }).join('');
 }
 
+const CAT_META={Jersey:['Jersey','⚽'],Hoodie:['Hoodie','🧥'],Polo:['Polo','👕'],Pants:['Shorts','🩳'],Trousers:['Trousers','👖'],'T-Shirt':['T-Shirt','👕'],Jacket:['Jacket','🧥']};
+function catInfo(c){return CAT_META[c]||[c,'🛍️'];}
+let _catKey='';
+function renderCatUI(){
+  if(!Array.isArray(products)||!products.length)return;
+  const order=Object.keys(CAT_META);
+  const cats=[...new Set(products.map(p=>p.category).filter(Boolean))].sort((a,b)=>(order.indexOf(a)<0?99:order.indexOf(a))-(order.indexOf(b)<0?99:order.indexOf(b)));
+  const cnt=c=>products.filter(p=>p.category===c).length;
+  const key=cats.map(c=>c+cnt(c)).join('|')+'|'+curFilter;
+  if(key===_catKey)return;_catKey=key;
+  const pills=document.querySelector('.cat-pills');
+  if(pills)pills.innerHTML=`<button class="cat-pill${curFilter==='all'?' active':''}" data-cat="all" onclick="filterCat('all',this)">সব (${products.length})</button>`+cats.map(c=>{const [n,e]=catInfo(c);return `<button class="cat-pill${curFilter===c?' active':''}" data-cat="${c}" onclick="filterCat('${c}',this)">${e} ${n} (${cnt(c)})</button>`;}).join('');
+  const row=document.getElementById('csRow');
+  if(row)row.innerHTML=cats.map(c=>{const [n,e]=catInfo(c);const rep=products.find(p=>p.category===c&&p.image_url&&getTotalStock(p)>0)||products.find(p=>p.category===c&&p.image_url);return `<div class="cs-card" onclick="filterCat('${c}',null)">${rep?`<img src="${rep.image_url}" alt="${n}" loading="lazy" decoding="async">`:`<div class="cs-ph">${e}</div>`}<div class="cs-info"><b>${n}</b><span>${cnt(c)} টি পণ্য</span></div></div>`;}).join('');
+}
+function flashAdded(btn){
+  const b=document.getElementById('cartBadge');if(b){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');}
+  if(!btn||btn._flash)return;btn._flash=true;
+  const h=btn.innerHTML;btn.innerHTML='✓ যোগ হয়েছে';btn.classList.add('added');
+  try{if(navigator.vibrate)navigator.vibrate(30);}catch(e){}
+  setTimeout(()=>{btn.innerHTML=h;btn.classList.remove('added');btn._flash=false;},1300);
+}
 function filterCat(f,el){
   curFilter=f;
   renderProducts(f);
   document.querySelectorAll('.nav-cat').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.cat-pill').forEach(b=>b.classList.remove('active'));
-  if(el){el.classList.add('active');}
+  document.querySelectorAll('.cat-pill').forEach(b=>b.classList.toggle('active',b.dataset.cat===f));
+  if(el&&!el.dataset.cat){el.classList.add('active');}
   document.getElementById('shop').scrollIntoView({behavior:'smooth'});
 }
 function toggleMensMenu(e){
