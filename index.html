@@ -650,6 +650,50 @@ button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:tran
 .hero-brand,.hero-trust span{border-color:var(--border)}
 .prod-card,.cs-card{border-color:var(--border)}
 ::selection{background:var(--accent);color:#171717}
+
+/* ===== MOBILE HEADER + SLIDE-IN MENU + CATEGORY CARD EFFECTS ===== */
+nav{background:rgba(248,247,244,.94)}
+.nav-search-btn{display:none;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:none;border:none;color:var(--black);cursor:pointer}
+.nav-search{position:fixed;top:60px;left:0;right:0;z-index:99;background:var(--bg);padding:10px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border);box-shadow:0 10px 20px rgba(0,0,0,.08);transform:translateY(-140%);visibility:hidden;transition:transform .25s,visibility .25s}
+.nav-search.open{transform:none;visibility:visible}
+.nav-search input{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:999px;font-size:16px;background:#fff;font-family:'Inter',sans-serif;color:var(--black)}
+.nav-search input:focus{outline:none;border-color:var(--black)}
+.nav-search button{width:40px;height:40px;border-radius:50%;border:none;background:var(--off);color:var(--black);font-size:16px;cursor:pointer}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:198}
+.drawer-overlay.open{opacity:1;pointer-events:auto}
+.mobile-nav{display:flex!important;position:fixed;top:0;right:0;bottom:0;left:auto;width:84%;max-width:340px;background:var(--bg);border:none;padding:0 0 28px;z-index:199;flex-direction:column;gap:0;transform:translateX(100%);visibility:hidden;transition:transform .32s cubic-bezier(.4,0,.2,1),visibility .32s;overflow-y:auto;box-shadow:-14px 0 34px rgba(0,0,0,.2)}
+.mobile-nav.open{transform:none;visibility:visible}
+.mn-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
+.mn-logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--black)}
+.mn-logo b{color:var(--accent)}
+.mobile-nav .mn-close{width:38px;height:38px;border-radius:50%;background:var(--off);border:none;padding:0;text-align:center;font-size:16px}
+.mobile-nav>button,.mobile-nav #mnCats button{display:flex;align-items:center;gap:10px;padding:15px 20px;border-bottom:1px solid var(--border);font-size:15px;width:100%;text-align:left;background:none;border-top:none;border-left:none;border-right:none}
+.mobile-nav #mnCats button small{margin-left:auto;color:var(--mid);font-size:12px;background:var(--off);padding:2px 9px;border-radius:999px}
+.mobile-nav>button:active,.mobile-nav #mnCats button:active{background:var(--off)}
+.mobile-nav .mn-promo{margin:14px 16px 6px;width:auto;border:1px solid var(--accent);border-radius:12px;background:linear-gradient(135deg,#FBF4E2,#F3E8C9);color:#171717;font-weight:600;font-size:14px;padding:14px;gap:8px}
+.mn-promo span{margin-left:auto}
+.mobile-nav-label{padding:16px 20px 6px}
+.mn-wa{display:block;margin:20px 16px 0;background:#25d366;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;text-decoration:none;font-size:15px}
+.cs-card img{transition:transform .5s ease}
+.cs-card{transition:transform .2s ease,box-shadow .3s ease}
+.cs-info b::after{content:'\2192';display:inline-block;margin-left:6px;opacity:0;transform:translateX(-6px);transition:all .25s}
+.cs-card:active{transform:scale(.95)}
+.cs-card:active img{transform:scale(1.05)}
+@media(hover:hover){
+  .cs-card:hover{transform:translateY(-5px);box-shadow:0 16px 30px rgba(0,0,0,.2)}
+  .cs-card:hover img{transform:scale(1.08)}
+  .cs-card:hover .cs-info b::after{opacity:1;transform:none}
+}
+@media(max-width:900px){
+  nav{padding:0 12px;gap:6px}
+  .nav-search-btn{display:flex}
+  #navSignupBtn,.nav-wish{display:none}
+  .nav-right{gap:2px}
+  .nav-cart{position:relative;width:40px;height:40px;padding:0;justify-content:center;border-radius:50%;border:none;background:none}
+  .nav-cart .hide-sm{display:none}
+  .nav-cart .cart-badge{position:absolute;top:1px;right:0;min-width:17px;height:17px}
+  .hamburger{width:40px;height:40px;align-items:center;justify-content:center;padding:0}
+}
 </style>
 <script type="application/ld+json">
 {
@@ -695,6 +739,7 @@ button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:tran
     </div>
   </div>
   <div class="nav-right">
+    <button class="nav-search-btn" onclick="toggleNavSearch()" aria-label="Search"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
     <button class="nav-cart" id="navSignupBtn" onclick="openSignupModal()" style="border-color:var(--accent);color:var(--accent2);">
       🎁<span class="hide-sm"> Sign Up</span>
     </button>
@@ -703,7 +748,7 @@ button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:tran
     </button>
     <button class="nav-cart" onclick="toggleCart()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-      Cart <span class="cart-badge" id="cartBadge">0</span>
+      <span class="hide-sm">Cart</span> <span class="cart-badge" id="cartBadge">0</span>
     </button>
     <button class="hamburger" onclick="toggleMobileNav()">
       <span></span><span></span><span></span>
@@ -711,20 +756,22 @@ button,a,select,input{touch-action:manipulation;-webkit-tap-highlight-color:tran
   </div>
 </nav>
 
-<div class="mobile-nav" id="mobileNav">
-  <button onclick="openSignupModal();toggleMobileNav()" style="color:var(--accent2);font-weight:700;">🎁 Sign Up — ৳10 off/piece</button>
-  <button onclick="filterCat('all',null);toggleMobileNav()">All Products</button>
-  <div class="mobile-nav-label">MEN'S</div>
-  <button onclick="filterCat('Trousers',null);toggleMobileNav()">Trousers</button>
-  <button onclick="filterCat('Pants',null);toggleMobileNav()">Shorts</button>
-  <button onclick="filterCat('T-Shirt',null);toggleMobileNav()">T-Shirt</button>
-  <button onclick="filterCat('Polo',null);toggleMobileNav()">Polo Shirt</button>
-  <button onclick="filterCat('Hoodie',null);toggleMobileNav()">Hoodie / Sweater</button>
-  <button onclick="filterCat('Jersey',null);toggleMobileNav()">Football Jersey</button>
-  <button onclick="filterCat('Jacket',null);toggleMobileNav()">Jacket</button>
+<div class="nav-search" id="navSearch">
+  <input id="navSearchInput" type="search" placeholder="পণ্য খুঁজুন (Jersey, Polo, Nike...)" oninput="navSearchInput(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
+  <button onclick="toggleNavSearch()" aria-label="Close">✕</button>
+</div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleMobileNav()"></div>
+<aside class="mobile-nav" id="mobileNav" aria-label="Menu">
+  <div class="mn-head"><span class="mn-logo">Brine <b>BD</b></span><button class="mn-close" onclick="toggleMobileNav()" aria-label="Close">✕</button></div>
+  <button class="mn-promo" onclick="openSignupModal();toggleMobileNav()">🎁 Sign Up করুন · প্রতি পিসে ৳10 ছাড় <span>→</span></button>
+  <div class="mobile-nav-label">SHOP</div>
+  <button onclick="filterCat('all',null);toggleMobileNav()">🛍️ All Products</button>
+  <div id="mnCats"></div>
+  <div class="mobile-nav-label">MY ACCOUNT</div>
   <button onclick="toggleWishlistDrawer();toggleMobileNav()">❤️ Wishlist</button>
   <button onclick="openTrackOrder();toggleMobileNav()">📦 Track Order</button>
-</div>
+  <a class="mn-wa" href="https://wa.me/8801876650291" target="_blank" rel="noopener">💬 WhatsApp এ কথা বলুন</a>
+</aside>
 
 <!-- HERO -->
 <section class="hero" id="home">
@@ -1482,6 +1529,8 @@ function renderCatUI(){
   if(key===_catKey)return;_catKey=key;
   const pills=document.querySelector('.cat-pills');
   if(pills)pills.innerHTML=`<button class="cat-pill${curFilter==='all'?' active':''}" data-cat="all" onclick="filterCat('all',this)">সব (${products.length})</button>`+cats.map(c=>{const [n,e]=catInfo(c);return `<button class="cat-pill${curFilter===c?' active':''}" data-cat="${c}" onclick="filterCat('${c}',this)">${e} ${n} (${cnt(c)})</button>`;}).join('');
+  const mc=document.getElementById('mnCats');
+  if(mc)mc.innerHTML=cats.map(c=>{const [n,e]=catInfo(c);return `<button onclick="filterCat('${c}',null);toggleMobileNav()">${e} ${n} <small>${cnt(c)}</small></button>`;}).join('');
   const row=document.getElementById('csRow');
   if(row)row.innerHTML=cats.map(c=>{const [n,e]=catInfo(c);const rep=products.find(p=>p.category===c&&p.image_url&&getTotalStock(p)>0)||products.find(p=>p.category===c&&p.image_url);return `<div class="cs-card" onclick="filterCat('${c}',null)">${rep?`<img src="${rep.image_url}" alt="${n}" loading="lazy" decoding="async">`:`<div class="cs-ph">${e}</div>`}<div class="cs-info"><b>${n}</b><span>${cnt(c)} টি পণ্য</span></div></div>`;}).join('');
 }
@@ -3199,7 +3248,24 @@ async function saveEdit(){
   closeEdit();
   await loadProducts();renderAdminList();
 }
-function toggleMobileNav(){document.getElementById('mobileNav').classList.toggle('open');}
+function toggleMobileNav(){
+  const n=document.getElementById('mobileNav'),o=document.getElementById('drawerOverlay');
+  const open=n.classList.toggle('open');o.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+  if(open){const sb=document.getElementById('navSearch');if(sb)sb.classList.remove('open');}
+}
+function toggleNavSearch(){
+  const b=document.getElementById('navSearch'),i=document.getElementById('navSearchInput');
+  const open=b.classList.toggle('open');
+  if(open){const n=document.getElementById('mobileNav');if(n.classList.contains('open'))toggleMobileNav();setTimeout(()=>i.focus(),180);}
+  else{i.blur();window._navSrchScrolled=false;}
+}
+function navSearchInput(v){
+  const m=document.getElementById('searchInput');if(m)m.value=v;
+  searchProducts(v);
+  if(v.trim()&&!window._navSrchScrolled){window._navSrchScrolled=true;const sh=document.getElementById('shop');if(sh)sh.scrollIntoView({behavior:'smooth'});}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const n=document.getElementById('mobileNav');if(n&&n.classList.contains('open'))toggleMobileNav();const b=document.getElementById('navSearch');if(b&&b.classList.contains('open'))toggleNavSearch();}});
 
 // INIT
 pruneExpiredCart();
