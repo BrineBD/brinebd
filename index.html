@@ -732,6 +732,30 @@ nav{background:rgba(248,247,244,.94)}
 .fr-empty{font-size:13px;color:var(--mid);padding:8px 2px}
 .fr-add{display:flex;gap:8px;margin-bottom:10px}
 .fr-add input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:#fff}
+
+/* ===== CHECKOUT: bottom-sheet, sticky confirm button, no iOS zoom ===== */
+.cart-drawer{top:0;bottom:0;height:auto;max-height:100%}
+.drawer-items{flex:1 1 auto;min-height:0;-webkit-overflow-scrolling:touch}
+.drawer-foot{flex:none;background:var(--white);padding:14px 20px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 14px -12px rgba(0,0,0,.2)}
+.drawer-foot .cart-row{margin-bottom:12px}
+.drawer-foot .btn-black{padding:16px;font-size:16px;border-radius:12px;min-height:52px}
+.order-modal-box{position:relative}
+.om-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:none;background:var(--off);font-size:16px;cursor:pointer;z-index:3}
+.om-field input,.om-field textarea,.om-field select,#omThanaSearch{font-size:16px!important;padding:12px 13px!important}
+.om-field input.om-err,.om-field textarea.om-err,.om-field select.om-err{border-color:#d62828!important;box-shadow:0 0 0 3px rgba(214,40,40,.12)}
+.om-clear{display:block;font-size:12px;color:var(--mid);text-decoration:underline;margin:-6px 0 14px;cursor:pointer}
+.om-more{margin:2px 0 12px;border:1px dashed var(--border);border-radius:10px;padding:0 12px;background:#fff}
+.om-more summary{padding:13px 0;font-weight:600;font-size:13.5px;cursor:pointer;list-style:none}
+.om-more summary::-webkit-details-marker{display:none}
+.om-more[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px}
+.om-sticky{position:sticky;bottom:0;background:var(--white);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));margin-top:6px;box-shadow:0 -12px 14px -12px rgba(0,0,0,.2);z-index:2}
+.om-sticky .om-submit-btn{margin-top:0;padding:16px;font-size:16px;border-radius:12px;font-weight:800;background:linear-gradient(135deg,#D8BF88,#C6A96B);color:#171717;box-shadow:0 8px 18px rgba(198,169,107,.45)}
+.om-sticky .om-submit-btn:disabled{background:var(--mid);color:#fff;box-shadow:none}
+@keyframes sheetUp{from{transform:translateY(46px);opacity:.5}to{transform:none;opacity:1}}
+@media(max-width:640px){
+  .order-modal-overlay{align-items:flex-end;padding:0}
+  .order-modal-box{max-width:100%;max-height:94vh;max-height:94dvh;border-radius:20px 20px 0 0;padding:22px 16px 0;margin:0;animation:sheetUp .28s ease}
+}
 </style>
 <script type="application/ld+json">
 {
@@ -1127,13 +1151,14 @@ nav{background:rgba(248,247,244,.94)}
 <!-- NEW ORDER MODAL -->
 <div class="order-modal-overlay" id="orderModalOverlay">
   <div class="order-modal-box">
+    <button class="om-x" onclick="closeOrderModal()" aria-label="Close">✕</button>
     <div id="omForm">
       <h3>🛒 Place Your Order</h3>
       <p class="om-sub">Cash on Delivery — সারা বাংলাদেশে ডেলিভারি</p>
       <div class="om-product" id="omProduct"></div>
-      <div class="om-field"><label>আপনার নাম *</label><input type="text" id="omName" placeholder="Full name"></div>
-      <div class="om-field"><label>ফোন নম্বর *</label><input type="tel" id="omPhone" placeholder="01XXXXXXXXX"></div>
-      <div class="om-field"><label>ইমেইল (optional)</label><input type="email" id="omEmail" placeholder="you@example.com" autocomplete="email"></div>
+      <a class="om-clear" id="omClearSaved" style="display:none" onclick="clearSavedCustomer()">অন্য কারো জন্য অর্ডার? সংরক্ষিত তথ্য মুছুন</a>
+      <div class="om-field"><label>আপনার নাম *</label><input type="text" id="omName" placeholder="Full name" autocomplete="name" autocapitalize="words"></div>
+      <div class="om-field"><label>ফোন নম্বর *</label><input type="tel" id="omPhone" placeholder="01XXXXXXXXX" inputmode="numeric" autocomplete="tel" maxlength="14"></div>
       <div class="om-field"><label>বিভাগ *</label>
         <select id="omDivision" onchange="onDivisionChange()">
           <option value="">-- বিভাগ বেছে নিন --</option>
@@ -1154,11 +1179,12 @@ nav{background:rgba(248,247,244,.94)}
         <div id="omt-drop" style="display:none;max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:white;margin-top:4px;"></div>
         <input type="hidden" id="omThana">
       </div>
-      <div class="om-field"><label>বাড়ি নং / গ্রাম / এলাকা *</label><textarea id="omAddress" rows="2" placeholder="বাড়ি নং, গ্রাম, পাড়া..."></textarea></div>
+      <div class="om-field"><label>বাড়ি নং / গ্রাম / এলাকা *</label><textarea id="omAddress" rows="2" autocomplete="street-address" placeholder="বাড়ি নং, গ্রাম, পাড়া..."></textarea></div>
       <div class="om-field" id="omSizeField"><label>Size</label><div class="om-size-row" id="omSizes"></div></div>
       <div class="om-field" id="omQtyField"><label>Quantity</label>
         <select id="omQty"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
       </div>
+      <details class="om-more" id="omMore"><summary>🎟️ কুপন / ইমেইল / নোট (ঐচ্ছিক) <span style="float:right">＋</span></summary>
       <div class="om-field"><label>Coupon Code (optional)</label>
         <div style="display:flex;gap:8px;">
           <input type="text" id="omCoupon" placeholder="e.g. WELCOME10" style="text-transform:uppercase;flex:1;">
@@ -1166,9 +1192,12 @@ nav{background:rgba(248,247,244,.94)}
         </div>
         <div id="omCouponMsg" style="font-size:12px;margin-top:6px;"></div>
       </div>
+      <div class="om-field"><label>ইমেইল (optional)</label><input type="email" id="omEmail" placeholder="you@example.com" autocomplete="email"></div>
       <div class="om-field"><label>Note (optional)</label><input type="text" id="omNote" placeholder="কোনো বিশেষ চাহিদা..."></div>
-      <button class="om-submit-btn" id="omSubmitBtn" onclick="reviewOrderForm()">✅ Confirm Order</button>
-      <button class="om-cancel" onclick="closeOrderModal()">Cancel</button>
+      </details>
+      <div class="om-sticky">
+        <button class="om-submit-btn" id="omSubmitBtn" onclick="quickConfirm()">✅ অর্ডার কনফার্ম করুন</button>
+      </div>
     </div>
     <div id="omReview" style="display:none;"></div>
     <div class="om-success" id="omSuccess" style="display:none;">
@@ -1978,6 +2007,66 @@ function computeDiscount(subtotal){
   }
   return Math.min(Math.round(raw),subtotal);
 }
+// ===== ONE-STEP CHECKOUT =====
+function quickConfirm(){
+  if(orderInFlight)return;
+  const g=id=>document.getElementById(id);
+  document.querySelectorAll('.om-err').forEach(e=>e.classList.remove('om-err'));
+  const thana=g('omThana').value||g('omThanaSearch').value;
+  const phone=g('omPhone').value.trim().replace(/\s/g,'');
+  const email=g('omEmail').value.trim();
+  const checks=[
+    ['omName',!g('omName').value.trim(),'আপনার নাম লিখুন'],
+    ['omPhone',!/^01[0-9]{9}$/.test(phone),'সঠিক ফোন নম্বর দিন (01XXXXXXXXX)'],
+    ['omDivision',!g('omDivision').value,'বিভাগ সিলেক্ট করুন'],
+    ['omDistrict',!g('omDistrict').value,'জেলা সিলেক্ট করুন'],
+    ['omThanaSearch',!thana,'থানা/উপজেলা সিলেক্ট করুন'],
+    ['omAddress',!g('omAddress').value.trim(),'বাসার ঠিকানা লিখুন'],
+    ['omEmail',!!email&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email),'সঠিক ইমেইল দিন, অথবা ফাঁকা রাখুন']
+  ];
+  const bad=checks.find(c=>c[1]);
+  if(bad){
+    if(bad[0]==='omEmail')g('omMore').open=true;
+    const el=g(bad[0]);el.classList.add('om-err');
+    el.scrollIntoView({block:'center',behavior:'smooth'});
+    setTimeout(()=>{try{el.focus({preventScroll:true});}catch(e){}},300);
+    toast(bad[2]);return;
+  }
+  if(!cart.length){toast('কার্ট খালি!');return;}
+  g('omPhone').value=phone;
+  try{localStorage.setItem('bbd_cust',JSON.stringify({name:g('omName').value.trim(),phone,division:g('omDivision').value,district:g('omDistrict').value,thana,addr:g('omAddress').value.trim()}));}catch(e){}
+  confirmSubmitOrder();
+}
+function prefillCustomer(){
+  const clr=document.getElementById('omClearSaved');
+  try{
+    const c=JSON.parse(localStorage.getItem('bbd_cust')||'null');
+    if(!c){if(clr)clr.style.display='none';return;}
+    const g=id=>document.getElementById(id);
+    g('omName').value=c.name||'';g('omPhone').value=c.phone||'';
+    if(c.division&&BD_GEO[c.division]){
+      g('omDivision').value=c.division;onDivisionChange();
+      if(c.district&&BD_GEO[c.division][c.district]){
+        g('omDistrict').value=c.district;onDistrictChange();
+        if(c.thana){g('omThana').value=c.thana;g('omThanaSearch').value=c.thana;}
+      }
+    }
+    g('omAddress').value=c.addr||'';
+    if(clr)clr.style.display='block';
+    updateCheckoutTotals();
+  }catch(e){}
+}
+function clearSavedCustomer(){
+  try{localStorage.removeItem('bbd_cust');}catch(e){}
+  ['omName','omPhone','omAddress'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('omDivision').value='';onDivisionChange();
+  document.getElementById('omClearSaved').style.display='none';
+}
+document.addEventListener('input',e=>{if(e.target&&e.target.classList)e.target.classList.remove('om-err');});
+function updateSubmitLabel(total,district){
+  const b=document.getElementById('omSubmitBtn');if(!b||b.disabled)return;
+  b.textContent=district?('✅ অর্ডার কনফার্ম করুন · ৳'+total.toLocaleString()):'✅ অর্ডার কনফার্ম করুন';
+}
 function updateCheckoutTotals(){
   const subtotal=computeCartSubtotal();
   const discount=computeDiscount(subtotal);
@@ -1985,6 +2074,7 @@ function updateCheckoutTotals(){
   const thana=document.getElementById('omThana')?document.getElementById('omThana').value:'';
   const deliveryCharge=computeDeliveryCharge(district,thana);
   const finalTotal=subtotal-discount+deliveryCharge;
+  updateSubmitLabel(finalTotal,district);
   const totalBlock=document.querySelector('#omProduct .om-cart-total');
   if(!totalBlock)return;
   totalBlock.parentElement.querySelectorAll('.om-subtotal-row,.om-discount-row,.om-delivery-row').forEach(e=>e.remove());
@@ -2135,6 +2225,7 @@ function openOrderModal(){
   appliedCoupon=null;
   renderOrderItems();
   updateCheckoutTotals();
+  prefillCustomer();
   document.getElementById('orderModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   // InitiateCheckout — fires as soon as the checkout form opens with real cart contents
@@ -2267,16 +2358,17 @@ function showDuplicateOrderMsg(){
 async function confirmSubmitOrder(){
   if(orderInFlight)return;            // extra taps are ignored
   orderInFlight=true;                 // lock immediately (before any await)
-  const btn=document.querySelector('#omReview .om-submit-btn');
+  const btn=document.getElementById('omSubmitBtn');
   if(btn){btn.disabled=true;btn.textContent='⏳ অর্ডার হচ্ছে... একটু অপেক্ষা করুন';}
   try{
     await _confirmSubmitOrderInner();
   }catch(e){
     console.error('Order error:',e);
     toast('নেট সমস্যা হয়েছে, আবার চেষ্টা করুন।');
-    if(btn){btn.disabled=false;btn.textContent='✅ হ্যাঁ, Order Confirm করুন';}
+    if(btn){btn.disabled=false;updateCheckoutTotals();}
   }finally{
     orderInFlight=false;
+    if(btn&&btn.disabled){btn.disabled=false;updateCheckoutTotals();}
   }
 }
 async function _confirmSubmitOrderInner(){
@@ -2374,6 +2466,7 @@ async function _confirmSubmitOrderInner(){
     });
   }catch(e){console.log('Email error:',e);}
 
+  document.getElementById('omForm').style.display='none';
   document.getElementById('omReview').style.display='none';
   document.getElementById('omSuccess').style.display='block';
   // Meta Pixel: Purchase — fires ONLY after Supabase confirms the order saved
