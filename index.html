@@ -659,8 +659,8 @@ nav{background:rgba(248,247,244,.94)}
 .nav-search input{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:999px;font-size:16px;background:#fff;font-family:'Inter',sans-serif;color:var(--black)}
 .nav-search input:focus{outline:none;border-color:var(--black)}
 .nav-search button{width:40px;height:40px;border-radius:50%;border:none;background:var(--off);color:var(--black);font-size:16px;cursor:pointer}
-.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:198}
-.drawer-overlay.open{opacity:1;pointer-events:auto}
+.nav-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s;z-index:198}
+.nav-overlay.open{opacity:1;pointer-events:auto}
 .mobile-nav{display:flex!important;position:fixed;top:0;right:0;bottom:0;left:auto;width:84%;max-width:340px;background:var(--bg);border:none;padding:0 0 28px;z-index:199;flex-direction:column;gap:0;transform:translateX(100%);visibility:hidden;transition:transform .32s cubic-bezier(.4,0,.2,1),visibility .32s;overflow-y:auto;box-shadow:-14px 0 34px rgba(0,0,0,.2)}
 .mobile-nav.open{transform:none;visibility:visible}
 .mn-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1}
@@ -710,6 +710,28 @@ nav{background:rgba(248,247,244,.94)}
 .ord-day{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 6px;margin-top:8px;font-size:12.5px;color:var(--mid);border-bottom:1px solid var(--border)}
 .ord-day b{color:var(--black);font-size:13.5px}
 .ord-more{width:100%;margin-top:12px;padding:13px;border:1.5px solid var(--black);background:#fff;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+
+/* ===== FRAUD ===== */
+.risk-row{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+.risk-badge{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+.r-high{background:#d62828}.r-mid{background:#d9890b}.r-low{background:#1f8a4c}
+.rk-chip{font-size:11px;background:#fdecea;color:#a31515;border-radius:999px;padding:3px 9px}
+.rk-chip.good{background:#e6f7ed;color:#136b3a}
+.risk-actions{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.fr-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.fr-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.fr-card.wide{grid-column:1/-1}
+.fr-card b{display:block;font-size:24px;font-weight:800}
+.fr-card span{font-size:11.5px;color:var(--mid)}
+.fr-card.hi{border-color:#d62828;background:#fff5f5}.fr-card.hi b{color:#d62828}
+.fr-card.md{border-color:#d9890b;background:#fffaf0}.fr-card.md b{color:#d9890b}
+.fr-sec{font-weight:800;font-size:14px;margin:18px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--black)}
+.fr-item{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
+.fr-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.fr-meta{font-size:12.5px;color:var(--mid);margin-top:2px}
+.fr-empty{font-size:13px;color:var(--mid);padding:8px 2px}
+.fr-add{display:flex;gap:8px;margin-bottom:10px}
+.fr-add input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:#fff}
 </style>
 <script type="application/ld+json">
 {
@@ -776,7 +798,7 @@ nav{background:rgba(248,247,244,.94)}
   <input id="navSearchInput" type="search" placeholder="পণ্য খুঁজুন (Jersey, Polo, Nike...)" oninput="navSearchInput(this.value)" onkeydown="if(event.key==='Enter'){this.blur();}">
   <button onclick="toggleNavSearch()" aria-label="Close">✕</button>
 </div>
-<div class="drawer-overlay" id="drawerOverlay" onclick="toggleMobileNav()"></div>
+<div class="nav-overlay" id="navOverlay" onclick="toggleMobileNav()"></div>
 <aside class="mobile-nav" id="mobileNav" aria-label="Menu">
   <div class="mn-head"><span class="mn-logo">Brine <b>BD</b></span><button class="mn-close" onclick="toggleMobileNav()" aria-label="Close">✕</button></div>
   <button class="mn-promo" onclick="openSignupModal();toggleMobileNav()">🎁 Sign Up করুন · প্রতি পিসে ৳10 ছাড় <span>→</span></button>
@@ -1204,6 +1226,7 @@ nav{background:rgba(248,247,244,.94)}
       <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border);">
         <button id="tabProducts" onclick="switchAdminTab('products')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid var(--black);margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--black);">Products</button>
         <button id="tabOrders" onclick="switchAdminTab('orders')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">Orders</button>
+        <button id="tabFraud" onclick="switchAdminTab('fraud')" style="padding:10px 14px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">🛡️ Fraud</button>
         <button id="tabCoupons" onclick="switchAdminTab('coupons')" style="padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'Inter',sans-serif;color:var(--mid);">Coupons</button>
       </div>
       <!-- PRODUCTS TAB -->
@@ -1301,12 +1324,13 @@ nav{background:rgba(248,247,244,.94)}
           </div>
           <div class="ord-sum" id="ordSummary"></div>
           <div class="ord-chips" id="ordStatus">
-            <button data-s="all" onclick="ordSetStatus('all')">সব <i data-c="all"></i></button><button data-s="pending" onclick="ordSetStatus('pending')">Pending <i data-c="pending"></i></button><button data-s="unsent" onclick="ordSetStatus('unsent')">Steadfast বাকি <i data-c="unsent"></i></button><button data-s="delivered" onclick="ordSetStatus('delivered')">Delivered <i data-c="delivered"></i></button><button data-s="cancelled" onclick="ordSetStatus('cancelled')">Cancelled <i data-c="cancelled"></i></button>
+            <button data-s="all" onclick="ordSetStatus('all')">সব <i data-c="all"></i></button><button data-s="pending" onclick="ordSetStatus('pending')">Pending <i data-c="pending"></i></button><button data-s="risky" onclick="ordSetStatus('risky')">🔴 Risky <i data-c="risky"></i></button><button data-s="unsent" onclick="ordSetStatus('unsent')">Steadfast বাকি <i data-c="unsent"></i></button><button data-s="delivered" onclick="ordSetStatus('delivered')">Delivered <i data-c="delivered"></i></button><button data-s="cancelled" onclick="ordSetStatus('cancelled')">Cancelled <i data-c="cancelled"></i></button>
           </div>
         </div>
         <div id="adminOrdersList"><p style="color:var(--mid);font-size:13px;">Loading orders...</p></div>
         <button id="ordMore" class="ord-more" style="display:none" onclick="ordState.limit+=30;renderAdminOrders()"></button>
       </div>
+      <div id="adminTabFraud" style="display:none;"><div id="fraudBody"><p style="color:var(--mid);font-size:13px;">Loading...</p></div></div>
       <div id="adminTabCoupons" style="display:none;">
         <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Add Coupon</h3>
         <div class="form-row">
@@ -2270,6 +2294,11 @@ async function _confirmSubmitOrderInner(){
   // Duplicate protection: same phone + same items already ordered recently?
   const orderSig=orderSignature(cart);
   if(await findDuplicateOrder(phone,orderSig)){showDuplicateOrderMsg();return;}
+  // Blocked number check (server-side list; if the check fails, a real order is never blocked)
+  try{
+    const {data:blk}=await sb.rpc('is_phone_blocked',{p:phone});
+    if(blk===true){alert('দুঃখিত, এই নম্বর থেকে অনলাইনে অর্ডার নেওয়া সম্ভব হচ্ছে না। অনুগ্রহ করে আমাদের WhatsApp এ যোগাযোগ করুন।');backToOrderForm();return;}
+  }catch(e){}
 
   // Re-check stock right before placing the order, using FRESH data straight
   // from the database (not the possibly-stale local copy) — this closes the
@@ -2539,14 +2568,168 @@ function closeOrder(){closeOrderModal();}
 
 // ADMIN TABS
 function switchAdminTab(tab){
-  document.getElementById('adminTabProducts').style.display = tab==='products'?'block':'none';
-  document.getElementById('adminTabOrders').style.display = tab==='orders'?'block':'none';
-  document.getElementById('adminTabCoupons').style.display = tab==='coupons'?'block':'none';
-  document.getElementById('tabProducts').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='products'?'var(--black)':'transparent')+';color:'+(tab==='products'?'var(--black)':'var(--mid)');
-  document.getElementById('tabOrders').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='orders'?'var(--black)':'transparent')+';color:'+(tab==='orders'?'var(--black)':'var(--mid)');
-  document.getElementById('tabCoupons').style.cssText='padding:10px 20px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab==='coupons'?'var(--black)':'transparent')+';color:'+(tab==='coupons'?'var(--black)':'var(--mid)');
-  if(tab==='orders') loadAdminOrders();
-  if(tab==='coupons') loadCoupons();
+  ['Products','Orders','Fraud','Coupons'].forEach(n=>{
+    const k=n.toLowerCase(),c=document.getElementById('adminTab'+n),b=document.getElementById('tab'+n);
+    if(c)c.style.display=tab===k?'block':'none';
+    if(b)b.style.cssText='padding:10px 14px;background:none;border:none;font-weight:600;font-size:14px;cursor:pointer;margin-bottom:-2px;font-family:Inter,sans-serif;border-bottom:2px solid '+(tab===k?'var(--black)':'transparent')+';color:'+(tab===k?'var(--black)':'var(--mid)');
+  });
+  if(tab==='orders')loadAdminOrders();
+  if(tab==='coupons')loadCoupons();
+  if(tab==='fraud')loadFraudDashboard();
+}
+
+// ================= FRAUD DETECTION =================
+let fraudIdx=null,fraudRows=[],fraudAt=0,blockedSet=new Set(),blockedList=[];
+const normPhone=p=>String(p||'').replace(/\D/g,'').replace(/^880/,'0');
+const sigOf=o=>orderSignature(Array.isArray(o.items)?o.items:[]);
+const tOf=o=>new Date(o.created_at).getTime();
+const stOf=o=>(o.status||'pending').toLowerCase();
+const sfOf=o=>(o.steadfast_status||'').toLowerCase();
+const isOpenO=o=>stOf(o)!=='delivered'&&stOf(o)!=='cancelled';
+const isDeliveredO=o=>stOf(o)==='delivered'||sfOf(o)==='delivered';
+function buildFraudIndex(rows){
+  const byPhone={},byAddr={};
+  rows.forEach(o=>{
+    const ph=normPhone(o.customer_phone);(byPhone[ph]=byPhone[ph]||[]).push(o);
+    const ad=String(o.customer_address||'').toLowerCase().replace(/[^a-z0-9\u0980-\u09ff]/g,'');
+    if(ad.length>12)(byAddr[ad]=byAddr[ad]||[]).push(o);
+  });
+  Object.values(byPhone).forEach(a=>a.sort((x,y)=>tOf(x)-tOf(y)));
+  return {byPhone,byAddr};
+}
+function dupSiblings(o){
+  if(!fraudIdx)return [];
+  const sig=sigOf(o),t=tOf(o);
+  return (fraudIdx.byPhone[normPhone(o.customer_phone)]||[]).filter(x=>x.id!==o.id&&sigOf(x)===sig&&Math.abs(tOf(x)-t)<864e5);
+}
+// a cancel only counts against the customer when it was NOT just a duplicate copy
+function isRealBad(o){return (stOf(o)==='cancelled'||sfOf(o)==='cancelled'||sfOf(o)==='returned')&&!dupSiblings(o).length;}
+function riskOf(o){
+  if(!fraudIdx)return null;
+  const ph=normPhone(o.customer_phone),t=tOf(o),all=fraudIdx.byPhone[ph]||[];
+  if(blockedSet.has(ph))return {score:100,level:'high',why:[{t:'🚫 Blocked নম্বর'}],blocked:true,dups:0};
+  let score=0;const why=[];
+  const prev=all.filter(x=>x.id!==o.id&&tOf(x)<t);
+  const bad=prev.filter(isRealBad).length,good=prev.filter(isDeliveredO).length;
+  if(bad){score+=Math.min(60,28*bad);why.push({t:'❌ আগে '+bad+'টি Cancel/Return'});}
+  if(good){score-=Math.min(45,15*good);why.push({t:'✅ '+good+'টি সফল ডেলিভারি',good:true});}
+  const n24=all.filter(x=>Math.abs(tOf(x)-t)<864e5).length;
+  if(n24>=5){score+=35;why.push({t:'⚡ ২৪ ঘণ্টায় '+n24+'টি অর্ডার'});}else if(n24>=3){score+=20;why.push({t:'⚡ ২৪ ঘণ্টায় '+n24+'টি অর্ডার'});}
+  const dups=dupSiblings(o).length;
+  if(dups){score+=15;why.push({t:'⚠️ Duplicate ('+(dups+1)+'x)'});}
+  const ad=String(o.customer_address||'').toLowerCase().replace(/[^a-z0-9\u0980-\u09ff]/g,'');
+  const sameAddr=(fraudIdx.byAddr[ad]||[]).filter(x=>normPhone(x.customer_phone)!==ph&&Math.abs(tOf(x)-t)<30*864e5);
+  if(ad.length>12&&sameAddr.length){score+=15;why.push({t:'📍 একই ঠিকানায় ভিন্ন নম্বর'});}
+  const names=new Set(all.map(x=>String(x.customer_name||'').trim().toLowerCase()));
+  if(names.size>=3){score+=10;why.push({t:'👥 একই নম্বরে ভিন্ন নাম'});}
+  if(/(\d)\1{5,}/.test(ph)||/0123456|1234567|2345678|3456789/.test(ph)){score+=25;why.push({t:'📵 সন্দেহজনক নম্বর'});}
+  if(String(o.customer_address||'').length<15||String(o.customer_name||'').trim().length<3){score+=10;why.push({t:'📝 নাম/ঠিকানা অসম্পূর্ণ'});}
+  const items=Array.isArray(o.items)?o.items:[];const qty=items.reduce((a,i)=>a+(Number(i.qty)||1),0);
+  if(!prev.length&&(Number(o.total_amount)>=6000||qty>=6)){score+=10;why.push({t:'💰 নতুন কাস্টমার, বড় অর্ডার'});}
+  score=Math.max(0,Math.min(100,score));
+  return {score,level:score>=60?'high':score>=30?'mid':'low',why,dups,blocked:false};
+}
+function riskHtml(o){
+  const r=riskOf(o);if(!r)return '';
+  const em=r.level==='high'?'🔴':r.level==='mid'?'🟡':'🟢';
+  const lab=r.level==='high'?'উচ্চ ঝুঁকি':r.level==='mid'?'মাঝারি ঝুঁকি':'নিরাপদ';
+  const chips=r.why.map(w=>`<span class="rk-chip${w.good?' good':''}">${w.t}</span>`).join('');
+  const ph=normPhone(o.customer_phone);
+  const dupBtn=r.dups&&isOpenO(o)?`<button class="oli-btn" style="background:#b45309;color:#fff;" onclick="cancelDuplicates('${o.id}')">🧹 Duplicate Cancel</button>`:'';
+  const blkBtn=r.blocked?`<button class="oli-btn" style="background:#136b3a;color:#fff;" onclick="fraudUnblock('${ph}')">✅ Unblock</button>`:`<button class="oli-btn" style="background:#444;color:#fff;" onclick="fraudBlock('${ph}')">🚫 Block</button>`;
+  return `<div class="risk-row"><span class="risk-badge r-${r.level}">${em} ${r.score} · ${lab}</span>${chips}</div><div class="risk-actions">${dupBtn}${blkBtn}</div>`;
+}
+async function loadBlocked(force){
+  if(!localStorage.getItem('bbd_sf_token')&&!force)return;
+  try{const j=await sfCall('blocklist',null);if(j&&j.ok){blockedList=j.list||[];blockedSet=new Set(blockedList.map(b=>normPhone(b.phone)));}}catch(e){}
+}
+async function ensureFraud(force){
+  if(!force&&fraudIdx&&Date.now()-fraudAt<120000)return;
+  const {data}=await fetchOrders(0);
+  if(data){fraudRows=data;fraudIdx=buildFraudIndex(data);fraudAt=Date.now();}
+  await loadBlocked(false);
+}
+function refreshFraudViews(){
+  const ft=document.getElementById('adminTabFraud');
+  if(ft&&ft.style.display!=='none')renderFraud();
+  if(ordData.length)renderAdminOrders();
+}
+async function fraudBlock(ph){
+  const reason=prompt('Block করার কারণ (ঐচ্ছিক):','ভুয়া/ফেরত অর্ডার');if(reason===null)return;
+  const j=await sfCall('block',null,{phone:normPhone(ph),reason});
+  if(j&&j.ok){toast('🚫 Block করা হয়েছে');await loadBlocked(true);refreshFraudViews();}
+  else if(j)toast('❌ '+(j.error||'Error'));
+}
+async function fraudUnblock(ph){
+  if(!confirm('এই নম্বর Unblock করবেন?'))return;
+  const j=await sfCall('unblock',null,{phone:normPhone(ph)});
+  if(j&&j.ok){toast('✅ Unblock হয়েছে');await loadBlocked(true);refreshFraudViews();}
+  else if(j)toast('❌ '+(j.error||'Error'));
+}
+async function fraudAddManual(){
+  const inp=document.getElementById('frNewPhone');const ph=normPhone(inp.value);
+  if(!/^01\d{9}$/.test(ph)){toast('সঠিক নম্বর দিন (01XXXXXXXXX)');return;}
+  await fraudBlock(ph);inp.value='';
+}
+async function cancelDuplicates(id){
+  const o=fraudRows.find(x=>x.id===id)||ordData.find(x=>x.id===id);if(!o)return;
+  const g=[o,...dupSiblings(o)].filter(isOpenO).sort((a,b)=>tOf(a)-tOf(b));
+  if(g.length<2){toast('কোনো Duplicate নেই');return;}
+  if(!confirm(g.length+'টি একই অর্ডার আছে। প্রথমটি রেখে '+(g.length-1)+'টি Cancel করবেন?'))return;
+  const ids=g.slice(1).map(x=>x.id);
+  const {error}=await sb.from('orders').update({status:'cancelled'}).in('id',ids);
+  if(error){toast('Error: '+error.message);return;}
+  toast('🧹 '+ids.length+'টি Duplicate Cancel হয়েছে');
+  fraudAt=0;await loadAdminOrders();
+  const ft=document.getElementById('adminTabFraud');if(ft&&ft.style.display!=='none')loadFraudDashboard();
+}
+async function fraudCancel(id){
+  if(!confirm('এই অর্ডার Cancel করবেন?'))return;
+  await sb.from('orders').update({status:'cancelled'}).eq('id',id);
+  toast('Cancelled!');fraudAt=0;loadFraudDashboard();
+}
+async function loadFraudDashboard(){
+  const el=document.getElementById('fraudBody');
+  el.innerHTML='<p style="color:var(--mid);font-size:13px;">Loading...</p>';
+  await ensureFraud(true);await loadBlocked(true);
+  renderFraud();
+}
+function renderFraud(){
+  const el=document.getElementById('fraudBody');if(!el)return;
+  if(!fraudIdx){el.innerHTML='<p style="color:red;font-size:13px;">ডাটা লোড হয়নি, আবার চেষ্টা করুন।</p>';return;}
+  const money=n=>'৳'+Number(n||0).toLocaleString();
+  const openRows=fraudRows.filter(isOpenO);
+  const scored=openRows.map(o=>({o,r:riskOf(o)})).filter(x=>x.r);
+  const high=scored.filter(x=>x.r.level==='high'),mid=scored.filter(x=>x.r.level==='mid');
+  const seen=new Set(),groups=[];
+  openRows.forEach(o=>{if(seen.has(o.id))return;const d=dupSiblings(o).filter(isOpenO);if(d.length){const g=[o,...d].sort((a,b)=>tOf(a)-tOf(b));g.forEach(x=>seen.add(x.id));groups.push(g);}});
+  const since=Date.now()-30*864e5,recent=fraudRows.filter(o=>tOf(o)>=since);
+  const badRecent=recent.filter(isRealBad).length;
+  const rate=recent.length?Math.round(badRecent*100/recent.length):0;
+  const atRisk=high.reduce((a,x)=>a+(Number(x.o.total_amount)||0),0);
+  const risky=Object.entries(fraudIdx.byPhone).map(([ph,arr])=>({ph,arr,bad:arr.filter(isRealBad).length,del:arr.filter(isDeliveredO).length})).filter(x=>x.bad>=2||(x.bad>=1&&x.bad>=x.del&&x.arr.length>=2)).filter(x=>!blockedSet.has(x.ph)).sort((a,b)=>b.bad-a.bad).slice(0,12);
+  const row=(x)=>{const o=x.o,r=x.r,em=r.level==='high'?'🔴':'🟡';
+    return `<div class="fr-item"><div class="fr-top"><b>${o.customer_name}</b><span class="risk-badge r-${r.level}">${em} ${r.score}</span></div>
+    <div class="fr-meta">📞 ${o.customer_phone} · ${money(o.total_amount)} · ${new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</div>
+    <div class="risk-row">${r.why.map(w=>`<span class="rk-chip${w.good?' good':''}">${w.t}</span>`).join('')}</div>
+    <div class="risk-actions"><a class="oli-btn" style="background:#1f8a4c;color:#fff;text-decoration:none;" href="tel:${o.customer_phone}">📞 Call</a><button class="oli-btn oli-btn-del" onclick="fraudCancel('${o.id}')">Cancel</button><button class="oli-btn" style="background:#444;color:#fff;" onclick="fraudBlock('${normPhone(o.customer_phone)}')">🚫 Block</button></div></div>`;};
+  el.innerHTML=`
+  <div class="fr-cards">
+    <div class="fr-card hi"><b>${high.length}</b><span>🔴 উচ্চ ঝুঁকি (${money(atRisk)})</span></div>
+    <div class="fr-card md"><b>${mid.length}</b><span>🟡 মাঝারি ঝুঁকি</span></div>
+    <div class="fr-card"><b>${groups.length}</b><span>⚠️ Duplicate গ্রুপ</span></div>
+    <div class="fr-card"><b>${blockedList.length}</b><span>🚫 Blocked নম্বর</span></div>
+    <div class="fr-card wide"><b>${rate}%</b><span>↩️ গত ৩০ দিনে Cancel/Return হার (${badRecent}/${recent.length})</span></div>
+  </div>
+  <div class="fr-sec">এখনই যাচাই করুন (Pending)</div>
+  ${(high.length+mid.length)?[...high,...mid].sort((a,b)=>b.r.score-a.r.score).slice(0,20).map(row).join(''):'<p class="fr-empty">✅ কোনো ঝুঁকিপূর্ণ pending অর্ডার নেই</p>'}
+  <div class="fr-sec">Duplicate অর্ডার</div>
+  ${groups.length?groups.map(g=>`<div class="fr-item"><div class="fr-top"><b>${g[0].customer_name}</b><span class="risk-badge r-mid">${g.length}x</span></div><div class="fr-meta">📞 ${g[0].customer_phone} · প্রতিটি ${money(g[0].total_amount)}</div><div class="risk-actions"><button class="oli-btn" style="background:#b45309;color:#fff;" onclick="cancelDuplicates('${g[0].id}')">🧹 ${g.length-1}টি Duplicate Cancel</button></div></div>`).join(''):'<p class="fr-empty">কোনো Duplicate নেই</p>'}
+  <div class="fr-sec">বারবার Cancel/Return করা কাস্টমার</div>
+  ${risky.length?risky.map(x=>`<div class="fr-item"><div class="fr-top"><b>${x.arr[x.arr.length-1].customer_name}</b><span class="risk-badge r-high">❌ ${x.bad}</span></div><div class="fr-meta">📞 ${x.ph} · মোট ${x.arr.length}টি · ডেলিভারি ${x.del}টি</div><div class="risk-actions"><button class="oli-btn" style="background:#444;color:#fff;" onclick="fraudBlock('${x.ph}')">🚫 Block</button></div></div>`).join(''):'<p class="fr-empty">নেই</p>'}
+  <div class="fr-sec">Blocked নম্বর</div>
+  <div class="fr-add"><input id="frNewPhone" type="tel" placeholder="01XXXXXXXXX"><button class="oli-btn" style="background:#444;color:#fff;" onclick="fraudAddManual()">🚫 Block করুন</button></div>
+  ${blockedList.length?blockedList.map(b=>`<div class="fr-item"><div class="fr-top"><b>${b.phone}</b><button class="oli-btn" style="background:#136b3a;color:#fff;" onclick="fraudUnblock('${b.phone}')">✅ Unblock</button></div><div class="fr-meta">${b.reason||'—'}</div></div>`).join(''):'<p class="fr-empty">কোনো নম্বর Block করা নেই</p>'}`;
 }
 
 const ordState={days:10,status:'all',q:'',limit:30};
@@ -2573,6 +2756,7 @@ async function loadAdminOrders(){
   const {data,error}=await fetchOrders(need);
   if(error){el.innerHTML='<p style="color:red;font-size:13px;">Error: '+error.message+'</p>';return;}
   ordData=data;ordFetchedDays=need;
+  await ensureFraud(false);
   renderAdminOrders();
 }
 function ordApply(){ordState.limit=30;if(ordNeedDays()!==ordFetchedDays)loadAdminOrders();else renderAdminOrders();}
@@ -2585,14 +2769,14 @@ function renderAdminOrders(){
   let list=ordData;
   if(q)list=list.filter(o=>[o.customer_name,o.customer_phone,o.id,o.courier_tracking_code,o.consignment_id,o.customer_address].some(v=>String(v||'').toLowerCase().includes(q)));
   const isOpen=o=>{const st=o.status||'pending';return st!=='delivered'&&st!=='cancelled';};
-  const cnt={all:list.length,pending:0,delivered:0,cancelled:0,unsent:0};let sales=0;
+  const cnt={all:list.length,pending:0,delivered:0,cancelled:0,unsent:0,risky:0};let sales=0;
   list.forEach(o=>{
     const st=o.status||'pending';
-    if(st==='delivered')cnt.delivered++;else if(st==='cancelled')cnt.cancelled++;else{cnt.pending++;if(!o.consignment_id&&!o.courier_tracking_code)cnt.unsent++;}
+    if(st==='delivered')cnt.delivered++;else if(st==='cancelled')cnt.cancelled++;else{cnt.pending++;if(!o.consignment_id&&!o.courier_tracking_code)cnt.unsent++;const rk=riskOf(o);if(rk&&rk.level==='high')cnt.risky++;}
     if(st!=='cancelled')sales+=Number(o.total_amount)||0;
   });
   const f=ordState.status;
-  const shown=list.filter(o=>f==='all'?true:f==='pending'?isOpen(o):f==='unsent'?(isOpen(o)&&!o.consignment_id&&!o.courier_tracking_code):(o.status||'pending')===f);
+  const shown=list.filter(o=>f==='all'?true:f==='pending'?isOpen(o):f==='unsent'?(isOpen(o)&&!o.consignment_id&&!o.courier_tracking_code):f==='risky'?(isOpen(o)&&(riskOf(o)||{}).level==='high'):(o.status||'pending')===f);
   // controls state
   document.querySelectorAll('#ordRange button').forEach(b=>b.classList.toggle('on',Number(b.dataset.d)===ordState.days&&!q));
   document.querySelectorAll('#ordStatus button').forEach(b=>b.classList.toggle('on',b.dataset.s===f));
@@ -2626,6 +2810,7 @@ function adminOrderCard(o){
         <span class="oli-status" style="background:${statusColor}">${o.status||'pending'}</span>
       </div>
       <div class="oli-name">${o.customer_name}</div>
+      ${riskHtml(o)}
       <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
       ${items.some(i=>i.image_url)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">${items.map(i=>i.image_url?`<img loading="lazy" src="${i.image_url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" title="${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}">`:'').join('')}</div>`:''}
       <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}${o.delivery_charge!=null?' (ডেলিভারি ৳'+Number(o.delivery_charge).toLocaleString()+' সহ)':''}</div>
@@ -2665,12 +2850,12 @@ function sfToken(){
   if(!t){t=(prompt('Steadfast Admin Token দিন (একবারই লাগবে):')||'').trim();if(t)localStorage.setItem('bbd_sf_token',t);}
   return t;
 }
-async function sfCall(action,id){
+async function sfCall(action,id,extra){
   const token=sfToken();if(!token)return null;
   const r=await fetch(`${SURL}/functions/v1/steadfast-create-order`,{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+SKEY,'x-admin-token':token},
-    body:JSON.stringify({action,order_id:id})
+    body:JSON.stringify({action,order_id:id,...(extra||{})})
   });
   let j={};try{j=await r.json();}catch(e){}
   if(r.status===401)localStorage.removeItem('bbd_sf_token'); // wrong token -> ask again next time
@@ -2738,6 +2923,7 @@ async function updateOrderStatus(el){
   const id=el.dataset.id;
   const status=el.dataset.status;
   await sb.from('orders').update({status}).eq('id',id);
+  fraudAt=0;
   loadAdminOrders();
   toast(status==='delivered'?'Delivered!':'Cancelled!');
 }
@@ -3335,7 +3521,7 @@ async function saveEdit(){
   await loadProducts();renderAdminList();
 }
 function toggleMobileNav(){
-  const n=document.getElementById('mobileNav'),o=document.getElementById('drawerOverlay');
+  const n=document.getElementById('mobileNav'),o=document.getElementById('navOverlay');
   const open=n.classList.toggle('open');o.classList.toggle('open',open);
   document.body.style.overflow=open?'hidden':'';
   if(open){const sb=document.getElementById('navSearch');if(sb)sb.classList.remove('open');}
