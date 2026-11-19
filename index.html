@@ -694,6 +694,22 @@ nav{background:rgba(248,247,244,.94)}
   .nav-cart .cart-badge{position:absolute;top:1px;right:0;min-width:17px;height:17px}
   .hamburger{width:40px;height:40px;align-items:center;justify-content:center;padding:0}
 }
+
+/* ===== ADMIN ORDERS: filters, summary, day groups ===== */
+.ord-ctl{margin-bottom:12px}
+.ord-ctl input[type=search]{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;margin-bottom:10px;font-family:'Inter',sans-serif}
+.ord-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.ord-chips::-webkit-scrollbar{display:none}
+.ord-chips button{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#fff;color:var(--black);padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.ord-chips button.on{background:var(--black);color:#fff;border-color:var(--black)}
+.ord-chips i{font-style:normal;margin-left:4px;opacity:.7;font-size:11.5px}
+.ord-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.ord-sum div{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 4px;text-align:center}
+.ord-sum b{display:block;font-size:15px;font-weight:800;color:var(--black)}
+.ord-sum span{font-size:10.5px;color:var(--mid)}
+.ord-day{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 6px;margin-top:8px;font-size:12.5px;color:var(--mid);border-bottom:1px solid var(--border)}
+.ord-day b{color:var(--black);font-size:13.5px}
+.ord-more{width:100%;margin-top:12px;padding:13px;border:1.5px solid var(--black);background:#fff;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
 </style>
 <script type="application/ld+json">
 {
@@ -1278,7 +1294,18 @@ nav{background:rgba(248,247,244,.94)}
           <h3 style="font-size:18px;font-weight:600;">Recent Orders</h3>
           <button onclick="loadAdminOrders()" style="background:none;border:1px solid var(--border);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Refresh</button>
         </div>
+        <div class="ord-ctl">
+          <input id="ordSearch" type="search" placeholder="🔍 নাম / ফোন / অর্ডার ID / tracking খুঁজুন" oninput="ordSetQ(this.value)">
+          <div class="ord-chips" id="ordRange">
+            <button data-d="1" onclick="ordSetDays(1)">আজ</button><button data-d="3" onclick="ordSetDays(3)">৩ দিন</button><button data-d="7" onclick="ordSetDays(7)">৭ দিন</button><button data-d="10" onclick="ordSetDays(10)">১০ দিন</button><button data-d="30" onclick="ordSetDays(30)">৩০ দিন</button><button data-d="0" onclick="ordSetDays(0)">সব</button>
+          </div>
+          <div class="ord-sum" id="ordSummary"></div>
+          <div class="ord-chips" id="ordStatus">
+            <button data-s="all" onclick="ordSetStatus('all')">সব <i data-c="all"></i></button><button data-s="pending" onclick="ordSetStatus('pending')">Pending <i data-c="pending"></i></button><button data-s="unsent" onclick="ordSetStatus('unsent')">Steadfast বাকি <i data-c="unsent"></i></button><button data-s="delivered" onclick="ordSetStatus('delivered')">Delivered <i data-c="delivered"></i></button><button data-s="cancelled" onclick="ordSetStatus('cancelled')">Cancelled <i data-c="cancelled"></i></button>
+          </div>
+        </div>
         <div id="adminOrdersList"><p style="color:var(--mid);font-size:13px;">Loading orders...</p></div>
+        <button id="ordMore" class="ord-more" style="display:none" onclick="ordState.limit+=30;renderAdminOrders()"></button>
       </div>
       <div id="adminTabCoupons" style="display:none;">
         <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Add Coupon</h3>
@@ -2522,13 +2549,73 @@ function switchAdminTab(tab){
   if(tab==='coupons') loadCoupons();
 }
 
+const ordState={days:10,status:'all',q:'',limit:30};
+let ordData=[],ordFetchedDays=null,_ordTimer=null;
+async function fetchOrders(days){
+  let rows=[],from=0;const step=1000;let since=null;
+  if(days){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(days-1));since=d.toISOString();}
+  while(true){
+    let q=sb.from('orders').select('*').or('status.is.null,status.neq.deleted').order('created_at',{ascending:false}).range(from,from+step-1);
+    if(since)q=q.gte('created_at',since);
+    const {data,error}=await q;
+    if(error)return {error};
+    rows=rows.concat(data);
+    if(data.length<step||rows.length>=5000)break;
+    from+=step;
+  }
+  return {data:rows};
+}
+function ordNeedDays(){return ordState.q.trim()?0:ordState.days;}
 async function loadAdminOrders(){
   const el=document.getElementById('adminOrdersList');
   el.innerHTML='<p style="color:var(--mid);font-size:13px;">Loading...</p>';
-  const {data,error}=await sb.from('orders').select('*').or('status.is.null,status.neq.deleted').order('created_at',{ascending:false}).limit(50);
+  const need=ordNeedDays();
+  const {data,error}=await fetchOrders(need);
   if(error){el.innerHTML='<p style="color:red;font-size:13px;">Error: '+error.message+'</p>';return;}
-  if(!data.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;">No orders yet.</p>';return;}
-  el.innerHTML=data.map(o=>{
+  ordData=data;ordFetchedDays=need;
+  renderAdminOrders();
+}
+function ordApply(){ordState.limit=30;if(ordNeedDays()!==ordFetchedDays)loadAdminOrders();else renderAdminOrders();}
+function ordSetDays(d){ordState.days=d;ordApply();}
+function ordSetStatus(st){ordState.status=st;ordState.limit=30;renderAdminOrders();}
+function ordSetQ(v){ordState.q=v;clearTimeout(_ordTimer);_ordTimer=setTimeout(ordApply,300);}
+function renderAdminOrders(){
+  const el=document.getElementById('adminOrdersList');if(!el)return;
+  const q=ordState.q.trim().toLowerCase();
+  let list=ordData;
+  if(q)list=list.filter(o=>[o.customer_name,o.customer_phone,o.id,o.courier_tracking_code,o.consignment_id,o.customer_address].some(v=>String(v||'').toLowerCase().includes(q)));
+  const isOpen=o=>{const st=o.status||'pending';return st!=='delivered'&&st!=='cancelled';};
+  const cnt={all:list.length,pending:0,delivered:0,cancelled:0,unsent:0};let sales=0;
+  list.forEach(o=>{
+    const st=o.status||'pending';
+    if(st==='delivered')cnt.delivered++;else if(st==='cancelled')cnt.cancelled++;else{cnt.pending++;if(!o.consignment_id&&!o.courier_tracking_code)cnt.unsent++;}
+    if(st!=='cancelled')sales+=Number(o.total_amount)||0;
+  });
+  const f=ordState.status;
+  const shown=list.filter(o=>f==='all'?true:f==='pending'?isOpen(o):f==='unsent'?(isOpen(o)&&!o.consignment_id&&!o.courier_tracking_code):(o.status||'pending')===f);
+  // controls state
+  document.querySelectorAll('#ordRange button').forEach(b=>b.classList.toggle('on',Number(b.dataset.d)===ordState.days&&!q));
+  document.querySelectorAll('#ordStatus button').forEach(b=>b.classList.toggle('on',b.dataset.s===f));
+  document.querySelectorAll('#ordStatus i').forEach(i=>i.textContent=cnt[i.dataset.c]);
+  document.getElementById('ordSummary').innerHTML=
+    `<div><b>${cnt.all}</b><span>অর্ডার</span></div><div><b>${cnt.pending}</b><span>Pending</span></div><div><b>${cnt.delivered}</b><span>Delivered</span></div><div><b>\u09f3${sales.toLocaleString()}</b><span>বিক্রি</span></div>`;
+  const more=document.getElementById('ordMore');
+  if(!shown.length){el.innerHTML='<p style="color:var(--mid);font-size:13px;padding:14px 0;">'+(q?'কোনো অর্ডার পাওয়া যায়নি।':'এই সময়ে কোনো অর্ডার নেই।')+'</p>';if(more)more.style.display='none';return;}
+  // day totals
+  const dayKey=o=>new Date(o.created_at).toDateString();
+  const days={};shown.forEach(o=>{const k=dayKey(o);(days[k]=days[k]||{n:0,sum:0});days[k].n++;if(o.status!=='cancelled')days[k].sum+=Number(o.total_amount)||0;});
+  const today=new Date().toDateString(),yest=new Date(Date.now()-864e5).toDateString();
+  let html='',last='';
+  shown.slice(0,ordState.limit).forEach(o=>{
+    const k=dayKey(o);
+    if(k!==last){last=k;const lab=k===today?'আজ':k===yest?'গতকাল':new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+      html+=`<div class="ord-day"><b>${lab}</b><span>${days[k].n} টি · \u09f3${days[k].sum.toLocaleString()}</span></div>`;}
+    html+=adminOrderCard(o);
+  });
+  el.innerHTML=html;
+  if(more){const rest=shown.length-ordState.limit;more.style.display=rest>0?'block':'none';more.textContent='আরও দেখুন ('+rest+' টি বাকি)';}
+}
+function adminOrderCard(o){
     const items=Array.isArray(o.items)?o.items:[];
     const itemText=items.map(i=>`${i.name||''}${i.color?' ['+i.color+']':''} (${i.size||''}×${i.qty||1})`).join(', ');
     const date=new Date(o.created_at).toLocaleString('en-BD',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
@@ -2540,7 +2627,7 @@ async function loadAdminOrders(){
       </div>
       <div class="oli-name">${o.customer_name}</div>
       <div class="oli-meta">📱 ${o.customer_phone} &nbsp;|&nbsp; 📍 ${o.customer_address}</div>
-      ${items.some(i=>i.image_url)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">${items.map(i=>i.image_url?`<img src="${i.image_url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" title="${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}">`:'').join('')}</div>`:''}
+      ${items.some(i=>i.image_url)?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">${items.map(i=>i.image_url?`<img loading="lazy" src="${i.image_url}" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" title="${i.name||''}${i.size&&i.size!=='N/A'?' ('+i.size+')':''} ×${i.qty||1}">`:'').join('')}</div>`:''}
       <div class="oli-meta" style="margin-top:4px;">📦 ${itemText||'-'} &nbsp;|&nbsp; 💰 ৳${Number(o.total_amount).toLocaleString()}${o.delivery_charge!=null?' (ডেলিভারি ৳'+Number(o.delivery_charge).toLocaleString()+' সহ)':''}</div>
       <div class="oli-meta" style="margin-top:2px;">🕐 ${date}</div>
       <div style="display:flex;gap:6px;margin-top:8px;">
@@ -2557,7 +2644,6 @@ async function loadAdminOrders(){
         <button class="oli-btn" style="background:#444;color:#fff;" onclick="deleteOrder('${o.id}')">🗑 Delete</button>
       </div>
     </div>`;
-  }).join('');
 }
 async function deleteOrder(id){
   if(!confirm('এই অর্ডারটি Delete করবেন? (লিস্ট থেকে সরে যাবে)'))return;
