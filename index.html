@@ -1535,6 +1535,7 @@ function renderProducts(f){
   curFilter=f;
   renderCatUI();
   renderHeroFeature();
+  setTimeout(handleDeepLink,0);
   const g=document.getElementById('productsGrid');
   let list=f==='all'?products:products.filter(p=>p.category===f);
   if(curSearch){
@@ -1613,6 +1614,39 @@ function renderCatUI(){
   if(mc)mc.innerHTML=cats.map(c=>{const [n,e]=catInfo(c);return `<button onclick="filterCat('${c}',null);toggleMobileNav()">${e} ${n} <small>${cnt(c)}</small></button>`;}).join('');
   const row=document.getElementById('csRow');
   if(row)row.innerHTML=cats.map(c=>{const [n,e]=catInfo(c);const rep=products.find(p=>p.category===c&&p.image_url&&getTotalStock(p)>0)||products.find(p=>p.category===c&&p.image_url);return `<div class="cs-card" onclick="filterCat('${c}',null)">${rep?`<img src="${rep.image_url}" alt="${n}" loading="lazy" decoding="async">`:`<div class="cs-ph">${e}</div>`}<div class="cs-info"><b>${n}</b><span>${cnt(c)} টি পণ্য</span></div></div>`;}).join('');
+}
+// ===== AD / SHARE LINKS: open the exact product or category from the URL =====
+// Supported:  /?product_id=12 (catalog feed)   /?p=12   /?product=12   /product/nike-shorts-12   /?cat=Trousers   /?cat=shorts
+let _deepDone=false;
+function slugifyKey(t){return String(t||'').toLowerCase().replace(/[^a-z0-9\u0980-\u09ff]+/g,'-').replace(/^-+|-+$/g,'');}
+function findProductFromUrl(){
+  let u;try{u=new URL(location.href);}catch(e){return null;}
+  let key=u.searchParams.get('product_id')||u.searchParams.get('p')||u.searchParams.get('product')||u.searchParams.get('pid');
+  if(!key){const m=u.pathname.match(/\/product\/([^\/?#]+)/i);if(m){try{key=decodeURIComponent(m[1]);}catch(e){key=m[1];}}}
+  if(!key&&/^#product-/i.test(u.hash))key=u.hash.slice(9);
+  if(!key)return null;
+  key=String(key).trim();const ks=slugifyKey(key);
+  let p=products.find(x=>String(x.id)===key||(x.slug&&String(x.slug)===key));
+  if(p)return p;
+  const t=key.match(/(\d+)$/);                       // "nike-shorts-12" -> id 12 (only if the name matches)
+  if(t){p=products.find(x=>String(x.id)===t[1]&&(ks===t[1]||ks.indexOf(slugifyKey(x.name))===0));if(p)return p;}
+  p=products.find(x=>slugifyKey(x.name)===ks);if(p)return p;
+  const cands=products.filter(x=>slugifyKey(x.name)&&ks.indexOf(slugifyKey(x.name))===0).sort((a,b)=>slugifyKey(b.name).length-slugifyKey(a.name).length);
+  return cands[0]||null;
+}
+function matchCategoryKey(v){
+  const k=String(v||'').trim().toLowerCase();if(!k)return null;
+  const cats=[...new Set(products.map(x=>x.category).filter(Boolean))];
+  return cats.find(c=>c.toLowerCase()===k||catInfo(c)[0].toLowerCase()===k)||null;
+}
+function handleDeepLink(){
+  if(_deepDone||!Array.isArray(products)||!products.length)return;
+  _deepDone=true;
+  let u;try{u=new URL(location.href);}catch(e){return;}
+  const p=findProductFromUrl();
+  if(p){openPpage(p.id);return;}
+  const c=matchCategoryKey(u.searchParams.get('cat')||u.searchParams.get('category'));
+  if(c)filterCat(c,null);
 }
 function flashAdded(btn){
   const b=document.getElementById('cartBadge');if(b){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');}
