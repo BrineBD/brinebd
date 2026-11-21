@@ -1656,6 +1656,7 @@ function flashAdded(btn){
   setTimeout(()=>{btn.innerHTML=h;btn.classList.remove('added');btn._flash=false;},1300);
 }
 function filterCat(f,el){
+  try{const u=new URL(location.href);if(f==='all')u.searchParams.delete('cat');else u.searchParams.set('cat',f);history.replaceState(history.state,'',u.pathname+u.search);}catch(e){}
   curFilter=f;
   renderProducts(f);
   document.querySelectorAll('.nav-cat').forEach(b=>b.classList.remove('active'));
@@ -1750,7 +1751,7 @@ async function openPpage(id){
   document.getElementById('ppageOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   if(!window._ppageHistoryPushed||window._ppageHistoryPushed!==id){
-    history.pushState({ppage:id},'','');
+    history.pushState({ppage:id},'','?product_id='+id);
     window._ppageHistoryPushed=id;
   }
   // admin mode check
